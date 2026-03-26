@@ -1,0 +1,209 @@
+.map-page {
+  display: flex;
+  height: calc(100vh - 96px);
+  overflow: hidden;
+}
+
+.map-page__sidebar {
+  width: 380px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-subtle);
+  overflow: hidden;
+}
+
+.map-sidebar__header {
+  padding: 24px 20px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.map-sidebar__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.map-sidebar__subtitle {
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.map-sidebar__filters {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.map-filter-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+
+.map-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.map-filter-chip {
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+}
+
+.map-filter-chip:hover { color: var(--text-primary); border-color: var(--border-default); }
+.map-filter-chip--active { color: white; background: var(--liberia-blue); border-color: var(--liberia-blue); }
+
+.map-sidebar__list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.map-location-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  text-align: left;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  width: 100%;
+}
+
+.map-location-card:hover { background: var(--bg-glass-hover); }
+.map-location-card--active { background: var(--accent-subtle); border: 1px solid var(--border-accent); }
+
+.map-location-card__icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.map-location-card__icon--supreme-court { background: var(--tag-constitution); color: var(--tag-constitution-text); }
+.map-location-card__icon--circuit-court { background: var(--tag-statute); color: var(--tag-statute-text); }
+.map-location-card__icon--magistrate-court { background: var(--tag-opinion); color: var(--tag-opinion-text); }
+.map-location-card__icon--government { background: var(--tag-case); color: var(--tag-case-text); }
+.map-location-card__icon--law-school { background: var(--accent-subtle); color: var(--accent); }
+
+.map-location-card__info h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.map-location-card__info span {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+/* ── Detail ── */
+.map-sidebar__detail {
+  padding: 20px;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+}
+
+.map-sidebar__detail h3 {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.map-detail__type {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--liberia-blue);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 8px;
+}
+
+.map-detail__address {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.map-detail__desc {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.map-detail__coords {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+/* ── Map ── */
+.map-page__map {
+  flex: 1;
+  min-height: 100%;
+}
+
+/* Leaflet marker overrides */
+.map-marker {
+  background: none !important;
+  border: none !important;
+}
+
+.map-marker__dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  margin: 4px;
+}
+
+.map-marker--supreme-court .map-marker__dot { background: #f59e0b; }
+.map-marker--circuit-court .map-marker__dot { background: var(--liberia-blue-vivid); }
+.map-marker--magistrate-court .map-marker__dot { background: #22c55e; }
+.map-marker--government .map-marker__dot { background: var(--liberia-red); }
+.map-marker--law-school .map-marker__dot { background: #8b5cf6; }
+
+@media (max-width: 768px) {
+  .map-page {
+    flex-direction: column;
+  }
+
+  .map-page__sidebar {
+    width: 100%;
+    max-height: 45vh;
+  }
+
+  .map-page__map {
+    min-height: 55vh;
+  }
+}
