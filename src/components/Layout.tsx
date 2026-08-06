@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Scale, Search, BookOpen, Menu, X, Sun, Moon, MapPin, MessageSquare, Construction } from 'lucide-react';
+import { Search, BookOpen, Menu, X, Sun, Moon, MapPin, MessageSquare } from 'lucide-react';
 import { useState } from 'react';
 import { useTheme } from '../hooks/useTheme';
 import './Layout.css';

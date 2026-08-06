@@ -34,6 +34,17 @@
   mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black, transparent);
 }
 
+.hero__bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('/liberiaFlag.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.18;
+  filter: saturate(0.9) brightness(0.9);
+}
+
 .hero__content {
   position: relative;
   max-width: 1200px;
@@ -76,10 +87,11 @@
 }
 
 .hero__title-accent {
-  background: linear-gradient(135deg, var(--liberia-blue) 0%, var(--liberia-blue-vivid) 50%, var(--liberia-red) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--liberia-red);
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
 }
 
 .hero__subtitle {

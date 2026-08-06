@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Sparkles, Scale, AlertTriangle } from 'lucide-react';
+import { documents, type LegalDocument } from '../data/legalData';
 import './AIAssistant.css';
 
 interface Message {
@@ -18,108 +19,60 @@ const suggestions = [
   'Explain the role of the Truth and Reconciliation Commission',
 ];
 
-const mockResponses: Record<string, string> = {
-  'land rights': `**Land Rights Act of 2018 — Key Provisions:**
+function isGreeting(query: string): boolean {
+  return /^(hi|hello|hey|good (morning|afternoon|evening)|what's up|yo)$/i.test(query.trim());
+}
 
-The Land Rights Act of 2018 is one of the most transformative pieces of legislation in Liberian history. Here are its core provisions:
+function searchDocuments(query: string): LegalDocument[] {
+  const terms = query
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean);
+  if (terms.length === 0) return [];
 
-**1. Four Categories of Land Ownership:**
-- **Customary Land** — owned by communities based on traditional practices
-- **Government Land** — owned by the Government of Liberia
-- **Private Land** — owned by individuals or entities
-- **Public Land** — held in trust for public use
+  const score = (doc: LegalDocument) => {
+    let total = 0;
+    const haystack = `${doc.title} ${doc.summary} ${doc.body}`.toLowerCase();
+    terms.forEach((term) => {
+      if (haystack.includes(term)) total += 2;
+      if (doc.tags.some((tag) => tag.includes(term))) total += 1;
+      if (doc.citations.some((citation) => citation.toLowerCase().includes(term))) total += 1;
+    });
+    if (doc.category.includes(terms[0])) total += 1;
+    return total;
+  };
 
-**2. Community Land Rights:**
-- Communities can own customary land as a legal entity (first time in Liberian history)
-- No customary land can be taken without free, prior, and informed consent
+  return documents
+    .map((doc) => ({ doc, score: score(doc) }))
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 4)
+    .map(({ doc }) => doc);
+}
 
-**3. Women's Land Rights:**
-- Women have equal rights to own, use, and manage land
-- Discriminatory customary practices are prohibited
+function formatDocumentResponse(results: LegalDocument[], query: string): string {
+  if (results.length === 0) {
+    return `I couldn't find a close match in the Liberian legal library for "${query}".
 
-**4. Historical Significance:**
-This Act ended over 170 years of indigenous land dispossession that began with the founding of Liberia in 1847.
+Try asking about a law, court case, or specific legal topic like "Land Rights Act 2018", "due process rights", or "maritime registration".`;
+  }
 
-*Sources: Land Rights Act of 2018, Sections 1.1–4.2*`,
+  const items = results
+    .map((doc) => `**${doc.title}** (${doc.date})\n${doc.summary}`)
+    .join('\n\n');
 
-  'due process': `**Due Process Rights under the 1986 Constitution:**
-
-Article 20 of the 1986 Constitution guarantees due process. The Supreme Court in *Cabral v. Republic* (1988) established these minimum requirements:
-
-1. **Adequate notice** of charges or claims
-2. **Meaningful opportunity to be heard**
-3. **Impartial tribunal**
-4. **Right to present evidence** and confront witnesses
-5. **Decision based on evidence** presented
-
-The Court also held that due process is both **procedural** (fair process) and **substantive** (government cannot act arbitrarily).
-
-Article 21 further prohibits torture and inhumane treatment.
-
-*Sources: Constitution of Liberia (1986), Articles 20-21; Cabral v. Republic (1988)*`,
-
-  'domestic violence': `**Domestic Violence Law in Liberia:**
-
-The **Domestic Violence Act of 2019** provides comprehensive protections:
-
-**Covered Acts:**
-- Physical abuse (assault, battery)
-- Sexual abuse (non-consensual acts)
-- Psychological abuse (intimidation, threats, stalking)
-- Economic abuse (withholding finances, destroying property)
-
-**Penalties:**
-- Domestic violence: up to **5 years imprisonment**
-- Aggravated domestic violence: up to **10 years**
-- Violation of protection order: up to **2 years**
-
-**Protection Orders:**
-- Victims can apply to Magistrate or Circuit Court
-- Emergency orders can be issued without the abuser present
-- Violating a protection order is a criminal offense
-
-**Support Services:**
-The Government is required to establish shelters and support services.
-
-*Sources: Domestic Violence Act of 2019, Sections 1-5*`,
-
-  'maritime': `**Liberia's Maritime Registration Laws:**
-
-Liberia has one of the world's **largest ship registries** (second globally by tonnage), established by the **Maritime Law of 1948**.
-
-**Key Points:**
-
-1. **Open Registry System:** Any vessel owned by a Liberian corporation can register under the Liberian flag
-2. **Liberia Maritime Authority (LiMA):** Sole authority for maritime administration (revised 2020)
-3. **International Compliance:** All vessels must meet SOLAS, MARPOL, STCW, and MLC standards
-4. **Revenue Allocation:** 60% to consolidated fund, 25% to LiMA operations, 15% to development
-
-**Economic Impact:**
-Maritime registration is one of Liberia's most significant revenue sources, generating hundreds of millions annually.
-
-*Sources: Maritime Law of 1948; Liberia Maritime Authority Act (2020)*`,
-
-  'default': `Thank you for your question. Based on my analysis of Liberian legal sources, here is what I can tell you:
-
-This is a complex area of Liberian law. I recommend reviewing the relevant statutes and case law in our database for the most authoritative guidance.
-
-**Suggested next steps:**
-1. Search our database for related statutes and cases
-2. Review the specific provisions referenced in the citations
-3. Consult with a licensed Liberian attorney for specific legal advice
-
-**Disclaimer:** This AI provides general legal information about Liberian law. It does not constitute legal advice. Always consult a qualified attorney for specific legal matters.
-
-*Browse our full library of 384+ documents spanning 1847-2026.*`,
-};
+  return `Here are the most relevant Liberian legal documents I found for your question:\n\n${items}\n\nIf you want, I can summarize one of these results in more detail.`;
+}
 
 function getAIResponse(query: string): string {
-  const q = query.toLowerCase();
-  if (q.includes('land right')) return mockResponses['land rights'];
-  if (q.includes('due process') || q.includes('constitution') && q.includes('right')) return mockResponses['due process'];
-  if (q.includes('domestic violence') || q.includes('protection order')) return mockResponses['domestic violence'];
-  if (q.includes('maritime') || q.includes('shipping') || q.includes('vessel')) return mockResponses['maritime'];
-  return mockResponses['default'];
+  const trimmed = query.trim();
+  if (isGreeting(trimmed)) {
+    return `Hi there! I'm LegalCore AI, your Liberian law assistant. Ask me about statutes, court cases, or legal topics such as land rights, due process, maritime law, or customary law, and I'll search the library for the best matches.`;
+  }
+
+  const results = searchDocuments(query);
+  return formatDocumentResponse(results, query);
 }
 
 export default function AIAssistant() {
