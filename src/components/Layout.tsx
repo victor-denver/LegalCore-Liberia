@@ -13,30 +13,21 @@ export default function Layout({ children }: LayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { theme, toggle, isDark } = useTheme();
   const isHome = location.pathname === '/';
+  const logoSrc = isDark
+    ? '/logo/AmaraTech IT Logo (new) - dark bg.png'
+    : '/logo/Login Logo (140x60 px) light mode.png';
+  const logoAlt = isDark ? 'Dark theme logo' : 'Light theme logo';
 
   return (
     <div className={`layout theme-${theme}`}>
-      {/* Dev Banner */}
-      <div className="dev-banner">
-        <div className="dev-banner__inner">
-          <Construction size={14} />
-          <span>This platform is currently <strong>in development</strong> — Built by <strong>Simpson Consultant Agency</strong></span>
-        </div>
-      </div>
-
       <nav className={`navbar ${isHome ? 'navbar--transparent' : 'navbar--solid'}`}>
         <div className="navbar__inner">
           <Link to="/" className="navbar__logo" onClick={() => setMobileMenuOpen(false)}>
             <div className="navbar__logo-icon">
-              <Scale size={20} />
+              <img src={logoSrc} alt={logoAlt} className="navbar__logo-img" />
             </div>
             <span className="navbar__logo-text">
               Legal<span className="navbar__logo-accent">Core</span>
-            </span>
-            <span className="navbar__logo-flag">
-              <span className="flag-stripe flag-stripe--red" />
-              <span className="flag-stripe flag-stripe--white" />
-              <span className="flag-stripe flag-stripe--blue" />
             </span>
           </Link>
 
@@ -73,16 +64,13 @@ export default function Layout({ children }: LayoutProps) {
           <div className="footer__top">
             <div className="footer__brand-col">
               <div className="footer__brand">
-                <div className="footer__brand-icon"><Scale size={18} /></div>
+                <div className="footer__brand-icon">
+                  <img src={logoSrc} alt={logoAlt} className="footer__brand-img" />
+                </div>
                 <div>
                   <span className="footer__brand-name">LegalCore Liberia</span>
                   <span className="footer__brand-tagline">Empowering legal professionals across Liberia</span>
                 </div>
-              </div>
-              <div className="footer__flag-bar">
-                <div className="footer__flag-stripe footer__flag-stripe--red" />
-                <div className="footer__flag-stripe footer__flag-stripe--white" />
-                <div className="footer__flag-stripe footer__flag-stripe--blue" />
               </div>
             </div>
             <div className="footer__links-col">
@@ -102,7 +90,6 @@ export default function Layout({ children }: LayoutProps) {
           </div>
           <div className="footer__bottom">
             <span className="footer__copy">&copy; {new Date().getFullYear()} LegalCore — All rights reserved</span>
-            <span className="footer__agency">Built by <strong>Simpson Consultant Agency</strong></span>
           </div>
         </div>
       </footer>

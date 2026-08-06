@@ -73,14 +73,19 @@
 }
 
 .navbar__logo-icon {
-  width: 32px;
-  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--liberia-blue);
-  border-radius: var(--radius-sm);
-  color: white;
+  height: 40px;
+  min-width: 120px;
+  background: transparent;
+  border-radius: 0;
+}
+
+.navbar__logo-img {
+  max-height: 100%;
+  width: auto;
+  display: block;
 }
 
 .navbar__logo-accent {
@@ -224,21 +229,23 @@
 
 .footer__brand {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
   margin-bottom: 16px;
 }
 
 .footer__brand-icon {
-  width: 36px;
-  height: 36px;
+  width: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--liberia-blue);
-  border-radius: var(--radius-sm);
-  color: white;
   flex-shrink: 0;
+}
+
+.footer__brand-img {
+  width: 100%;
+  max-height: 42px;
+  object-fit: contain;
 }
 
 .footer__brand-name {
@@ -255,23 +262,6 @@
   color: var(--text-tertiary);
   margin-top: 2px;
 }
-
-.footer__flag-bar {
-  display: flex;
-  gap: 0;
-  height: 4px;
-  border-radius: 2px;
-  overflow: hidden;
-  max-width: 200px;
-}
-
-.footer__flag-stripe {
-  flex: 1;
-}
-
-.footer__flag-stripe--red { background: var(--liberia-red); }
-.footer__flag-stripe--white { background: var(--liberia-white); }
-.footer__flag-stripe--blue { background: var(--liberia-blue); }
 
 .footer__links-col {
   display: flex;

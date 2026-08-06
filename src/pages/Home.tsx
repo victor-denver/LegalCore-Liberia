@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Scale, ArrowRight, BookOpen, Gavel, FileText, ScrollText, Zap, Globe, Shield, MapPin, MessageSquare, Flag } from 'lucide-react';
 import SearchBar from '../components/SearchBar';
+import { HeatmapChart } from '../components/ui/heatmap-chart';
 import { categories, stats, recentSearches } from '../data/legalData';
 import './Home.css';
 
@@ -15,32 +16,36 @@ export default function Home() {
         </div>
 
         <div className="hero__content">
-          <div className="hero__badge animate-in">
-            <Flag size={14} />
-            Liberia's Legal Intelligence Platform
+          <div className="hero__content-left">
+            <div className="hero__badge animate-in">
+              <Flag size={14} />
+              Liberia's Legal Intelligence Platform
+            </div>
+
+            <h1 className="hero__title animate-in-up">
+              Find the law.<br />
+              <span className="hero__title-accent">Instantly.</span>
+            </h1>
+
+            <p className="hero__subtitle animate-in-up" style={{ animationDelay: '0.1s' }}>
+              Search {stats.yearsSpan} of Liberian statutes, court decisions, and legal opinions
+              in seconds — not days. Built for lawyers who move fast.
+            </p>
           </div>
 
-          <h1 className="hero__title animate-in-up">
-            Find the law.<br />
-            <span className="hero__title-accent">Instantly.</span>
-          </h1>
+          <div className="hero__content-right animate-in-up" style={{ animationDelay: '0.2s' }}>
+            <div className="hero__search">
+              <SearchBar size="hero" placeholder="Search Liberian law — try 'land rights' or 'Constitution 1847'" />
+            </div>
 
-          <p className="hero__subtitle animate-in-up" style={{ animationDelay: '0.1s' }}>
-            Search {stats.yearsSpan} of Liberian statutes, court decisions, and legal opinions
-            in seconds — not days. Built for lawyers who move fast.
-          </p>
-
-          <div className="hero__search animate-in-up" style={{ animationDelay: '0.2s' }}>
-            <SearchBar size="hero" placeholder="Search Liberian law — try 'land rights' or 'Constitution 1847'" />
-          </div>
-
-          <div className="hero__recent animate-in-up" style={{ animationDelay: '0.3s' }}>
-            <span className="hero__recent-label">Popular:</span>
-            {recentSearches.slice(0, 4).map((term) => (
-              <Link key={term} to={`/search?q=${encodeURIComponent(term)}`} className="hero__recent-tag">
-                {term}
-              </Link>
-            ))}
+            <div className="hero__recent">
+              <span className="hero__recent-label">Popular:</span>
+              {recentSearches.slice(0, 4).map((term) => (
+                <Link key={term} to={`/search?q=${encodeURIComponent(term)}`} className="hero__recent-tag">
+                  {term}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -49,6 +54,22 @@ export default function Home() {
           <div className="hero__flag-stripe hero__flag-stripe--red" />
           <div className="hero__flag-stripe hero__flag-stripe--white" />
           <div className="hero__flag-stripe hero__flag-stripe--blue" />
+        </div>
+      </section>
+
+      <section className="data-section">
+        <div className="data-section__inner">
+          <div className="data-section__copy">
+            <p className="data-section__eyebrow">Data Coverage</p>
+            <h2>Search across the full Liberian legal record</h2>
+            <p>
+              Our database spans {stats.yearsSpan} of Liberian statutes, court decisions, and legal commentary.
+              The visual below highlights the current indexed coverage so you can see the depth of legal data we support.
+            </p>
+          </div>
+          <div className="data-section__chart">
+            <HeatmapChart width={740} height={340} />
+          </div>
         </div>
       </section>
 
