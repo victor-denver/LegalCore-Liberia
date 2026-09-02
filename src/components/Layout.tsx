@@ -1,96 +1,112 @@
-import { Link, useLocation } from 'react-router-dom';
-import { Search, BookOpen, Menu, X, Sun, Moon, MapPin, MessageSquare } from 'lucide-react';
-import { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Search, Menu, X, Bookmark, Globe, Bell, Maximize2, Sparkles } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTheme } from '../hooks/useTheme';
+import { documents, stats } from '../data/legalData';
 import './Layout.css';
 
-interface LayoutProps {
-  children: React.ReactNode;
-}
-
-export default function Layout({ children }: LayoutProps) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { theme, toggle, isDark } = useTheme();
-  const isHome = location.pathname === '/';
-  const logoSrc = isDark
-    ? '/logo/AmaraTech IT Logo (new) - dark bg.png'
-    : '/logo/Login Logo (140x60 px) light mode.png';
-  const logoAlt = isDark ? 'Dark theme logo' : 'Light theme logo';
+  const navigate = useNavigate();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [cmdOpen, setCmdOpen] = useState(false);
+  const [q, setQ] = useState('');
+  const { toggle, isDark } = useTheme();
+
+  useEffect(() => {
+    const h = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); setCmdOpen(v=>!v); }
+      if (e.key==='Escape') setCmdOpen(false);
+    };
+    window.addEventListener('keydown', h);
+    return ()=> window.removeEventListener('keydown', h);
+  }, []);
+  useEffect(()=> setMobileOpen(false), [location.pathname]);
+  useEffect(()=> { document.body.style.overflow = cmdOpen||mobileOpen ? 'hidden' : ''; return ()=>{document.body.style.overflow='';}; },[cmdOpen,mobileOpen]);
+
+  const filtered = useMemo(()=>{
+    if(!q.trim()) return documents.slice(0,5);
+    const t=q.toLowerCase();
+    return documents.filter(d=> d.title.toLowerCase().includes(t) || d.tags.some(x=>x.toLowerCase().includes(t))).slice(0,5);
+  },[q]);
 
   return (
-    <div className={`layout theme-${theme}`}>
-      <nav className={`navbar ${isHome ? 'navbar--transparent' : 'navbar--solid'}`}>
-        <div className="navbar__inner">
-          <Link to="/" className="navbar__logo" onClick={() => setMobileMenuOpen(false)}>
-            <div className="navbar__logo-icon">
-              <img src={logoSrc} alt={logoAlt} className="navbar__logo-img" />
-            </div>
-            <span className="navbar__logo-text">
-              Legal<span className="navbar__logo-accent">Core</span>
-            </span>
+    <div className="layout">
+      <div className="liberia-flag-bar" aria-label="Liberia Flag" title="Liberia Flag — 11 red and white stripes, blue canton with star" />
+      <nav className="topbar">
+        <div className="topbar__left">
+          <Link to="/" className="topbar__logo">
+            <img src={isDark ? "/logo/AmaraTech IT Logo (new) - dark bg.png" : "/logo/Login Logo (140x60 px) light mode.png"} alt="AmaraTech — LegalCore Liberia" className="topbar__logo-img" />
           </Link>
-
-          <div className={`navbar__links ${mobileMenuOpen ? 'navbar__links--open' : ''}`}>
-            <Link to="/search" className={`navbar__link ${location.pathname === '/search' ? 'navbar__link--active' : ''}`} onClick={() => setMobileMenuOpen(false)}>
-              <Search size={16} /> Search
-            </Link>
-            <Link to="/browse" className={`navbar__link ${location.pathname === '/browse' ? 'navbar__link--active' : ''}`} onClick={() => setMobileMenuOpen(false)}>
-              <BookOpen size={16} /> Browse
-            </Link>
-            <Link to="/map" className={`navbar__link ${location.pathname === '/map' ? 'navbar__link--active' : ''}`} onClick={() => setMobileMenuOpen(false)}>
-              <MapPin size={16} /> Map
-            </Link>
-            <Link to="/ai" className={`navbar__link ${location.pathname === '/ai' ? 'navbar__link--active' : ''}`} onClick={() => setMobileMenuOpen(false)}>
-              <MessageSquare size={16} /> AI Assistant
-            </Link>
-          </div>
-
-          <div className="navbar__actions">
-            <button className="navbar__theme-toggle" onClick={toggle} aria-label="Toggle theme">
-              {isDark ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-            <button className="navbar__mobile-toggle" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle menu">
-              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
-            </button>
+          <div className="topbar__nav">
+            <Link to="/search" className={`topbar__link ${location.pathname==='/search'?'topbar__link--active':''}`}>Search</Link>
+            <Link to="/browse" className={`topbar__link ${location.pathname==='/browse'?'topbar__link--active':''}`}>Browse</Link>
+            <Link to="/map" className={`topbar__link ${location.pathname==='/map'?'topbar__link--active':''}`}>Courts</Link>
+            <Link to="/ai" className={`topbar__link ${location.pathname==='/ai'?'topbar__link--active':''}`}>AI</Link>
           </div>
         </div>
+
+        <button className="topbar__search" onClick={()=>setCmdOpen(true)} aria-label="Search">
+          <Search size={14} />
+          <span>Search on LegalCore...</span>
+          <span className="topbar__search-icon"><Maximize2 size={14}/></span>
+        </button>
+
+        <div className="topbar__right">
+          <button className="topbar__icon" aria-label="Saved"><Bookmark size={16}/></button>
+          <button className="topbar__icon" onClick={toggle} aria-label="Toggle"><Globe size={16}/></button>
+          <button className="topbar__icon" aria-label="Notifications"><Bell size={16}/></button>
+          <span className="topbar__avatar">LC</span>
+          <button className="topbar__menu" onClick={()=>setMobileOpen(!mobileOpen)} aria-label="Menu">
+            {mobileOpen ? <X size={18}/> : <Menu size={18}/>}
+          </button>
+        </div>
       </nav>
+
+      {mobileOpen && (
+        <div className="mobile-menu">
+          <Link to="/search">Search</Link>
+          <Link to="/browse">Browse</Link>
+          <Link to="/map">Map</Link>
+          <Link to="/ai"><Sparkles size={14}/> AI Assistant</Link>
+          <Link to="/about">About Us</Link>
+        </div>
+      )}
+
+      {cmdOpen && (
+        <div className="cmd-overlay" onClick={()=>setCmdOpen(false)}>
+          <div className="cmd-box" onClick={e=>e.stopPropagation()}>
+            <div className="cmd-box__header">
+              <Search size={16}/>
+              <input autoFocus placeholder="Search Liberian law — try Land Rights Act, Constitution" value={q} onChange={e=>setQ(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter'&&filtered[0]){ navigate(`/document/${filtered[0].id}`); setCmdOpen(false);}}} />
+              <span className="cmd-esc">ESC</span>
+            </div>
+            <div className="cmd-box__list">
+              {filtered.map(d=>(
+                <button key={d.id} className="cmd-item" onClick={()=>{ navigate(`/document/${d.id}`); setCmdOpen(false);}}>
+                  <span className={`cmd-tag cmd-tag--${d.type}`}>{d.type}</span>
+                  <span className="cmd-title">{d.title}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <main className="main-content">{children}</main>
 
       <footer className="footer">
+        <div className="footer__flag" aria-label="Liberia Flag — 11 stripes red & white, blue canton with star" />
         <div className="footer__inner">
-          <div className="footer__top">
-            <div className="footer__brand-col">
-              <div className="footer__brand">
-                <div className="footer__brand-icon">
-                  <img src={logoSrc} alt={logoAlt} className="footer__brand-img" />
-                </div>
-                <div>
-                  <span className="footer__brand-name">LegalCore Liberia</span>
-                  <span className="footer__brand-tagline">Empowering legal professionals across Liberia</span>
-                </div>
-              </div>
-            </div>
-            <div className="footer__links-col">
-              <h4>Platform</h4>
-              <Link to="/search">Search</Link>
-              <Link to="/browse">Browse</Link>
-              <Link to="/map">Court Map</Link>
-              <Link to="/ai">AI Assistant</Link>
-            </div>
-            <div className="footer__links-col">
-              <h4>Legal Areas</h4>
-              <Link to="/search?category=constitutional">Constitutional</Link>
-              <Link to="/search?category=criminal">Criminal</Link>
-              <Link to="/search?category=property">Property & Land</Link>
-              <Link to="/search?category=commercial">Commercial</Link>
-            </div>
+          <div className="footer__links">
+            <Link to="/about">About Us</Link>
+            <span>•</span>
+            <Link to="/search">Search</Link>
+            <span>•</span>
+            <Link to="/ai">Koloqua AI</Link>
           </div>
-          <div className="footer__bottom">
-            <span className="footer__copy">&copy; {new Date().getFullYear()} LegalCore — All rights reserved</span>
-          </div>
+          <span>© {new Date().getFullYear()} LegalCore Liberia — AmaraTech • {stats.totalDocuments} laws • 1847–2026 • 15 counties • Liberia Flag 🇱🇷</span>
+          <span>For everyone • Type anything → Press Enter</span>
         </div>
       </footer>
     </div>

@@ -1,224 +1,80 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
-*, *::before, *::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* ═══════════════════════════════════════
-   LIBERIAN FLAG PALETTE — Red White Blue
-   ═══════════════════════════════════════ */
-
+/* ═════════════════════════════════════════
+   MOBBIN-DARK THEME — LegalCore
+   Inspired by screenshot: #0E0E0E / #1C1C1E / white bold
+   Liberia accent: red #BF0A30  blue #002868
+   ═════════════════════════════════════════ */
 :root {
   --liberia-red: #BF0A30;
   --liberia-blue: #002868;
-  --liberia-white: #FFFFFF;
-  --liberia-red-light: #DC3545;
-  --liberia-blue-light: #1a4f8a;
-  --liberia-blue-vivid: #2563eb;
 
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-display: 'Space Grotesk', 'Inter', sans-serif;
-  --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  --bg: #0E0E0E;
+  --bg-elevated: #141414;
+  --bg-card: #1A1A1A;
+  --bg-card-hover: #202020;
+  --bg-pill: #1E1E1E;
+  --bg-pill-active: #2A2A2A;
+  --bg-input: #1E1E1E;
+  --bg-input-hover: #252525;
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
+  --border: #262626;
+  --border-strong: #2E2E2E;
+
+  --text-primary: #FFFFFF;
+  --text-secondary: #A1A1AA;
+  --text-muted: #71717A;
+  --text-faint: #52525B;
+
+  --accent: #FFFFFF;
+  --accent-red: #BF0A30;
+  --accent-blue: #3B82F6;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --radius-sm: 8px;
+  --radius-md: 12px;
   --radius-lg: 16px;
-  --radius-xl: 24px;
+  --radius-xl: 20px;
   --radius-full: 9999px;
 
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
-
   font-family: var(--font-sans);
-  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
-/* ── DARK MODE (default) ── */
-:root,
-:root[data-theme="dark"] {
-  --bg-primary: #0a0e1a;
-  --bg-secondary: #0f1424;
-  --bg-tertiary: #151b2e;
-  --bg-card: #111827;
-  --bg-card-hover: #1a2238;
-  --bg-glass: rgba(255, 255, 255, 0.04);
-  --bg-glass-hover: rgba(255, 255, 255, 0.07);
-  --bg-input: rgba(255, 255, 255, 0.06);
-  --bg-input-focus: rgba(255, 255, 255, 0.1);
-
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-default: rgba(255, 255, 255, 0.12);
-  --border-strong: rgba(255, 255, 255, 0.18);
-  --border-accent: rgba(37, 99, 235, 0.5);
-
-  --text-primary: #f8fafc;
-  --text-secondary: rgba(248, 250, 252, 0.72);
-  --text-tertiary: rgba(248, 250, 252, 0.44);
-  --text-muted: rgba(248, 250, 252, 0.25);
-
-  --accent: var(--liberia-blue-vivid);
-  --accent-hover: #3b82f6;
-  --accent-subtle: rgba(37, 99, 235, 0.12);
-  --accent-glow: rgba(37, 99, 235, 0.15);
-
-  --red: var(--liberia-red);
-  --red-subtle: rgba(191, 10, 48, 0.12);
-  --green: #22c55e;
-  --amber: #f59e0b;
-  --blue: var(--liberia-blue-vivid);
-
-  --tag-statute: rgba(37, 99, 235, 0.15);
-  --tag-statute-text: #93c5fd;
-  --tag-case: rgba(191, 10, 48, 0.15);
-  --tag-case-text: #fca5a5;
-  --tag-opinion: rgba(34, 197, 94, 0.12);
-  --tag-opinion-text: #86efac;
-  --tag-constitution: rgba(245, 158, 11, 0.12);
-  --tag-constitution-text: #fcd34d;
-
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 40px rgba(37, 99, 235, 0.1);
-
-  --dev-banner-bg: var(--liberia-red);
-  --dev-banner-text: white;
-
-  --nav-bg: rgba(10, 14, 26, 0.85);
-
-  color-scheme: dark;
+  background: var(--bg);
   color: var(--text-primary);
-  background: var(--bg-primary);
 }
 
-/* ── LIGHT MODE ── */
+/* Light variant still available but default is dark mobbin */
 :root[data-theme="light"] {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8fafc;
-  --bg-tertiary: #f1f5f9;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f8fafc;
-  --bg-glass: rgba(0, 40, 104, 0.03);
-  --bg-glass-hover: rgba(0, 40, 104, 0.06);
-  --bg-input: rgba(0, 40, 104, 0.04);
-  --bg-input-focus: rgba(0, 40, 104, 0.07);
-
-  --border-subtle: rgba(0, 40, 104, 0.08);
-  --border-default: rgba(0, 40, 104, 0.14);
-  --border-strong: rgba(0, 40, 104, 0.22);
-  --border-accent: rgba(37, 99, 235, 0.4);
-
-  --text-primary: #0f172a;
-  --text-secondary: #334155;
-  --text-tertiary: #64748b;
-  --text-muted: #94a3b8;
-
-  --accent: var(--liberia-blue);
-  --accent-hover: var(--liberia-blue-light);
-  --accent-subtle: rgba(0, 40, 104, 0.06);
-  --accent-glow: rgba(0, 40, 104, 0.08);
-
-  --red: var(--liberia-red);
-  --red-subtle: rgba(191, 10, 48, 0.06);
-  --green: #16a34a;
-  --amber: #d97706;
-  --blue: var(--liberia-blue);
-
-  --tag-statute: rgba(0, 40, 104, 0.08);
-  --tag-statute-text: var(--liberia-blue);
-  --tag-case: rgba(191, 10, 48, 0.08);
-  --tag-case-text: var(--liberia-red);
-  --tag-opinion: rgba(22, 163, 74, 0.08);
-  --tag-opinion-text: #16a34a;
-  --tag-constitution: rgba(217, 119, 6, 0.08);
-  --tag-constitution-text: #b45309;
-
-  --shadow-sm: 0 1px 3px rgba(0, 40, 104, 0.06);
-  --shadow-md: 0 4px 12px rgba(0, 40, 104, 0.08);
-  --shadow-lg: 0 8px 32px rgba(0, 40, 104, 0.1);
-  --shadow-glow: 0 0 40px rgba(0, 40, 104, 0.05);
-
-  --dev-banner-bg: var(--liberia-red);
-  --dev-banner-text: white;
-
-  --nav-bg: rgba(255, 255, 255, 0.88);
-
+  --bg: #F5F5F5;
+  --bg-elevated: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #FAFAFA;
+  --bg-pill: #EAEAEA;
+  --bg-pill-active: #FFFFFF;
+  --bg-input: #EAEAEA;
+  --bg-input-hover: #E0E0E0;
+  --border: #E5E5E5;
+  --border-strong: #D4D4D4;
+  --text-primary: #0E0E0E;
+  --text-secondary: #52525B;
+  --text-muted: #71717A;
   color-scheme: light;
-  color: var(--text-primary);
-  background: var(--bg-primary);
 }
+:root[data-theme="dark"] { color-scheme: dark; }
 
-body {
-  min-height: 100vh;
-  overflow-x: hidden;
-  transition: background var(--transition-base), color var(--transition-base);
-}
-
-#root {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-a {
-  color: var(--accent-hover);
-  text-decoration: none;
-  transition: color var(--transition-fast);
-}
-a:hover {
-  color: var(--text-primary);
-}
-
-button {
-  cursor: pointer;
-  font-family: var(--font-sans);
-  border: none;
-  outline: none;
-  background: none;
-}
-
-input, textarea, select {
-  font-family: var(--font-sans);
-  outline: none;
-  border: none;
-  background: none;
-}
-
-::selection {
-  background: var(--accent);
-  color: white;
-}
-
-::-webkit-scrollbar { width: 6px; }
+html { scroll-behavior: smooth; }
+body { min-height: 100vh; overflow-x: hidden; background: var(--bg); color: var(--text-primary); line-height: 1.5; }
+#root { min-height: 100vh; display: flex; flex-direction: column; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+input { font-family: inherit; outline: none; border: none; background: none; color: inherit; }
+::selection { background: var(--liberia-blue); color: white; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 999px; }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideDown {
-  from { transform: translateY(-100%); }
-  to { transform: translateY(0); }
-}
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(37, 99, 235, 0.1); }
-  50% { box-shadow: 0 0 40px rgba(37, 99, 235, 0.2); }
-}
-
-.animate-in { animation: fadeIn 0.5s ease-out forwards; }
-.animate-in-up { animation: fadeInUp 0.6s ease-out forwards; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.animate-in { animation: fadeIn 0.25s ease forwards; }

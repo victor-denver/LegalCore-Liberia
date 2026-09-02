@@ -1,159 +1,114 @@
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { useMemo, useState } from 'react';
-import { Filter, SlidersHorizontal, X } from 'lucide-react';
+import { SlidersHorizontal, X, Search, Sparkles, Clock3, Info } from 'lucide-react';
 import SearchBar from '../components/SearchBar';
 import DocumentCard from '../components/DocumentCard';
 import { documents, categories, type DocumentType, type LegalCategory } from '../data/legalData';
 import './SearchPage.css';
 
-const typeFilters: { value: DocumentType | 'all'; label: string }[] = [
-  { value: 'all', label: 'All Types' },
-  { value: 'constitution', label: 'Constitution' },
-  { value: 'statute', label: 'Statutes' },
-  { value: 'case', label: 'Case Law' },
-  { value: 'opinion', label: 'Legal Opinions' },
+const typeFilters:{value:DocumentType|'all';label:string}[]=[
+  {value:'all',label:'All'},
+  {value:'constitution',label:'Constitution'},
+  {value:'statute',label:'Statutes'},
+  {value:'case',label:'Cases'},
+  {value:'opinion',label:'Opinions'},
 ];
 
-export default function SearchPage() {
-  const [searchParams] = useSearchParams();
-  const queryParam = searchParams.get('q') || '';
-  const categoryParam = searchParams.get('category') || '';
+export default function SearchPage(){
+  const [searchParams]=useSearchParams();
+  const qParam=searchParams.get('q')||'';
+  const catParam=searchParams.get('category')||'';
+  const [typeFilter,setTypeFilter]=useState<DocumentType|'all'>('all');
+  const [catFilter,setCatFilter]=useState<LegalCategory|'all'>((catParam as LegalCategory)||'all');
+  const [showFilters,setShowFilters]=useState(false);
+  const [sortBy,setSortBy]=useState<'relevance'|'newest'|'oldest'>('relevance');
 
-  const [typeFilter, setTypeFilter] = useState<DocumentType | 'all'>('all');
-  const [categoryFilter, setCategoryFilter] = useState<LegalCategory | 'all'>(
-    (categoryParam as LegalCategory) || 'all'
-  );
-  const [showFilters, setShowFilters] = useState(false);
-
-  const results = useMemo(() => {
-    let filtered = [...documents];
-
-    if (queryParam) {
-      const q = queryParam.toLowerCase();
-      filtered = filtered.filter(
-        (doc) =>
-          doc.title.toLowerCase().includes(q) ||
-          doc.summary.toLowerCase().includes(q) ||
-          doc.tags.some((t) => t.toLowerCase().includes(q)) ||
-          doc.body.toLowerCase().includes(q)
-      );
+  const results=useMemo(()=>{
+    let f=[...documents];
+    if(qParam){
+      const q=qParam.toLowerCase();
+      f=f.filter(d=> d.title.toLowerCase().includes(q) || d.summary.toLowerCase().includes(q) || d.tags.some(t=>t.toLowerCase().includes(q)) || d.body.toLowerCase().includes(q));
+      f.sort((a,b)=> (b.title.toLowerCase().includes(q) ? 1:0) - (a.title.toLowerCase().includes(q)?1:0));
     }
+    if(typeFilter!=='all') f=f.filter(d=>d.type===typeFilter);
+    if(catFilter!=='all') f=f.filter(d=>d.category===catFilter);
+    if(sortBy==='newest') f.sort((a,b)=>b.year-a.year);
+    if(sortBy==='oldest') f.sort((a,b)=>a.year-b.year);
+    return f;
+  },[qParam,typeFilter,catFilter,sortBy]);
 
-    if (typeFilter !== 'all') {
-      filtered = filtered.filter((doc) => doc.type === typeFilter);
-    }
-
-    if (categoryFilter !== 'all') {
-      filtered = filtered.filter((doc) => doc.category === categoryFilter);
-    }
-
-    return filtered;
-  }, [queryParam, typeFilter, categoryFilter]);
-
-  const hasActiveFilters = typeFilter !== 'all' || categoryFilter !== 'all';
-
-  const clearFilters = () => {
-    setTypeFilter('all');
-    setCategoryFilter('all');
-  };
+  const hasFilters=typeFilter!=='all'||catFilter!=='all';
+  const clear=()=>{setTypeFilter('all');setCatFilter('all');};
 
   return (
     <div className="search-page">
-      <div className="search-page__header">
-        <div className="search-page__header-inner">
-          <div className="search-page__search-row">
-            <SearchBar initialQuery={queryParam} />
+      <div className="search-header">
+        <div className="search-header__inner">
+          <h1 className="search-header__title">Search Liberian Law</h1>
+          <p className="search-header__sub">Type any word — we search titles, summaries and full text for you.</p>
+          <div className="search-header__bar">
+            <SearchBar initialQuery={qParam} />
+          </div>
+          <div className="search-header__helper">
+            <Info size={12}/> Try: <Link to="/search?q=land%20rights">land rights</Link> • <Link to="/search?q=Article%2020">Article 20</Link> • <Link to="/search?q=maritime">maritime</Link>
           </div>
 
-          <div className="search-page__controls">
-            <div className="search-page__result-count">
-              <span className="search-page__count">{results.length}</span> result{results.length !== 1 ? 's' : ''}
-              {queryParam && <> for <strong>"{queryParam}"</strong></>}
+          <div className="search-controls">
+            <div className="search-controls__left">
+              <span className="results-count"><strong>{results.length}</strong> results {qParam && <>for “{qParam}”</>} <span className="results-time"><Clock3 size={11}/> ~18ms</span></span>
             </div>
-
-            <button
-              className={`search-page__filter-toggle ${showFilters ? 'search-page__filter-toggle--active' : ''}`}
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              <SlidersHorizontal size={16} />
-              Filters
-              {hasActiveFilters && <span className="search-page__filter-dot" />}
-            </button>
+            <div className="search-controls__right">
+              <div className="sort-pills">
+                {(['relevance','newest','oldest'] as const).map(s=>(
+                  <button key={s} className={`sort-pill ${sortBy===s?'sort-pill--active':''}`} onClick={()=>setSortBy(s)}>{s}</button>
+                ))}
+              </div>
+              <button className={`filter-btn ${showFilters?'filter-btn--active':''}`} onClick={()=>setShowFilters(!showFilters)}>
+                <SlidersHorizontal size={14}/> Filters {hasFilters && <span className="filter-dot"/>}
+              </button>
+            </div>
           </div>
 
           {showFilters && (
-            <div className="search-page__filters animate-in">
-              <div className="filter-group">
-                <label className="filter-group__label">
-                  <Filter size={13} />
-                  Document Type
-                </label>
-                <div className="filter-group__options">
-                  {typeFilters.map((tf) => (
-                    <button
-                      key={tf.value}
-                      className={`filter-chip ${typeFilter === tf.value ? 'filter-chip--active' : ''}`}
-                      onClick={() => setTypeFilter(tf.value)}
-                    >
-                      {tf.label}
-                    </button>
+            <div className="filters-panel">
+              <div className="filters-group">
+                <span className="filters-label">Type</span>
+                <div className="filters-options">
+                  {typeFilters.map(t=>(
+                    <button key={t.value} className={`chip ${typeFilter===t.value?'chip--active':''}`} onClick={()=>setTypeFilter(t.value)}>{t.label}</button>
                   ))}
                 </div>
               </div>
-
-              <div className="filter-group">
-                <label className="filter-group__label">
-                  <Filter size={13} />
-                  Category
-                </label>
-                <div className="filter-group__options">
-                  <button
-                    className={`filter-chip ${categoryFilter === 'all' ? 'filter-chip--active' : ''}`}
-                    onClick={() => setCategoryFilter('all')}
-                  >
-                    All Categories
-                  </button>
-                  {categories.map((cat) => (
-                    <button
-                      key={cat.id}
-                      className={`filter-chip ${categoryFilter === cat.id ? 'filter-chip--active' : ''}`}
-                      onClick={() => setCategoryFilter(cat.id)}
-                    >
-                      {cat.label}
-                    </button>
+              <div className="filters-group">
+                <span className="filters-label">Category</span>
+                <div className="filters-options">
+                  <button className={`chip ${catFilter==='all'?'chip--active':''}`} onClick={()=>setCatFilter('all')}>All</button>
+                  {categories.map(c=>(
+                    <button key={c.id} className={`chip ${catFilter===c.id?'chip--active':''}`} onClick={()=>setCatFilter(c.id)}>{c.label}</button>
                   ))}
                 </div>
               </div>
-
-              {hasActiveFilters && (
-                <button className="filter-clear" onClick={clearFilters}>
-                  <X size={14} />
-                  Clear all filters
-                </button>
-              )}
+              {hasFilters && <button className="filters-clear" onClick={clear}><X size={14}/> Clear filters</button>}
             </div>
           )}
         </div>
       </div>
 
-      <div className="search-page__results">
-        <div className="search-page__results-inner">
-          {results.length > 0 ? (
-            <div className="search-page__results-grid">
-              {results.map((doc) => (
-                <DocumentCard key={doc.id} doc={doc} />
-              ))}
+      <div className="search-results">
+        <div className="search-results__inner">
+          {results.length>0 ? (
+            <div className="results-grid">
+              {results.map(d=> <DocumentCard key={d.id} doc={d} />)}
             </div>
           ) : (
-            <div className="search-page__empty">
-              <p className="search-page__empty-title">No results found</p>
-              <p className="search-page__empty-text">
-                Try adjusting your search terms or filters. You can also{' '}
-                <button className="search-page__empty-link" onClick={clearFilters}>
-                  clear all filters
-                </button>{' '}
-                to see all documents.
-              </p>
+            <div className="empty">
+              <div className="empty__icon"><Search size={20}/></div>
+              <h3>No results for “{qParam || 'filters'}”</h3>
+              <p>Try a simpler word, or ask AI in plain English.</p>
+              <div className="empty__actions">
+                <button className="btn btn--dark" onClick={clear}>Clear filters</button>
+                <Link to="/ai" className="btn btn--red"><Sparkles size={14}/> Ask AI</Link>
+              </div>
             </div>
           )}
         </div>

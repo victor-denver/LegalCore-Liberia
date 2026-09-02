@@ -3,81 +3,58 @@ import { ArrowRight, BookOpen, FileText, Gavel, ScrollText } from 'lucide-react'
 import { categories, documents, stats } from '../data/legalData';
 import './BrowsePage.css';
 
-const typeIcons = {
-  statute: ScrollText,
-  case: Gavel,
-  opinion: FileText,
-  constitution: BookOpen,
-};
+const icons = { statute: ScrollText, case: Gavel, opinion: FileText, constitution: BookOpen };
 
-export default function BrowsePage() {
-  const recentDocs = [...documents].sort((a, b) => b.year - a.year).slice(0, 6);
-
+export default function BrowsePage(){
+  const recent=[...documents].sort((a,b)=>b.year-a.year).slice(0,6);
   return (
-    <div className="browse-page">
-      <div className="browse-page__header">
-        <div className="browse-page__header-inner">
-          <h1 className="browse-page__title">Browse Library</h1>
-          <p className="browse-page__subtitle">
-            Explore {stats.totalDocuments}+ Liberian legal documents spanning {stats.yearsSpan}
-          </p>
+    <div className="browse">
+      <div className="browse-header">
+        <div className="browse-header__inner">
+          <h1>Browse law by topic</h1>
+          <p>Not sure what to search? Tap a topic. We made it simple — even if you’ve never used a law site before.</p>
+          <div className="browse-stats">
+            <span><strong>{stats.totalDocuments}+</strong> docs</span>
+            <span><strong>{stats.categories}</strong> topics</span>
+            <span><strong>{stats.yearsSpan}</strong></span>
+          </div>
         </div>
       </div>
 
-      <div className="browse-page__content">
-        <div className="browse-page__inner">
-          <div className="browse-overview">
-            <div className="browse-overview__card">
-              <span className="browse-overview__number">{stats.totalDocuments}</span>
-              <span className="browse-overview__label">Total Documents</span>
-            </div>
-            <div className="browse-overview__card">
-              <span className="browse-overview__number">{stats.statutes}</span>
-              <span className="browse-overview__label">Statutes</span>
-            </div>
-            <div className="browse-overview__card">
-              <span className="browse-overview__number">{stats.cases}</span>
-              <span className="browse-overview__label">Cases</span>
-            </div>
-            <div className="browse-overview__card">
-              <span className="browse-overview__number">{stats.opinions}</span>
-              <span className="browse-overview__label">Opinions</span>
-            </div>
-          </div>
-
-          <section className="browse-section">
-            <h2 className="browse-section__title">Categories ({stats.categories})</h2>
-            <div className="browse-categories">
-              {categories.map((cat) => (
-                <Link key={cat.id} to={`/search?category=${cat.id}`} className="browse-cat-card">
-                  <div className="browse-cat-card__info">
-                    <h3 className="browse-cat-card__title">{cat.label}</h3>
-                    <p className="browse-cat-card__desc">{cat.description}</p>
+      <div className="browse-content">
+        <div className="browse-content__inner">
+          <section>
+            <h2 className="browse-section-title">All topics — tap to explore</h2>
+            <div className="browse-cats">
+              {categories.map(c=>(
+                <Link key={c.id} to={`/search?category=${c.id}`} className="browse-cat">
+                  <div className="browse-cat__left">
+                    <h3>{c.label}</h3>
+                    <p>{c.description}</p>
                   </div>
-                  <div className="browse-cat-card__right">
-                    <span className="browse-cat-card__count">{cat.count} docs</span>
-                    <ArrowRight size={16} className="browse-cat-card__arrow" />
+                  <div className="browse-cat__right">
+                    <span className="browse-cat__count">{c.count}</span>
+                    <ArrowRight size={16}/>
                   </div>
                 </Link>
               ))}
             </div>
           </section>
 
-          <section className="browse-section">
-            <h2 className="browse-section__title">Recently Added</h2>
+          <section>
+            <h2 className="browse-section-title">Newest documents</h2>
+            <p className="browse-section-sub">The latest laws we added — tap to read.</p>
             <div className="browse-recent">
-              {recentDocs.map((doc) => {
-                const Icon = typeIcons[doc.type];
+              {recent.map(d=>{
+                const Icon=icons[d.type];
                 return (
-                  <Link key={doc.id} to={`/document/${doc.id}`} className="browse-recent-item">
-                    <div className={`browse-recent-item__icon browse-recent-item__icon--${doc.type}`}>
-                      <Icon size={16} />
-                    </div>
-                    <div className="browse-recent-item__info">
-                      <h4 className="browse-recent-item__title">{doc.title}</h4>
-                      <span className="browse-recent-item__date">{doc.date} &middot; {doc.year}</span>
-                    </div>
-                    <ArrowRight size={16} className="browse-recent-item__arrow" />
+                  <Link key={d.id} to={`/document/${d.id}`} className="browse-recent__item">
+                    <span className={`browse-recent__icon browse-recent__icon--${d.type}`}><Icon size={16}/></span>
+                    <span className="browse-recent__info">
+                      <strong>{d.title}</strong>
+                      <span>{d.date} • {d.year}</span>
+                    </span>
+                    <ArrowRight size={16} className="browse-recent__arrow"/>
                   </Link>
                 );
               })}

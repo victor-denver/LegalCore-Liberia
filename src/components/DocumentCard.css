@@ -1,108 +1,20 @@
 .doc-card {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 24px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  text-decoration: none;
-  transition: all var(--transition-base);
-  animation: fadeIn 0.4s ease-out forwards;
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+  transition: all 150ms ease;
 }
-
-.doc-card:hover {
-  background: var(--bg-card-hover);
-  border-color: var(--border-default);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-}
-
-.doc-card__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.doc-card__type {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-}
-
-.doc-card__type--statute {
-  background: var(--tag-statute);
-  color: var(--tag-statute-text);
-}
-.doc-card__type--case {
-  background: var(--tag-case);
-  color: var(--tag-case-text);
-}
-.doc-card__type--opinion {
-  background: var(--tag-opinion);
-  color: var(--tag-opinion-text);
-}
-.doc-card__type--constitution {
-  background: var(--tag-constitution);
-  color: var(--tag-constitution-text);
-}
-
-.doc-card__date {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 12px;
-  color: var(--text-tertiary);
-}
-
-.doc-card__title {
-  font-family: var(--font-display);
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--text-primary);
-  line-height: 1.4;
-  letter-spacing: -0.01em;
-}
-
-.doc-card__summary {
-  font-size: 14px;
-  color: var(--text-secondary);
-  line-height: 1.6;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.doc-card__court {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: var(--text-tertiary);
-}
-
-.doc-card__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 4px;
-}
-
-.doc-card__tag {
-  padding: 3px 10px;
-  border-radius: var(--radius-full);
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-tertiary);
-  background: var(--bg-glass);
-  border: 1px solid var(--border-subtle);
-}
+.doc-card:hover { border-color: var(--border-strong); background: var(--bg-card-hover); transform: translateY(-1px); }
+.doc-card__header { display: flex; justify-content: space-between; align-items: center; }
+.doc-tag { display: inline-flex; align-items: center; gap: 5px; padding: 4px 8px; border-radius: 9999px; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid var(--border); }
+.doc-tag--statute { background: #EFF6FF; color: #1D4ED8; }
+.doc-tag--case { background: #FFF1F2; color: #BE123C; }
+.doc-tag--constitution { background: var(--text-primary); color: var(--bg); }
+.doc-tag--opinion { background: #F0FDF4; color: #15803D; }
+:root[data-theme="dark"] .doc-tag--statute { background: #1E3A5E; color: #93C5FD; border-color: transparent; }
+:root[data-theme="dark"] .doc-tag--case { background: #3F1020; color: #FECDD3; border-color: transparent; }
+.doc-card__year { font-size: 11px; font-weight: 700; padding: 3px 8px; background: var(--bg-pill); border-radius: 9999px; color: var(--text-secondary); border: 1px solid var(--border); }
+.doc-card__title { font-size: 14px; font-weight: 750; line-height: 1.35; color: var(--text-primary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.doc-card__summary { font-size: 13px; line-height: 1.5; color: var(--text-secondary); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
+.doc-card__footer { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--border); margin-top: 4px; }
+.doc-card__date { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); }
+.doc-card__cta { font-size: 12px; font-weight: 700; color: var(--text-primary); display: inline-flex; gap: 4px; align-items: center; }
