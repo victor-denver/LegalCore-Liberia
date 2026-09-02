@@ -34,9 +34,13 @@
 .topbar__search span { flex: 1; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .topbar__search-icon { width: 24px; height: 24px; display: grid; place-items: center; background: var(--bg-pill-active); border-radius: 50%; flex-shrink: 0; }
 
-.topbar__right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.topbar__right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
 .topbar__icon { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; color: var(--text-secondary); }
 .topbar__icon:hover { background: var(--bg-pill); color: var(--text-primary); }
+.topbar__theme { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 9999px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary); }
+.topbar__theme:hover { background: var(--bg-pill); border-color: var(--border-strong); }
+:root[data-theme="dark"] .topbar__theme { background: #1A1A1A; border-color: #2A2A2A; color: #FBBF24; }
+:root[data-theme="light"] .topbar__theme { background: white; border-color: #E5E5E5; color: #0E0E0E; }
 
 .topbar__avatar { width: 32px; height: 32px; display: grid; place-items: center; background: #2563EB; color: white; border-radius: 50%; font-size: 12px; font-weight: 800; }
 .topbar__menu { display: none; width: 32px; height: 32px; place-items: center; color: var(--text-primary); }
@@ -51,6 +55,7 @@
   .topbar__search span { display: none; }
   .topbar__search-icon { width: auto; height: auto; background: transparent; }
   .topbar__icon { display: none; }
+  .topbar__theme { display: grid; width: 40px; height: 40px; }
   .topbar__menu { display: grid; width: 40px; height: 40px; }
   .topbar__left { gap: 10px; }
   .topbar__logo-img { height: 22px; }

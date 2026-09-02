@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Search, Menu, X, Bookmark, Globe, Bell, Maximize2, Sparkles } from 'lucide-react';
+import { Search, Menu, X, Bookmark, Bell, Maximize2, Sparkles, Sun, Moon } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import { useTheme } from '../hooks/useTheme';
 import { documents, stats } from '../data/legalData';
@@ -54,7 +54,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
         <div className="topbar__right">
           <button className="topbar__icon" aria-label="Saved"><Bookmark size={16}/></button>
-          <button className="topbar__icon" onClick={toggle} aria-label="Toggle"><Globe size={16}/></button>
+          <button className="topbar__theme" onClick={toggle} aria-label="Toggle theme" title={isDark ? "Switch to light" : "Switch to dark"}>
+            {isDark ? <Sun size={16}/> : <Moon size={16}/>}
+          </button>
           <button className="topbar__icon" aria-label="Notifications"><Bell size={16}/></button>
           <span className="topbar__avatar">LC</span>
           <button className="topbar__menu" onClick={()=>setMobileOpen(!mobileOpen)} aria-label="Menu">
