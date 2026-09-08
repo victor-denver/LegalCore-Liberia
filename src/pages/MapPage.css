@@ -48,3 +48,27 @@
 .map-marker--government .map-dot { background: #BF0A30; }
 .map-marker--law-school .map-dot { background: #7C3AED; }
 @media (max-width: 860px) { .map-page { flex-direction: column; height: auto; } .map-sidebar { width: 100%; max-height: 50vh; } .map-wrap { height: 50vh; min-height: 360px; } }
+
+/* ── ECOWAS-first tabs ── */
+.map-tabs-page { min-height: calc(100vh - 56px); min-height: calc(100dvh - 56px); background: var(--bg); }
+.map-tabs { position: sticky; top: 56px; z-index: 50; display: flex; gap: 8px; padding: 10px 16px; background: var(--bg); border-bottom: 1px solid var(--border); }
+.map-tabs button { display: inline-flex; gap: 8px; align-items: center; padding: 9px 18px; border-radius: 9999px; border: 1px solid var(--border); background: var(--bg-card); font-size: 13px; font-weight: 800; color: var(--text-secondary); }
+.map-tabs button.on { background: #0A2E22; border-color: #D4AF17; color: #fff; box-shadow: 0 0 0 1px #D4AF17; }
+.map-tabs-page > .map-page { height: calc(100vh - 113px); height: calc(100dvh - 113px); }
+.map-eco { max-width: 1100px; margin: 0 auto; padding: 20px 16px 40px; display: flex; flex-direction: column; gap: 16px; }
+.map-eco__head h1 { font-size: clamp(22px, 4vw, 32px); font-weight: 900; letter-spacing: -0.02em; color: var(--text-primary); }
+.map-eco__head p { font-size: 13px; color: var(--text-secondary); margin-top: 6px; }
+.map-eco__head strong { color: #D4AF17; }
+.map-countries { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; }
+.map-country { display: flex; gap: 10px; align-items: center; padding: 10px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; text-align: left; transition: transform 150ms ease, border-color 150ms ease; }
+.map-country:hover { transform: translateY(-1px); border-color: var(--border-strong); }
+.map-country.on { border-color: #D4AF17; box-shadow: 0 0 0 1px #D4AF17; }
+.map-country img { width: 34px; height: 24px; object-fit: cover; border-radius: 4px; border: 1px solid rgba(0,0,0,0.2); flex-shrink: 0; }
+.map-country__info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.map-country__info strong { font-size: 12px; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.map-country__info small { font-size: 10px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.map-country__st { font-size: 9px; font-weight: 800; font-style: normal; text-transform: uppercase; letter-spacing: 0.05em; padding: 3px 7px; border-radius: 9999px; background: var(--bg-pill); color: var(--text-muted); border: 1px solid var(--border); flex-shrink: 0; }
+.map-country__st--active { background: #0A2E22; color: #6EE7B7; border-color: #14532D; }
+.map-eco__note { font-size: 12px; color: var(--text-muted); text-align: center; }
+.map-eco__note strong { color: var(--text-primary); }
+@media (max-width: 640px) { .map-tabs { top: 52px; } .map-countries { grid-template-columns: 1fr 1fr; } }
