@@ -1,127 +1,107 @@
-import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Copy, Check, ExternalLink, Lightbulb, FileText, Gavel, BookOpen, ScrollText, Search, Trash2, ShieldCheck, Scale, Volume2, VolumeX, Mic } from 'lucide-react';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import { Send, User, Copy, Check, ExternalLink, Lightbulb, FileText, Gavel, BookOpen, ScrollText, Search, Trash2, ShieldCheck, Scale, Volume2, VolumeX, Mic, Cpu, Globe2, Languages } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { documents, type LegalDocument } from '../data/legalData';
+import { ecowasCommunityDocs } from '../data/ecowasCommunity';
+import { JURISDICTIONS, getJurisdiction } from '../data/jurisdictions';
+import { useJurisdiction } from '../hooks/useJurisdiction';
+import { getWebEngine, ensureEngineTrained, type TrainingStats } from '../ai/webEngine';
+import { ProvenanceBadge } from '../components/Provenance';
+import LawAvatar from '../components/LawAvatar';
 import './AIAssistant.css';
 
-interface Message { id:string; role:'user'|'assistant'; content:string; sources?:LegalDocument[]; timestamp:Date; }
+interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  sources?: LegalDocument[];
+  timestamp: Date;
+  meta?: { confidence: number; latencyMs: number; jurisdiction: string; isComparative: boolean };
+}
 
-const suggestions=[
-  'What are the key provisions of the Land Rights Act of 2018?',
-  'Explain due process rights under the 1986 Constitution Article 20',
-  'What penalties apply for domestic violence in Liberia?',
-  'How do I register a business and get a concession in Liberia?',
-  'What is customary land and how do I formalize it?',
-  'Explain the role of the TRC and war crimes court debate',
-];
+const typeIcons: Record<string, any> = { statute: ScrollText, case: Gavel, opinion: FileText, constitution: BookOpen };
 
-const typeIcons:Record<string,any>={ statute:ScrollText, case:Gavel, opinion:FileText, constitution:BookOpen };
-
-const synonyms: Record<string,string[]> = {
-  land: ['property','customary','land rights','deeds','tenure'],
-  property: ['land','customary','deeds','estate'],
-  constitution: ['article','fundamental rights','supreme law','1986'],
-  business: ['commercial','corporation','investment','concession','company'],
-  company: ['business','corporation','commercial'],
-  criminal: ['penal','offense','crime','felony','misdemeanor'],
-  court: ['judiciary','supreme court','circuit court','magistrate','trial'],
-  marriage: ['family','customary marriage','divorce','custody'],
-  tax: ['revenue','LRA','customs','duty','GST'],
-  health: ['public health','Ebola','quarantine','hospital'],
-  school: ['education','teacher','university','NCHE'],
-  environment: ['forest','mining','EPA','EIA','climate'],
-  maritime: ['shipping','vessel','LiMA','port','flag'],
-  rights: ['human rights','TRC','discrimination','equality'],
+const FLAG_EMOJI: Record<string, string> = {
+  LR: '🇱🇷', SL: '🇸🇱', GH: '🇬🇭', GM: '🇬🇲', NG: '🇳🇬',
+  SN: '🇸🇳', CI: '🇨🇮', BJ: '🇧🇯', TG: '🇹🇬', GN: '🇬🇳',
+  CV: '🇨🇻', GW: '🇬🇼', ECOWAS: '🌍',
 };
 
-function expandTerms(raw: string[]): string[] {
-  const out = new Set<string>(raw);
-  raw.forEach(t=>{
-    Object.entries(synonyms).forEach(([k, vals])=>{
-      if (t.includes(k) || vals.some(v=> t.includes(v))) {
-        vals.forEach(v=> out.add(v));
-        out.add(k);
-      }
-    });
-  });
-  return [...out];
+/** Example questions tuned to the active respect-area country + language. */
+function suggestionsFor(code: string): string[] {
+  const j = getJurisdiction(code);
+  const demonym: Record<string, string> = {
+    SL: 'Sierra Leonean', GH: 'Ghanaian', GM: 'Gambian', NG: 'Nigerian',
+  };
+  const who = demonym[code] ? `a ${demonym[code]}` : `a ${j.name} citizen`;
+  if (code === 'LR') return [
+    'What are the key provisions of the Land Rights Act of 2018?',
+    'Explain due process rights under the 1986 Constitution Article 20',
+    'Can a Liberian enter Ghana visa-free for 90 days under ECOWAS?',
+    'How do I register a SARL company under OHADA in Senegal?',
+    'What penalties apply for domestic violence in Liberia?',
+    'How do I register a business and get a concession in Liberia?',
+    'What is customary land and how do I formalize it?',
+    'Explain the role of the TRC and war crimes court debate',
+  ];
+  if (j.language === 'fr') return [
+    "Qu'est-ce que l'Acte uniforme OHADA sur le droit commercial général ?",
+    'Comment créer une SARL sous l\'OHADA ?',
+    'Un Libérien peut-il entrer sans visa pour 90 jours ?',
+    'Comment saisir la Cour de justice de la CEDEAO ?',
+    'Quelles formalités au RCCM pour immatriculer une société ?',
+    'Que dit le tarif extérieur commun (TEC) de la CEDEAO ?',
+    'Comparer le foncier coutumier au Liberia et en droit OHADA',
+    'Quelles peines pour le blanchiment selon les normes GIABA ?',
+  ];
+  if (j.language === 'pt') return [
+    'O que é o Ato Uniforme da OHADA sobre direito comercial geral?',
+    'Como constituir uma SARL segundo a OHADA?',
+    'Um liberiano pode entrar sem visto por 90 dias?',
+    'Como recorrer ao Tribunal de Justiça da CEDEAO?',
+    'Que formalidades para registar uma sociedade?',
+    'O que diz a Tarifa Externa Comum da CEDEAO?',
+  ];
+  return [
+    `Can ${who} enter Liberia visa-free for 90 days under ECOWAS?`,
+    `How do I register a business in ${j.name}?`,
+    'How do I file a human-rights case at the ECOWAS Community Court?',
+    'What duties apply under the ECOWAS Common External Tariff?',
+    `Compare land tenure in ${j.name} vs Liberia`,
+    'What is the OHADA Uniform Act on General Commercial Law?',
+    'Explain free movement: entry, residence and establishment',
+    'What are the penalties for money laundering under GIABA standards?',
+  ];
 }
 
-function searchDocs(q: string): LegalDocument[] {
-  const raw = q.toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(w=>w.length>2);
-  if(!raw.length) return [];
-  const terms = expandTerms(raw);
-  const catHint = (()=> {
-    const s = q.toLowerCase();
-    if (s.includes('land')||s.includes('property')||s.includes('customary')) return 'property';
-    if (s.includes('business')||s.includes('company')||s.includes('concession')||s.includes('commercial')) return 'commercial';
-    if (s.includes('crime')||s.includes('criminal')||s.includes('penal')||s.includes('rape')||s.includes('theft')) return 'criminal';
-    if (s.includes('constitution')||s.includes('article')||s.includes('rights')) return 'constitutional';
-    if (s.includes('family')||s.includes('marriage')||s.includes('custody')||s.includes('divorce')) return 'family';
-    if (s.includes('tax')||s.includes('revenue')||s.includes('customs')) return 'tax-revenue';
-    if (s.includes('health')||s.includes('Ebola')) return 'public-health';
-    if (s.includes('school')||s.includes('education')) return 'education';
-    if (s.includes('environment')||s.includes('forest')||s.includes('mining')) return 'environmental';
-    if (s.includes('maritime')||s.includes('shipping')||s.includes('vessel')) return 'maritime';
-    if (s.includes('labor')||s.includes('worker')||s.includes('wage')) return 'labor';
-    return '';
-  })();
-  const scored = documents.map(doc=>{
-    let s=0;
-    const hay = `${doc.title} ${doc.summary} ${doc.body}`.toLowerCase();
-    const title = doc.title.toLowerCase();
-    const tags = doc.tags.join(' ').toLowerCase();
-    terms.forEach(t=>{
-      if (title.includes(t)) s+=4;
-      if (hay.includes(t)) s+=2;
-      if (tags.includes(t)) s+=1.5;
-      if (t.length>4 && (title.includes(t.slice(0,4)) || hay.includes(t.slice(0,4)))) s+=0.3;
-    });
-    if (catHint && doc.category===catHint) s+=3;
-    if (q.toLowerCase().includes(String(doc.year))) s+=2;
-    return { doc, score:s };
-  }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score);
-  if (scored.length===0 && catHint) return documents.filter(d=>d.category===catHint).slice(0,3);
-  if (scored.length===0) return documents.filter(d=>['const-1986','stat-2018-land-rights','stat-1948-maritime','case-1988-cabral'].includes(d.id));
-  return scored.slice(0,4).map(x=>x.doc);
+function placeholderFor(code: string, koloquaActive: boolean): string {
+  const j = getJurisdiction(code);
+  if (koloquaActive) return 'Ask in Koloqua — e.g. Wetin Land Rights Act tok?';
+  if (j.language === 'fr') return 'Posez votre question — ex. Créer une SARL OHADA ?';
+  if (j.language === 'pt') return 'Pergunte — ex. Constituição de SARL OHADA?';
+  if (code === 'LR') return 'Ask anything — e.g. Land Rights Act 2018';
+  return `Ask about ${j.name} — e.g. business registration in ${j.capital}?`;
 }
 
-function getGeneralAnswer(q: string): { content: string, sources: LegalDocument[] } | null {
-  const s = q.toLowerCase();
-  if (s.includes('capital') && s.includes('liberia')) {
-    return { content: `**Monrovia** is the capital of Liberia, as established under the administrative structure in the 1986 Constitution (Article 2). The Legislature sits at the Capitol Building and the Supreme Court at the Temple of Justice — both on Capitol Hill, Monrovia.`, sources: searchDocs('Constitution 1986 Article 2') };
-  }
-  if (s.includes('how to') && (s.includes('register')||s.includes('business')||s.includes('company'))) {
-    return { content: `To **register a business in Liberia**:\n\n1. **Name search** at Liberia Business Registry (LBR)\n2. **Incorporate** under Business Corporations Act — file articles\n3. **Tax registration** with LRA — get TIN\n4. **Concession** (if mining/forest) — community consent under Land Rights Act 2018 + EIA from EPA\n5. **Licenses** — Ministry of Commerce + sector permits`, sources: searchDocs('business registration commercial concession') };
-  }
-  if (s.includes('how to') && s.includes('file') && s.includes('case')) {
-    return { content: `To **file a case in Liberia**:\n\n1. Identify jurisdiction — **Magistrate** (minor), **Circuit** (major), **Commercial** (business), **Supreme Court** (constitutional)\n2. File at Clerk of Court in relevant county (see Court Map)\n3. Pay fees, serve other party\n4. Due process under **Article 20** guarantees notice & hearing`, sources: searchDocs('court filing circuit supreme') };
-  }
-  return null;
-}
-
-// ── KOLOQUA TRANSFORM — Liberian English with ATTITUDE ──
+// ── KOLOQUA TRANSFORM — Liberian English with ATTITUDE (Liberia only) ──
 function toKoloqua(text: string): string {
   let t = text;
   const hasKoloqua = t.includes('Eh my man') || t.includes('Ya hear') || t.includes('Listen well');
   if (!hasKoloqua) {
-    // Liberian attitude: confident, warm, direct, small sass — NOT Nigerian
-    // Keep law titles intact, wrap with Koloqua framing
     const intros = [
       `Eh my man! Listen well o! 🇱🇷 Ya hear me?`,
       `My ma, make I burst your brain small! 🇱🇷`,
       `Look here my man — I go lay am for you clean clean o! 🇱🇷`,
     ];
-    const pick = intros[Math.floor(Math.random()*intros.length)];
+    const pick = intros[Math.floor(Math.random() * intros.length)];
     const outros = [
       `\n\nSo na so e be for true o! Da correct law be dat. You get am? If you wan make I break am down more simple, just tell me — I deh here, no stress!`,
       `\n\nYa hear me so? Trust me, na so the law tok. You wan try another question? Shoot am!`,
       `\n\nI swear, na so e be o! No guess-guess, na real Liberia law be this. You want me to talk am again?`,
     ];
-    const outro = outros[Math.floor(Math.random()*outros.length)];
+    const outro = outros[Math.floor(Math.random() * outros.length)];
     t = `${pick}\n\n` + t + outro;
   }
-  // Light, attitude-filled word swaps — keep legal terms untouched
   t = t
     .replace(/\bYou should\b/g, 'Yu should')
     .replace(/\byou should\b/g, 'yu should')
@@ -138,203 +118,276 @@ function toKoloqua(text: string): string {
     .replace(/\bplease\b/g, 'abeg')
     .replace(/\bunderstand\b/gi, 'get am')
     .replace(/\bimportant\b/gi, 'big deal');
-  // Add small interjections for rhythm — keep it Liberian, not Naija
-  // We keep it subtle: add "o" and "eh" at end of some sentences already via intro/outro
   return t;
 }
 
-function stripMarkdown(s: string){ return s.replace(/\*\*(.*?)\*\*/g,'$1').replace(/\n/g,' ').replace(/<[^>]*>/g,''); }
+/** Voice profile per respect-area country — the AI speaks YOUR area. */
+function voiceProfile(code: string, koloquaActive: boolean): { match: (v: SpeechSynthesisVoice) => boolean; lang: string; rate: number; pitch: number } {
+  const has = (...needles: string[]) => (v: SpeechSynthesisVoice) => {
+    const s = `${v.lang} ${v.name}`.toLowerCase();
+    return needles.some((n) => s.includes(n));
+  };
+  if (code === 'LR') return {
+    match: has('en-lr', 'liberia', 'en-sl', 'sierra leone', 'en-gh', 'ghana'),
+    lang: 'en-LR', rate: koloquaActive ? 0.88 : 0.98, pitch: koloquaActive ? 1.06 : 1.0,
+  };
+  if (code === 'SL') return { match: has('en-sl', 'sierra leone', 'en-lr', 'liberia', 'en-gh'), lang: 'en-SL', rate: 0.95, pitch: 1.0 };
+  if (code === 'GH') return { match: has('en-gh', 'ghana', 'en-ng', 'en-us'), lang: 'en-GH', rate: 0.98, pitch: 1.0 };
+  if (code === 'GM') return { match: has('en-gm', 'gambia', 'en-gh', 'en-sl', 'en-us'), lang: 'en-GM', rate: 0.98, pitch: 1.0 };
+  if (code === 'NG') return { match: has('en-ng', 'nigeria', 'en-gh', 'en-us'), lang: 'en-NG', rate: 0.98, pitch: 1.0 };
+  const j = getJurisdiction(code);
+  if (j.language === 'fr') return { match: has('fr-fr', 'francais', 'français', 'french', 'fr-'), lang: 'fr-FR', rate: 0.98, pitch: 1.0 };
+  if (j.language === 'pt') return { match: has('pt-pt', 'portugu', 'pt-'), lang: 'pt-PT', rate: 0.98, pitch: 1.0 };
+  return { match: has('en-us', 'en-gb', 'english'), lang: 'en-US', rate: 0.98, pitch: 1.0 };
+}
 
-export default function AIAssistant(){
-  const [messages,setMessages]=useState<Message[]>([]);
-  const [input,setInput]=useState('');
-  const [typing,setTyping]=useState(false);
-  const [stream,setStream]=useState('');
-  const [copied,setCopied]=useState<string|null>(null);
-  const [koloqua,setKoloqua]=useState(true); // default ON as user requested Liberia accent
-  const [speakingId,setSpeakingId]=useState<string|null>(null);
-  const endRef=useRef<HTMLDivElement>(null);
-  const hasMessages=messages.length>0;
-  useEffect(()=>{ endRef.current?.scrollIntoView({behavior:'smooth'}); },[messages,stream,typing]);
-  useEffect(()=>{ // preload voices
+function stripMarkdown(s: string) { return s.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\n/g, ' ').replace(/<[^>]*>/g, ''); }
+
+export default function AIAssistant() {
+  const { code: jurisdiction, active: activeJ, setCode: setJurisdictionCode } = useJurisdiction();
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+  const [typing, setTyping] = useState(false);
+  const [stream, setStream] = useState('');
+  const [copied, setCopied] = useState<string | null>(null);
+  const [koloqua, setKoloqua] = useState(true);
+  const [speakingId, setSpeakingId] = useState<string | null>(null);
+  const [trainStats, setTrainStats] = useState<TrainingStats | null>(null);
+  const endRef = useRef<HTMLDivElement>(null);
+  const hasMessages = messages.length > 0;
+
+  const isLR = jurisdiction === 'LR';
+  // Koloqua attitude is a Liberia thing — auto-off everywhere else.
+  const koloquaActive = koloqua && isLR;
+  const suggestions = useMemo(() => suggestionsFor(jurisdiction), [jurisdiction]);
+
+  // ── OWN AI WEBENGINE: train the database on the respect-area country ──
+  const engine = useMemo(() => getWebEngine(), []);
+  useEffect(() => {
+    const { stats } = ensureEngineTrained(documents, ecowasCommunityDocs, jurisdiction);
+    setTrainStats(stats);
+  }, [engine, jurisdiction]);
+
+  // Fresh thread when the user switches country — no mixed-context confusion.
+  const prevJuris = useRef(jurisdiction);
+  useEffect(() => {
+    if (prevJuris.current !== jurisdiction) {
+      prevJuris.current = jurisdiction;
+      setMessages([]);
+      stopSpeak();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jurisdiction]);
+
+  useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages, stream, typing]);
+  useEffect(() => {
     if ('speechSynthesis' in window) window.speechSynthesis.getVoices();
-  },[]);
+  }, []);
 
-  const speak = (text: string, id: string) => {
+  const speak = (text: string, id: string, forceCode?: string) => {
     try {
       if (!('speechSynthesis' in window)) return;
-      if (speakingId===id) { window.speechSynthesis.cancel(); setSpeakingId(null); return; }
+      if (speakingId === id) { window.speechSynthesis.cancel(); setSpeakingId(null); return; }
       window.speechSynthesis.cancel();
-      const plain = stripMarkdown(koloqua ? toKoloqua(text) : text);
+      const code = forceCode ?? jurisdiction;
+      const prof = voiceProfile(code, koloquaActive);
+      const plain = stripMarkdown(koloquaActive && code === 'LR' ? toKoloqua(text) : text);
       const utter = new SpeechSynthesisUtterance(plain);
       const voices = window.speechSynthesis.getVoices();
-      // ── LIBERIA ONLY — never Nigeria ──
-      // Try true Liberia, then Sierra Leone (closest to Liberia), then Ghana, then fallback US with Liberian prosody
-      const preferred =
-        voices.find(v=> v.lang.toLowerCase() === 'en-lr') ||
-        voices.find(v=> v.lang.toLowerCase().includes('en-lr')) ||
-        voices.find(v=> v.lang.toLowerCase() === 'en-sl') ||
-        voices.find(v=> v.lang.toLowerCase().includes('en-sl')) ||
-        voices.find(v=> v.name.toLowerCase().includes('liberia')) ||
-        voices.find(v=> v.name.toLowerCase().includes('sierra leone')) ||
-        voices.find(v=> v.lang.toLowerCase().includes('en-gh')) ||
-        voices.find(v=> v.name.toLowerCase().includes('ghana')) ||
-        voices.find(v=> v.lang.toLowerCase().includes('en-us') && v.name.toLowerCase().includes('natural'));
+      const preferred = voices.find(prof.match) ?? voices.find((v) => v.lang.toLowerCase().startsWith(prof.lang.slice(0, 2)));
       if (preferred) utter.voice = preferred;
-      // Force Liberian lang tag so browser knows — not en-NG
-      utter.lang = preferred ? preferred.lang : 'en-LR';
-      // Liberian Koloqua rhythm: warm, confident, slight melodic rise, not fast Naija pace
-      utter.rate = koloqua ? 0.88 : 0.98; // slower, more attitude when Koloqua
-      utter.pitch = koloqua ? 1.06 : 1.0; // a touch higher, lively
+      utter.lang = preferred ? preferred.lang : prof.lang;
+      utter.rate = prof.rate;
+      utter.pitch = prof.pitch;
       utter.volume = 1;
-      utter.onstart = ()=> setSpeakingId(id);
-      utter.onend = ()=> setSpeakingId(null);
-      utter.onerror = ()=> setSpeakingId(null);
-      // Small delay to let voices load on some browsers
-      if (voices.length===0) {
-        window.speechSynthesis.onvoiceschanged = ()=> {
+      utter.onstart = () => setSpeakingId(id);
+      utter.onend = () => setSpeakingId(null);
+      utter.onerror = () => setSpeakingId(null);
+      if (voices.length === 0) {
+        window.speechSynthesis.onvoiceschanged = () => {
           const vs = window.speechSynthesis.getVoices();
-          const p2 = vs.find(v=> v.lang.toLowerCase().includes('en-lr')) || vs.find(v=> v.lang.toLowerCase().includes('en-sl')) || vs.find(v=> v.name.toLowerCase().includes('liberia'));
+          const p2 = vs.find(prof.match);
           if (p2) utter.voice = p2;
           window.speechSynthesis.speak(utter);
         };
       } else {
         window.speechSynthesis.speak(utter);
       }
-    } catch {}
+    } catch { /* noop */ }
   };
 
-  const stopSpeak = ()=> { try{ window.speechSynthesis.cancel(); setSpeakingId(null);}catch{} };
+  const stopSpeak = () => { try { window.speechSynthesis.cancel(); setSpeakingId(null); } catch { /* noop */ } };
 
-  function buildReply(q: string, results: LegalDocument[]){
-    const clean = q.trim();
-    if(/^(hi|hello|hey|good (morning|afternoon|evening)|thanks|thank you|yo|what's up)\b/i.test(clean) && clean.split(/\s+/).length < 6){
-      const base = `Hey! I’m **LegalCore AI** — Liberia’s law AI that knows all ${documents.length} laws (1847–2026) and cites every answer.\n\nAsk me like a person:\n• “What does Article 20 say about due process?”\n• “Explain Land Rights Act 2018 simply”\n• “How do I register customary land?”\n\nWhat do you want to know?`;
-      return { content: koloqua ? toKoloqua(base) : base, sources: [] as LegalDocument[] };
-    }
-    const general = getGeneralAnswer(q);
-    if (general) {
-      const c = koloqua ? toKoloqua(general.content) : general.content;
-      return { content: c, sources: general.sources };
-    }
-    if(results.length===0){
-      const fallback = documents.slice(0,3);
-      const base = `I couldn’t find an exact match for **"${q}"**, but here are foundational Liberian laws to start. Try simpler words like *land*, *constitution*, *tax* — or ask me in Koloqua!`;
-      return { content: koloqua ? toKoloqua(base) : base, sources: fallback };
-    }
-    const header = koloqua ? `Eh my man, ya hear me! Here na wetin I find inside **Liberia real law** — all cited, no guess o:\n\n` : `Here’s what I found in **Liberia’s real laws** — grounded, cited, no guessing:\n\n`;
-    const bullets=results.map(d=> `**${d.title}** — *${d.date}* (${d.type})\n${d.summary}`).join('\n\n');
-    const footer = koloqua ? `\n\nTap any source below to read full text o! You wan make I break am down more simple in Koloqua? Just tell me!` : `\n\nTap any **source** below to read the full text. Want plain-English summary? Just say “summarize ${results[0].title} simply”.`;
-    const full = header + bullets + footer;
-    return { content: full, sources: results };
-  }
-
-  const send=(text:string)=>{
+  const send = (text: string) => {
     try {
-      if(!text.trim()||typing) return;
+      if (!text.trim() || typing) return;
       stopSpeak();
-      const user:Message={id:Date.now().toString(), role:'user', content:text.trim(), timestamp:new Date()};
-      setMessages(m=>[...m,user]);
+      const user: Message = { id: Date.now().toString(), role: 'user', content: text.trim(), timestamp: new Date() };
+      setMessages(m => [...m, user]);
       setInput(''); setTyping(true); setStream('');
-      const results=searchDocs(text);
-      const payload=buildReply(text,results);
-      let idx=0; const full=payload.content;
-      const iv=setInterval(()=>{
-        idx+=Math.ceil(full.length/30);
-        if(idx>=full.length){
+      // ── Query OUR engine (trained per-country), not an external API ──
+      const result = engine.query(text);
+      const out = koloquaActive && result.jurisdiction === 'LR' ? toKoloqua(result.content) : result.content;
+      let idx = 0;
+      const iv = setInterval(() => {
+        idx += Math.ceil(out.length / 30);
+        if (idx >= out.length) {
           clearInterval(iv);
-          const aiMsg:Message={id:(Date.now()+1).toString(), role:'assistant', content:full, sources:payload.sources, timestamp:new Date()};
-          setMessages(m=>[...m,aiMsg]);
+          const aiMsg: Message = {
+            id: (Date.now() + 1).toString(), role: 'assistant', content: out,
+            sources: result.sources, timestamp: new Date(),
+            meta: { confidence: result.confidence, latencyMs: result.latencyMs, jurisdiction: result.jurisdiction, isComparative: result.isComparative },
+          };
+          setMessages(m => [...m, aiMsg]);
           setStream(''); setTyping(false);
-          // Auto-speak in Koloqua if enabled
-          if (koloqua) setTimeout(()=> speak(full, aiMsg.id), 400);
-        } else setStream(full.slice(0,idx));
-      },16);
-    } catch(e){
+          if (koloquaActive && result.jurisdiction === 'LR') setTimeout(() => speak(out, aiMsg.id, result.jurisdiction), 400);
+        } else setStream(out.slice(0, idx));
+      }, 16);
+    } catch {
       setTyping(false); setStream('');
-      setMessages(m=>[...m,{id:Date.now().toString(), role:'assistant', content: koloqua ? toKoloqua(`I deh here! Something small go wrong, but try again — e.g. “Land Rights Act 2018”.`) : `Something went wrong, but I’m still here. Try “Land Rights Act 2018”.`, timestamp:new Date()}]);
+      setMessages(m => [...m, { id: Date.now().toString(), role: 'assistant', content: koloquaActive ? toKoloqua(`I deh here! Something small go wrong, but try again — e.g. "Land Rights Act 2018".`) : `Something went wrong, but I'm still here. Try again!`, timestamp: new Date() }]);
     }
   };
 
-  const displayContent = (content: string) => {
-    // If Koloqua off, show as is; if on and content not yet Koloqua, transform
-    // Messages already stored transformed when koloqua was on, but toggle should affect display
-    // For simplicity, if koloqua false and message contains Koloqua header, we leave it; user can toggle for next messages
-    return content;
-  };
+  const talkLabel = isLR ? (koloqua ? 'Talk in Koloqua 🇱🇷' : 'Talk') : `Listen (${activeJ.languageLabel})`;
+  const flagSrc = isLR ? '/liberiaFlag.png' : `https://flagcdn.com/w80/${activeJ.flag}.png`;
 
   return (
     <div className="ai-page">
       <div className="ai-page__inner">
         <div className="ai-header">
           <div className="ai-header__left">
-            <span className="ai-header__icon"><img src="/liberiaFlag.png" alt="Liberia" style={{width:22, height:14, objectFit:'cover', borderRadius:2, border:'1px solid rgba(0,0,0,0.1)'}} /></span>
+            <span className="ai-header__icon"><img src={flagSrc} alt={activeJ.name} style={{ width: 22, height: 14, objectFit: 'cover', borderRadius: 2, border: '1px solid rgba(0,0,0,0.1)' }} /></span>
             <div>
-              <span className="ai-header__title">LegalCore AI — Knows all. Sees all. 🇱🇷</span>
-              <span className="ai-header__sub">{documents.length} laws • 1847–2026 • Liberia Flag • Koloqua voice</span>
+              <span className="ai-header__title">LegalCore AI — {activeJ.name} {FLAG_EMOJI[jurisdiction] ?? ''}</span>
+              <span className="ai-header__sub">{documents.length + ecowasCommunityDocs.length} instruments • {activeJ.languageLabel} • Own WebEngine v1</span>
             </div>
           </div>
           <div className="ai-header__right">
-            <button className={`ai-koloqua-toggle ${koloqua?'ai-koloqua-toggle--on':''}`} onClick={()=>{ setKoloqua(v=>!v); stopSpeak(); }} title="Koloqua Liberia accent">
-              <Mic size={12}/> {koloqua ? 'Koloqua ON' : 'Koloqua OFF'}
-            </button>
-            <button className="ai-clear" onClick={()=>{ setMessages([]); stopSpeak(); }}><Trash2 size={14}/> Clear</button>
+            {isLR ? (
+              <button className={`ai-koloqua-toggle ${koloqua ? 'ai-koloqua-toggle--on' : ''}`} onClick={() => { setKoloqua(v => !v); stopSpeak(); }} title="Koloqua Liberia accent">
+                <Mic size={12} /> {koloqua ? 'Koloqua ON' : 'Koloqua OFF'}
+              </button>
+            ) : (
+              <span className="ai-lang-badge" title={`AI answers in ${activeJ.languageLabel}`}><Languages size={12} /> {activeJ.languageLabel}</span>
+            )}
+            <button className="ai-clear" onClick={() => { setMessages([]); stopSpeak(); }}><Trash2 size={14} /> Clear</button>
           </div>
         </div>
 
-        <div className="ai-helper">
-          <Lightbulb size={14}/> <strong>Liberia voice o!</strong> {koloqua ? 'Koloqua ON — I go answer in Liberian Koloqua and I can talk out loud. Tap 🔊 to hear me.' : 'Toggle Koloqua ON to hear me in Liberian accent.'} Example: “Wetin Land Rights Act tok?” → <strong>Send</strong>.
+        {/* ── OWN ENGINE: jurisdiction (respect-area country) + training status ── */}
+        <div className="ai-engine">
+          <span className="ai-engine__badge"><Cpu size={12} /> Own WebEngine v1</span>
+          <label className="ai-engine__juris">
+            <Globe2 size={12} />
+            <img src={`https://flagcdn.com/w40/${activeJ.flag}.png`} alt={activeJ.name} className="ai-engine__flag" loading="lazy" />
+            <select
+              value={jurisdiction}
+              onChange={e => setJurisdictionCode(e.target.value)}
+              aria-label="Respect-area country — engine trains on this jurisdiction"
+              title="Respect-area country — the engine trains its index on this jurisdiction"
+            >
+              {JURISDICTIONS.filter(j => j.code !== 'ECOWAS').map(j => (
+                <option key={j.code} value={j.code}>
+                  {j.name} — {j.status === 'active' ? 'LIVE' : j.status === 'next' ? 'Next • Phase 1' : `Queued • ${j.phase}`} ({j.languageLabel})
+                </option>
+              ))}
+            </select>
+          </label>
+          <span className="ai-engine__stats" title={trainStats ? `Trained ${new Date(trainStats.trainedAt).toLocaleString()}` : 'Training…'}>
+            {trainStats
+              ? <>trained: <strong>{trainStats.totalIndexed}</strong> docs ({trainStats.primaryDocs} {jurisdiction} + {trainStats.communityDocs} ECOWAS{trainStats.comparativeDocs ? ` + ${trainStats.comparativeDocs} comparative` : ''})</>
+              : 'training engine…'}
+          </span>
         </div>
 
+        <div className="ai-helper">
+          <Lightbulb size={14} />
+          {isLR ? (
+            <span><strong>Liberia voice o!</strong> {koloqua ? 'Koloqua ON — I go answer in Liberian Koloqua and I can talk out loud. Tap 🔊 to hear me.' : 'Toggle Koloqua ON to hear me in Liberian accent.'} Tap a country above to re-train me on that area.</span>
+          ) : (
+            <span><strong>{activeJ.name} mode.</strong> I'm trained on {activeJ.name} + ECOWAS community law and answer in <strong>{activeJ.languageLabel}</strong> ({activeJ.traditionLabel}). Tap 🔊 to hear my voice. Switch country above anytime.</span>
+          )}
+        </div>
+
+        {!isLR && (
+          <div className="ai-juris-note">
+            <Globe2 size={12} />
+            <span>You&apos;re viewing <strong>{FLAG_EMOJI[jurisdiction] ?? ''} {activeJ.name}</strong> — Liberia content appears only when you pick Liberia.</span>
+            <button onClick={() => setJurisdictionCode('LR')}>Back to Liberia 🇱🇷</button>
+          </div>
+        )}
+
         <div className="ai-trust">
-          <span><ShieldCheck size={12}/> Grounded</span><span><Scale size={12}/> Cited</span><span><FileText size={12}/>{documents.length} sources</span><span style={{marginLeft:'auto', display:'flex', gap:6, alignItems:'center'}}><img src="/liberiaFlag.png" alt="" style={{width:18, height:12, objectFit:'cover', borderRadius:2}}/> Liberia Flag • Red White Blue with Star</span>
+          <span><ShieldCheck size={12} /> Grounded</span><span><Scale size={12} /> Cited</span><span><FileText size={12} />{documents.length + ecowasCommunityDocs.length} sources</span><span style={{ marginLeft: 'auto', display: 'flex', gap: 6, alignItems: 'center' }}><img src={flagSrc} alt="" style={{ width: 18, height: 12, objectFit: 'cover', borderRadius: 2 }} /> {activeJ.name} • {activeJ.traditionLabel}</span>
         </div>
 
         {!hasMessages ? (
           <div className="ai-empty">
-            <div className="ai-empty__icon"><img src="/liberiaFlag.png" alt="Liberia" style={{width:32, height:20, objectFit:'cover', borderRadius:3}} /></div>
-            <h1>Ask Liberian law — I go answer you in Koloqua o!</h1>
-            <p>Every answer from real documents (1847–2026). I show sources. Tap 🔊 to hear my Liberia voice. No French flag — na <strong>Liberia Flag 🇱🇷</strong> with 11 stripes & star!</p>
+            <div className="ai-empty__icon"><img src={flagSrc} alt={activeJ.name} style={{ width: 32, height: 20, objectFit: 'cover', borderRadius: 3 }} /></div>
+            <h1>
+              {isLR ? 'Ask Liberian law — I go answer you in Koloqua o!'
+                : activeJ.language === 'fr' ? `Interrogez le droit — je réponds en français !`
+                : activeJ.language === 'pt' ? `Pergunte sobre direito — respondo em português!`
+                : `Ask ${activeJ.name} law — cited answers, zero guessing.`}
+            </h1>
+            <p>Our own WebEngine v1 is trained on {trainStats?.totalIndexed ?? '…'} instruments for <strong>{activeJ.name}</strong> + ECOWAS community law. Every answer cited. Tap 🔊 to hear my {activeJ.languageLabel} voice.</p>
             <div className="ai-suggestions">
-              {suggestions.map(s=>(
-                <button key={s} className="ai-suggestion" onClick={()=>send(s)}>
-                  <Lightbulb size={14}/><span>{s}</span><ExternalLink size={12}/>
+              {suggestions.map(s => (
+                <button key={s} className="ai-suggestion" onClick={() => send(s)}>
+                  <Lightbulb size={14} /><span>{s}</span><ExternalLink size={12} />
                 </button>
               ))}
             </div>
-            <p className="ai-empty__note">Try Koloqua: “Wetin da Land Rights Act say about customary land?” — I go answer and talk!</p>
+            <p className="ai-empty__note">
+              {isLR ? 'Try Koloqua: “Wetin da Land Rights Act say about customary land?” — or cross-border: “Can a Liberian work visa-free in Ghana?”'
+                : activeJ.language === 'fr' ? 'Essayez : « Comment créer une SARL sous l\'OHADA ? » — ou transfrontalier : « Libre circulation CEDEAO ? »'
+                : activeJ.language === 'pt' ? 'Tente: «Como constituir uma SARL segundo a OHADA?»'
+                : `Try: "Can I enter Liberia visa-free?" — or name any country ("…in ${activeJ.name}?") and I answer from that area.`}
+            </p>
           </div>
         ) : (
           <div className="ai-messages">
-            {messages.map(m=>(
+            {messages.map(m => (
               <div key={m.id} className={`ai-msg ai-msg--${m.role}`}>
-                <span className={`ai-msg__avatar ${m.role==='assistant'?'ai-msg__avatar--ai':''}`}>{m.role==='user'?<User size={14}/>:<Bot size={14}/>}</span>
+                {m.role === 'assistant' ? <LawAvatar size={36} speaking={speakingId === m.id} /> : <span className="ai-msg__avatar"><User size={14} /></span>}
                 <div className="ai-msg__bubble">
-                  <div className="ai-msg__text" dangerouslySetInnerHTML={{__html: displayContent(m.content).replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br/>')}}/>
-                  {m.sources && m.sources.length>0 && (
+                  <div className="ai-msg__text" dangerouslySetInnerHTML={{ __html: m.content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>') }} />
+                  {m.meta && m.role === 'assistant' && (
+                    <div className="ai-meta">
+                      <span><Cpu size={10} /> WebEngine v1</span>
+                      <span><Globe2 size={10} /> {m.meta.jurisdiction === 'ECOWAS' ? 'ECOWAS' : getJurisdiction(m.meta.jurisdiction).name}</span>
+                      <span>confidence {Math.round(m.meta.confidence * 100)}%</span>
+                      <span>{m.meta.latencyMs} ms</span>
+                      {m.meta.isComparative && <span className="ai-meta__warn">comparative reference — confirm locally</span>}
+                    </div>
+                  )}
+                  {m.sources && m.sources.length > 0 && (
                     <div className="ai-sources">
                       <span className="ai-sources__label">Sources — tap to read full text:</span>
                       <div className="ai-sources__grid">
-                        {m.sources.map(doc=>{
-                          const Icon=typeIcons[doc.type]||FileText;
+                        {m.sources.map(doc => {
+                          const Icon = typeIcons[doc.type] || FileText;
+                          const jcode = (doc as any).jurisdiction as string | undefined;
                           return (
                             <Link key={doc.id} to={`/document/${doc.id}`} className="ai-source">
-                              <span className={`ai-source__tag ai-source__tag--${doc.type}`}><Icon size={11}/>{doc.type} • {doc.year}</span>
+                              <span className={`ai-source__tag ai-source__tag--${doc.type}`}><Icon size={11} />{doc.type} • {doc.year}{jcode ? ` • ${jcode}` : ''}</span>
                               <strong>{doc.title}</strong>
-                              <span>{doc.summary.slice(0,90)}…</span>
+                              <span><ProvenanceBadge doc={doc} /></span>
+                              <span>{doc.summary.slice(0, 90)}…</span>
                             </Link>
                           );
                         })}
                       </div>
                     </div>
                   )}
-                  {m.role==='assistant' && (
+                  {m.role === 'assistant' && (
                     <div className="ai-msg__actions">
-                      <button className="ai-copy" onClick={async()=>{ await navigator.clipboard.writeText(m.content); setCopied(m.id); setTimeout(()=>setCopied(null),1200);}}>
-                        {copied===m.id ? <Check size={12}/> : <Copy size={12}/>}{copied===m.id ? 'Copied' : 'Copy'}
+                      <button className="ai-copy" onClick={async () => { await navigator.clipboard.writeText(m.content); setCopied(m.id); setTimeout(() => setCopied(null), 1200); }}>
+                        {copied === m.id ? <Check size={12} /> : <Copy size={12} />}{copied === m.id ? 'Copied' : 'Copy'}
                       </button>
-                      <button className={`ai-speak ${speakingId===m.id?'ai-speak--active':''}`} onClick={()=>speak(m.content, m.id)} title={koloqua ? "Talk in Koloqua" : "Talk"}>
-                        {speakingId===m.id ? <VolumeX size={12}/> : <Volume2 size={12}/>}{speakingId===m.id ? 'Stop' : 'Talk in Koloqua 🇱🇷'}
+                      <button className={`ai-speak ${speakingId === m.id ? 'ai-speak--active' : ''}`} onClick={() => speak(m.content, m.id, m.meta?.jurisdiction)} title={talkLabel}>
+                        {speakingId === m.id ? <VolumeX size={12} /> : <Volume2 size={12} />}{speakingId === m.id ? 'Stop' : talkLabel}
                       </button>
                     </div>
                   )}
@@ -343,23 +396,23 @@ export default function AIAssistant(){
             ))}
             {typing && (
               <div className="ai-msg ai-msg--assistant">
-                <span className="ai-msg__avatar ai-msg__avatar--ai"><Bot size={14}/></span>
+                <LawAvatar size={36} thinking />
                 <div className="ai-msg__bubble">
-                  {stream ? <div className="ai-msg__text" dangerouslySetInnerHTML={{__html: stream.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br/>')}}/> : <div className="ai-typing"><span/><span/><span/> Reading {documents.length} Liberia laws…</div>}
+                  {stream ? <div className="ai-msg__text" dangerouslySetInnerHTML={{ __html: stream.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>') }} /> : <div className="ai-typing"><span /><span /><span /> WebEngine searching {trainStats?.totalIndexed ?? documents.length} {activeJ.name} instruments…</div>}
                 </div>
               </div>
             )}
-            <div ref={endRef}/>
+            <div ref={endRef} />
           </div>
         )}
 
         <div className="ai-input">
           <div className="ai-input__field">
-            <Search size={16} className="ai-input__icon"/>
-            <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&send(input)} placeholder={koloqua ? "Ask in Koloqua — e.g. Wetin Land Rights Act tok?" : "Ask anything — e.g. Land Rights Act 2018"} aria-label="Ask AI" />
-            <button className="ai-input__send" onClick={()=>send(input)} disabled={!input.trim()||typing}><Send size={16}/><span>Send</span></button>
+            <Search size={16} className="ai-input__icon" />
+            <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && send(input)} placeholder={placeholderFor(jurisdiction, koloquaActive)} aria-label="Ask AI" />
+            <button className="ai-input__send" onClick={() => send(input)} disabled={!input.trim() || typing}><Send size={16} /><span>Send</span></button>
           </div>
-          <p className="ai-input__helper">Press <strong>Enter</strong> to send • Toggle <strong>Koloqua</strong> for Liberia accent • Tap 🔊 to hear voice • 🇱🇷 Liberia Flag</p>
+          <p className="ai-input__helper">Press <strong>Enter</strong> to send • Engine trained on <strong>{activeJ.name}</strong> + ECOWAS{isLR ? ' • Toggle Koloqua for Liberia accent' : ` • Answers in ${activeJ.languageLabel}`} • {FLAG_EMOJI[jurisdiction] ?? ''} {activeJ.name}</p>
         </div>
       </div>
     </div>

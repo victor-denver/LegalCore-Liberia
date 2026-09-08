@@ -69,6 +69,17 @@ export default function AboutPage(){
         </div>
       </section>
 
+      <section className="about-section">
+        <div className="about-container">
+          <h2 className="about-title">Documentation</h2>
+          <p style={{textAlign:'center', color:'var(--text-secondary)', marginBottom:16}}>Clear documentation on what we hold and how we capture it — cited, verified, and updated.</p>
+          <div style={{display:'flex', justifyContent:'center'}}>
+            <a href="/LegalCore_Liberia_Documentation.pdf" download className="about-btn about-btn--red" style={{textDecoration:'none'}}>Download PDF Documentation</a>
+          </div>
+          <p style={{textAlign:'center', fontSize:12, color:'var(--text-muted)', marginTop:10}}>12 pages — Cover, TOC, Executive Summary, Information Inventory, Data Capture (Sources → Collection → Processing → Storage → Updates), Verification, AI, Design, Tech Stack, Legal, Roadmap, Appendices.</p>
+        </div>
+      </section>
+
       <section className="about-cta">
         <div className="about-container">
           <h2>Ready to use it?</h2>

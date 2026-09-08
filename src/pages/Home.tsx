@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Search, Sparkles, ArrowRight, SlidersHorizontal } from 'lucide-react';
+import { Search, Sparkles, ArrowRight, SlidersHorizontal, Globe } from 'lucide-react';
 import SearchBar from '../components/SearchBar';
 import { categories, stats, courtLocations } from '../data/legalData';
 import './Home.css';
@@ -89,6 +89,11 @@ export default function Home() {
       <div className="helper">
         <Search size={14}/> <strong>New?</strong> Type any word in the search above — try <em>land rights</em> or <em>Constitution</em>. Or tap a category above. Then ask AI for plain English.
       </div>
+
+      {/* ECOWAS BANNER */}
+      <Link to="/west-africa" className="eco-banner">
+        <Globe size={16}/> <strong>New:</strong> LegalCore West Africa — 12 states, 3 languages, Liberia live now <ArrowRight size={12}/>
+      </Link>
 
       {/* CARDS GRID — like screenshot 3-per-row dark cards */}
       <section className="cards">

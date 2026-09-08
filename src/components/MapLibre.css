@@ -1,0 +1,21 @@
+/* Primitives for the MapLibre wrapper (no Tailwind in this project) */
+.map-loader-dot { width: 8px; height: 8px; border-radius: 50%; background: #D4AF17; animation: mapPulse 1s ease-in-out infinite; }
+.map-loader-dot:nth-child(2) { animation-delay: 150ms; }
+.map-loader-dot:nth-child(3) { animation-delay: 300ms; }
+@keyframes mapPulse { 0%, 100% { opacity: 0.35; transform: scale(0.85); } 50% { opacity: 1; transform: scale(1.1); } }
+
+.map-marker-content { position: relative; cursor: pointer; display: flex; }
+.map-default-pin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; background: #2563EB; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4); }
+
+.map-tooltip { pointer-events: none; border-radius: 8px; background: #0E0E0E; color: #fff; padding: 6px 10px; font-size: 12px; font-weight: 600; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4); white-space: nowrap; }
+.map-tooltip strong { color: #D4AF17; }
+:root[data-theme="light"] .map-tooltip { background: #0E0E0E; color: #fff; }
+
+.map-marker-label { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 11px; font-weight: 800; color: #fff; background: #0A2E22; border: 1px solid #D4AF17; padding: 2px 8px; border-radius: 9999px; pointer-events: none; }
+.map-marker-label--top { bottom: 100%; margin-bottom: 6px; }
+.map-marker-label--bottom { top: 100%; margin-top: 6px; }
+
+/* Keep MapLibre chrome on-brand */
+.maplibregl-ctrl-attrib { font-size: 10px; }
+.maplibregl-ctrl-attrib a { color: #71717A; }
+.maplibregl-ctrl-group { border-radius: 10px !important; overflow: hidden; }

@@ -28,6 +28,11 @@
 .doc-toolbar { display: flex; gap: 8px; padding: 10px 14px; background: var(--bg-elevated); border-bottom: 1px solid var(--border); flex-wrap: wrap; align-items: center; }
 .toolbar-btn { display: inline-flex; gap: 6px; align-items: center; padding: 8px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 9999px; font-size: 13px; font-weight: 600; color: var(--text-secondary); }
 .toolbar-btn--primary { background: var(--text-primary); color: var(--bg); border-color: var(--text-primary); }
+.toolbar-btn--saved { border-color: #D4AF17; color: var(--text-primary); box-shadow: 0 0 0 1px #D4AF17; }
+.toolbar-btn--pdf { background: #D4AF17; border-color: #D4AF17; color: #0E0E0E; font-weight: 800; }
+.toolbar-btn:disabled { opacity: 0.55; }
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 .toolbar-hint { margin-left: auto; font-size: 11px; color: var(--text-muted); }
 
 .doc-paper { padding: 14px; background: var(--bg-elevated); }
@@ -46,6 +51,25 @@
 .doc-citations li { display: flex; gap: 10px; align-items: center; padding: 10px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; font-size: 13px; color: var(--text-secondary); }
 .cite-n { width: 22px; height: 22px; display: grid; place-items: center; background: var(--bg-pill); color: var(--text-primary); border-radius: 50%; font-size: 11px; font-weight: 800; flex-shrink: 0; }
 .cite-copy { margin-left: auto; width: 28px; height: 28px; display: grid; place-items: center; background: var(--bg-pill); border: 1px solid var(--border); border-radius: 8px; color: var(--text-muted); }
+
+/* ── Scan, verify & export (QR + barcode + PDF) ── */
+.doc-verify { padding: 16px 18px; border-top: 1px solid var(--border); background: var(--bg-elevated); }
+.doc-verify h3 { font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-primary); margin-bottom: 12px; display: flex; gap: 6px; align-items: center; }
+.verify-card { display: flex; flex-direction: column; gap: 12px; }
+.verify-codes { display: flex; gap: 12px; flex-wrap: wrap; }
+.verify-qr, .verify-bar { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px; background: #fff; border: 1px solid var(--border); border-radius: 12px; }
+.verify-qr img { width: 132px; height: 132px; display: block; }
+.verify-skel { width: 132px; height: 132px; border-radius: 8px; background: linear-gradient(90deg, #eee, #ddd, #eee); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
+.verify-bar svg { width: 210px; height: auto; display: block; }
+.verify-qr small, .verify-bar small { font-size: 10px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: #52525B; }
+.verify-actions { display: flex; flex-direction: column; gap: 8px; }
+.verify-url { font-size: 11px; color: var(--text-secondary); word-break: break-all; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-family: ui-monospace, monospace; }
+.verify-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 560px) {
+  .verify-codes { flex-direction: column; }
+  .verify-qr img, .verify-skel { width: 160px; height: 160px; }
+  .verify-bar svg { width: 100%; max-width: 260px; }
+}
 
 .related { margin-top: 0; }
 .related h3 { font-size: 15px; font-weight: 800; color: var(--text-primary); margin-bottom: 12px; }

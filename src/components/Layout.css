@@ -1,22 +1,40 @@
 .layout { min-height: 100vh; display: flex; flex-direction: column; background: var(--bg); }
+.ecowas-scream-bar { height: 28px; display: flex; align-items: center; justify-content: center; gap: 10px; background: #0A2E22; color: white; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; overflow: hidden; white-space: nowrap; position: relative; }
+.ecowas-scream-bar::after { content:""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent); animation: shimmer 3s linear infinite; pointer-events: none; }
+.ecowas-scream-bar__dot { color: #D4AF17; animation: pulse 2s infinite; }
+.ecowas-scream-bar__flags { display: flex; gap: 4px; margin-left: 8px; }
+.ecowas-scream-bar__flags img { width: 20px; height: 14px; object-fit: cover; border-radius: 2px; border: 1px solid rgba(255,255,255,0.2); animation: flagWave 4s ease-in-out infinite; }
+.ecowas-scream-bar__flags img:nth-child(2){ animation-delay: 0.3s; }
+.ecowas-scream-bar__flags img:nth-child(3){ animation-delay: 0.6s; }
+@media (max-width: 700px) { .ecowas-scream-bar { font-size: 10px; gap: 6px; padding: 0 8px; } .ecowas-scream-bar__flags { display: none; } }
 .liberia-flag-bar { height: 4px; background: url('/liberiaFlag.png') center/cover no-repeat; border-bottom: 1px solid rgba(0,0,0,0.08); }
 
-/* Topbar — exact screenshot */
+/* Topbar — exact screenshot — stretched wide */
 .topbar {
   position: sticky; top: 0; z-index: 100;
-  height: 56px;
-  display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  padding: 0 20px;
   background: var(--bg);
   border-bottom: 1px solid var(--border);
 }
+.topbar__inner {
+  max-width: 1320px; margin: 0 auto; width: 100%;
+  height: 56px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 0 20px;
+}
 .topbar__left { display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
-.topbar__logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+.topbar__inner { max-width: 1320px; margin: 0 auto; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+@media (min-width: 1536px) { .topbar__inner { max-width: 1480px; } }
+@media (min-width: 1920px) { .topbar__inner { max-width: 1600px; } }
+.topbar__logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
 .topbar__logo-img {
   height: 28px; width: auto; max-width: 140px; object-fit: contain; display: block;
   filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
 }
-@media (max-width: 640px) { .topbar__logo-img { height: 24px; max-width: 120px; } }
+.topbar__brand { display: flex; flex-direction: column; line-height: 1; }
+.topbar__brand-name { font-size: 14px; font-weight: 900; letter-spacing: -0.03em; color: var(--text-primary); }
+.topbar__brand-sub { font-size: 10px; font-weight: 800; letter-spacing: 0.12em; color: #0A2E22; }
+:root[data-theme="dark"] .topbar__brand-sub { color: #D4AF17; }
+@media (max-width: 640px) { .topbar__logo-img { height: 24px; max-width: 120px; } .topbar__brand { display: none; } }
 .topbar__nav { display: flex; gap: 16px; }
 .topbar__link { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
 .topbar__link--active { color: var(--text-primary); }
@@ -44,13 +62,18 @@
 
 .topbar__avatar { width: 32px; height: 32px; display: grid; place-items: center; background: #2563EB; color: white; border-radius: 50%; font-size: 12px; font-weight: 800; }
 .topbar__menu { display: none; width: 32px; height: 32px; place-items: center; color: var(--text-primary); }
+.topbar__country { display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 12px 0 6px; border: 1px solid var(--border); background: var(--bg-card); border-radius: 9999px; font-size: 12px; font-weight: 800; color: var(--text-primary); transition: transform .15s ease, border-color .15s ease; }
+.topbar__country:hover { border-color: #D4AF17; transform: translateY(-1px); }
+.topbar__country img { width: 26px; height: 18px; object-fit: cover; border-radius: 4px; border: 1px solid rgba(0,0,0,0.2); }
+.topbar__country small { font-weight: 600; color: var(--text-muted); }
+@media (max-width: 640px) { .topbar__country span, .topbar__country small { display: none; } .topbar__country { padding: 0 4px; } }
 
 @media (max-width: 900px) {
   .topbar__nav { display: none; }
   .topbar__search { max-width: 320px; }
 }
 @media (max-width: 640px) {
-  .topbar { padding: 0 12px; height: 52px; gap: 8px; }
+  .topbar__inner { padding: 0 12px; height: 52px; gap: 8px; }
   .topbar__search { display: flex; max-width: none; width: 40px; height: 40px; padding: 0; justify-content: center; border-radius: 50%; flex: none; margin: 0; }
   .topbar__search span { display: none; }
   .topbar__search-icon { width: auto; height: auto; background: transparent; }
@@ -60,11 +83,17 @@
   .topbar__left { gap: 10px; }
   .topbar__logo-img { height: 22px; }
 }
+.mobile-backdrop { position: fixed; inset: 0; z-index: 140; background: rgba(0,0,0,0.5); }
 .mobile-menu {
+  position: absolute; top: calc(100% + 8px); left: 12px; right: 12px; z-index: 150;
   display: flex; flex-direction: column; gap: 4px;
-  padding: 12px; background: var(--bg-elevated); border-bottom: 1px solid var(--border);
+  padding: 10px; background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: 18px; box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+  max-height: calc(100vh - 140px); max-height: calc(100dvh - 140px); overflow-y: auto;
+  animation: fadeIn 0.18s ease;
 }
-.mobile-menu a { padding: 12px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; font-weight: 600; display: flex; gap: 8px; align-items: center; }
+.mobile-menu a { padding: 12px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; font-weight: 600; display: flex; gap: 8px; align-items: center; font-size: 14px; }
+.mobile-menu a.active { border-color: #D4AF17; box-shadow: 0 0 0 1px #D4AF17; color: var(--text-primary); }
 
 .cmd-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); display: flex; align-items: flex-start; justify-content: center; padding: 12vh 16px 24px; }
 .cmd-box { width: 100%; max-width: 580px; background: #1C1C1E; border: 1px solid #2A2A2A; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }

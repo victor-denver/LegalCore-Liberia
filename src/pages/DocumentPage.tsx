@@ -1,8 +1,17 @@
-import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Calendar, Building2, Tag, FileText, Gavel, ScrollText, BookOpen, Copy, Check, Printer, Share2, Hash, Sparkles, Clock3, ShieldCheck, ListTree, ExternalLink } from 'lucide-react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Calendar, Building2, Tag, FileText, Gavel, ScrollText, BookOpen, Copy, Check, Printer, Share2, Hash, Sparkles, Clock3, ShieldCheck, ListTree, ExternalLink, Bookmark, BookmarkCheck, Briefcase, Quote, FileDown, ScanLine } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { documents } from '../data/legalData';
+import { ecowasCommunityDocs } from '../data/ecowasCommunity';
+import { ProvenanceBadge, CertificateCard } from '../components/Provenance';
+import { getProvenance } from '../data/provenance';
+import { getCitedBy } from '../utils/citator';
+import { exportDocumentPdf } from '../utils/exportPdf';
+import VerifyCard from '../components/VerifyCard';
+import { useStore } from '../hooks/useStore';
 import './DocumentPage.css';
+
+const allDocs = [...documents, ...ecowasCommunityDocs];
 
 const cfg = {
   statute: { icon: ScrollText, label: 'Statute', cls: 'statute' },
@@ -13,17 +22,22 @@ const cfg = {
 
 export default function DocumentPage(){
   const { id } = useParams<{id:string}>();
-  const doc = documents.find(d=>d.id===id);
+  const doc = allDocs.find(d=>d.id===id);
   const [copied,setCopied]=useState(false);
   const [copiedCite,setCopiedCite]=useState(false);
+  const [pdfBusy,setPdfBusy]=useState(false);
+  const navigate = useNavigate();
+  const { toggleSaved, isSaved, addToBrief } = useStore();
+  const citedBy=useMemo(()=> doc ? getCitedBy(doc, allDocs) : [],[doc]);
+  const headings = useMemo(()=> doc ? doc.body.split('\n').filter(l=> l && l===l.toUpperCase() && l.length>3 && !l.startsWith('(')).slice(0,8) : [],[doc]);
 
   if(!doc){
     return <div className="doc"><div className="doc__inner"><div className="doc-empty"><h2>Not found</h2><p>This document doesn’t exist.</p><Link to="/search" className="doc-back"><ArrowLeft size={16}/> Back to search</Link></div></div></div>;
   }
   const c=cfg[doc.type];
   const Icon=c.icon;
-  const related=documents.filter(d=>d.id!==doc.id && d.category===doc.category).slice(0,4);
-  const headings = useMemo(()=> doc.body.split('\n').filter(l=> l && l===l.toUpperCase() && l.length>3 && !l.startsWith('(')).slice(0,8),[doc.body]);
+  const related=allDocs.filter(d=>d.id!==doc.id && d.category===doc.category).slice(0,4);
+  const saved=isSaved(doc.id);
 
   const copyText=async()=>{
     await navigator.clipboard.writeText(doc.body);
@@ -51,10 +65,11 @@ export default function DocumentPage(){
               <header className="doc-header">
                 <div className="doc-meta">
                   <span className={`doc-tag doc-tag--${c.cls}`}><Icon size={12}/>{c.label}</span>
+                  <ProvenanceBadge doc={doc} />
                   <span className="doc-meta-pill"><Calendar size={12}/>{doc.date}</span>
                   <span className="doc-meta-pill"><Hash size={12}/>{doc.year}</span>
                   {doc.court && <span className="doc-meta-pill"><Building2 size={12}/>{doc.court}</span>}
-                  <span className="doc-meta-pill doc-meta-pill--ok"><ShieldCheck size={12}/> Verified</span>
+                  <span className="doc-meta-pill doc-meta-pill--ok"><ShieldCheck size={12}/> {getProvenance(doc).binding}</span>
                 </div>
                 <h1>{doc.title}</h1>
                 <p className="doc-summary">{doc.summary}</p>
@@ -67,8 +82,22 @@ export default function DocumentPage(){
                 <button className="toolbar-btn toolbar-btn--primary" onClick={copyText}>{copied ? <Check size={14}/> : <Copy size={14}/>}{copied ? 'Copied!' : 'Copy text'}</button>
                 <button className="toolbar-btn" onClick={copyCite}>{copiedCite ? <Check size={14}/> : <Copy size={14}/>}{copiedCite ? 'Copied!' : 'Copy citation'}</button>
                 <button className="toolbar-btn" onClick={()=>window.print()}><Printer size={14}/> Print</button>
+                <button className="toolbar-btn toolbar-btn--pdf" disabled={pdfBusy} onClick={async()=>{ if(pdfBusy) return; setPdfBusy(true); try{ await exportDocumentPdf(doc); } finally{ setPdfBusy(false); } }}>{pdfBusy ? 'Making PDF…' : <><FileDown size={14}/> PDF</>}</button>
                 <button className="toolbar-btn" onClick={()=> navigator.share ? navigator.share({title:doc.title, url:location.href}) : navigator.clipboard.writeText(location.href)}><Share2 size={14}/> Share</button>
-                <span className="toolbar-hint">{doc.body.split(' ').length.toLocaleString()} words • {doc.citations.length} citations</span>
+                <button
+                  className={`toolbar-btn ${saved?'toolbar-btn--saved':''}`}
+                  title={saved ? 'Saved — tap to remove' : 'Save to my library'}
+                  onClick={()=> toggleSaved(doc.id)}
+                >{saved ? <BookmarkCheck size={14}/> : <Bookmark size={14}/>}{saved ? 'Saved' : 'Save'}</button>
+                <button
+                  className="toolbar-btn"
+                  title="Add to brief — open My Library to export"
+                  onClick={()=>{
+                    addToBrief(doc.id);
+                    navigate('/saved');
+                  }}
+                ><Briefcase size={14}/> Brief</button>
+                <span className="toolbar-hint">{doc.body.split(' ').length.toLocaleString()} words • {doc.citations.length} citations • cited by {citedBy.length}</span>
               </div>
 
               <div className="doc-paper">
@@ -101,6 +130,22 @@ export default function DocumentPage(){
                   </ul>
                 </div>
               )}
+
+              {citedBy.length>0 && (
+                <div className="doc-citations">
+                  <h3><Quote size={12}/> Cited by {citedBy.length} — who relies on this law</h3>
+                  <ul>
+                    {citedBy.map(({doc:cd, matched})=>(
+                      <li key={cd.id}><span className="cite-n">§</span><span><Link to={`/document/${cd.id}`} style={{fontWeight:700}}>{cd.title}</Link><em style={{display:'block', fontSize:11}}>via “{matched}”</em></span></li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <div className="doc-verify">
+                <h3><ScanLine size={12}/> Scan, verify & export</h3>
+                <VerifyCard doc={doc} />
+              </div>
             </article>
 
             {/* Mobile related */}
@@ -125,6 +170,8 @@ export default function DocumentPage(){
           </div>
 
           <aside className="doc-aside">
+            <CertificateCard doc={doc} />
+
             <div className="doc-aside__card doc-aside__card--ai">
               <div className="doc-aside__ai-head"><Sparkles size={14}/> Ask AI about this law</div>
               <p>Get a plain-English summary, key points, and how it applies — cited.</p>

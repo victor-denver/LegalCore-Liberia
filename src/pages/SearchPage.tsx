@@ -4,7 +4,11 @@ import { SlidersHorizontal, X, Search, Sparkles, Clock3, Info } from 'lucide-rea
 import SearchBar from '../components/SearchBar';
 import DocumentCard from '../components/DocumentCard';
 import { documents, categories, type DocumentType, type LegalCategory } from '../data/legalData';
+import { ecowasCommunityDocs } from '../data/ecowasCommunity';
+import { useJurisdiction } from '../hooks/useJurisdiction';
 import './SearchPage.css';
+
+const searchCorpus = [...documents, ...ecowasCommunityDocs];
 
 const typeFilters:{value:DocumentType|'all';label:string}[]=[
   {value:'all',label:'All'},
@@ -22,20 +26,29 @@ export default function SearchPage(){
   const [catFilter,setCatFilter]=useState<LegalCategory|'all'>((catParam as LegalCategory)||'all');
   const [showFilters,setShowFilters]=useState(false);
   const [sortBy,setSortBy]=useState<'relevance'|'newest'|'oldest'>('relevance');
+  const { code: activeCode, active: activeJ } = useJurisdiction();
 
   const results=useMemo(()=>{
-    let f=[...documents];
+    let f=[...searchCorpus];
     if(qParam){
       const q=qParam.toLowerCase();
       f=f.filter(d=> d.title.toLowerCase().includes(q) || d.summary.toLowerCase().includes(q) || d.tags.some(t=>t.toLowerCase().includes(q)) || d.body.toLowerCase().includes(q));
-      f.sort((a,b)=> (b.title.toLowerCase().includes(q) ? 1:0) - (a.title.toLowerCase().includes(q)?1:0));
+      // Respect-area country first: active jurisdiction + ECOWAS community rank above comparative hits
+      const active = activeCode;
+      const jRank = (d: typeof f[number]) => {
+        const j = (d as any).jurisdiction as string | undefined ?? 'LR';
+        if (j === active) return 0;
+        if (j === 'ECOWAS') return 1;
+        return 2;
+      };
+      f.sort((a,b)=> jRank(a) - jRank(b) || ((b.title.toLowerCase().includes(q) ? 1:0) - (a.title.toLowerCase().includes(q)?1:0)));
     }
     if(typeFilter!=='all') f=f.filter(d=>d.type===typeFilter);
     if(catFilter!=='all') f=f.filter(d=>d.category===catFilter);
     if(sortBy==='newest') f.sort((a,b)=>b.year-a.year);
     if(sortBy==='oldest') f.sort((a,b)=>a.year-b.year);
     return f;
-  },[qParam,typeFilter,catFilter,sortBy]);
+  },[qParam,typeFilter,catFilter,sortBy,activeCode]);
 
   const hasFilters=typeFilter!=='all'||catFilter!=='all';
   const clear=()=>{setTypeFilter('all');setCatFilter('all');};
@@ -44,8 +57,8 @@ export default function SearchPage(){
     <div className="search-page">
       <div className="search-header">
         <div className="search-header__inner">
-          <h1 className="search-header__title">Search Liberian Law</h1>
-          <p className="search-header__sub">Type any word — we search titles, summaries and full text for you.</p>
+          <h1 className="search-header__title">Search {activeJ.name} Law</h1>
+          <p className="search-header__sub">Type any word — we search titles, summaries and full text for you{activeJ.language === 'fr' ? ' — posez aussi en français' : activeJ.language === 'pt' ? ' — pergunte também em português' : ''}.</p>
           <div className="search-header__bar">
             <SearchBar initialQuery={qParam} />
           </div>

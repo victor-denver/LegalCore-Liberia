@@ -1,0 +1,84 @@
+.law-avatar {
+  position: relative; flex-shrink: 0;
+  animation: float 4s ease-in-out infinite;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
+  transform: translateZ(0); /* own GPU layer — smooth on phones */
+}
+.law-avatar svg { display: block; overflow: visible; }
+
+/* ── blink: eyes squash shut for a beat every few seconds ── */
+.law-eyes { transform-box: fill-box; transform-origin: center; animation: lawBlink 4.6s ease-in-out infinite; }
+@keyframes lawBlink {
+  0%, 91%, 98%, 100% { transform: scaleY(1); }
+  94% { transform: scaleY(0.08); }
+}
+
+/* ── beam: gentle sway idle, tips side to side while weighing (thinking) ── */
+.law-beam { transform-box: view-box; transform-origin: 60px 34px; animation: lawSway 5s ease-in-out infinite; }
+@keyframes lawSway {
+  0%, 100% { transform: rotate(-1.6deg); }
+  50% { transform: rotate(1.6deg); }
+}
+.law-avatar--thinking .law-beam { animation: lawWeigh 1.1s ease-in-out infinite; }
+@keyframes lawWeigh {
+  0%, 100% { transform: rotate(-7deg); }
+  50% { transform: rotate(7deg); }
+}
+
+/* ── speaking: excited bounce + chomping mouth ── */
+.law-avatar--speaking { animation: lawTalk 0.55s ease-in-out infinite; }
+@keyframes lawTalk {
+  0%, 100% { transform: translateY(0) rotate(-1.2deg); }
+  50% { transform: translateY(-3px) rotate(1.2deg); }
+}
+.law-mouth-open { opacity: 0; transform-box: fill-box; transform-origin: center top; transform: scaleY(0.2); }
+.law-avatar--speaking .law-mouth-open { opacity: 1; animation: lawChomp 0.36s ease-in-out infinite; }
+.law-avatar--speaking .law-smile { opacity: 0; }
+@keyframes lawChomp {
+  0%, 100% { transform: scaleY(0.35); }
+  50% { transform: scaleY(1); }
+}
+.law-avatar--speaking .law-pupils { animation: lawBob 0.55s ease-in-out infinite; }
+@keyframes lawBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1.4px); }
+}
+
+/* ── thinking: pupils dart while the beam weighs ── */
+.law-avatar--thinking { animation: float 1.2s ease-in-out infinite; }
+.law-avatar--thinking .law-pupils { animation: lawLook 0.9s ease-in-out infinite; }
+@keyframes lawLook {
+  0%, 100% { transform: translateX(-1.8px); }
+  50% { transform: translateX(1.8px); }
+}
+.law-pupils { transform-box: fill-box; }
+
+.law-avatar__flag {
+  position: absolute; right: -3px; bottom: 6px;
+  width: 16px; height: 12px; object-fit: cover; border-radius: 3px;
+  border: 1.5px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.law-avatar__dot {
+  position: absolute; right: 1px; top: 8px;
+  width: 8px; height: 8px; background: #22C55E; border: 1.5px solid white; border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(34,197,94,0.2);
+}
+.law-avatar--speaking .law-avatar__dot { background: #D4AF17; box-shadow: 0 0 0 3px rgba(212,175,23,0.3); animation: pulse 0.8s infinite; }
+
+/* ── phones: kill the always-on idle motion, keep her alive on state ──
+   (blink + talk-chomp + thinking-weigh still run; float/sway rest) */
+@media (max-width: 640px) {
+  .law-avatar { animation: none; filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25)); }
+  .law-avatar--speaking { animation: lawTalk 0.55s ease-in-out infinite; }
+  .law-avatar--thinking { animation: float 1.2s ease-in-out infinite; }
+  .law-beam { animation: none; }
+  .law-avatar--thinking .law-beam { animation: lawWeigh 1.1s ease-in-out infinite; }
+}
+
+/* ── respect reduced motion: freeze her in a friendly pose ── */
+@media (prefers-reduced-motion: reduce) {
+  .law-avatar, .law-avatar--speaking, .law-avatar--thinking,
+  .law-eyes, .law-beam, .law-pupils, .law-mouth-open, .law-avatar__dot { animation: none !important; }
+  .law-mouth-open { opacity: 0 !important; }
+  .law-avatar--speaking .law-smile { opacity: 1 !important; }
+}

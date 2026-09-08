@@ -1,0 +1,55 @@
+{
+  "total": 592,
+  "liberia": 584,
+  "ecowas": 8,
+  "byCategory": {
+    "constitutional": 55,
+    "commercial": 51,
+    "property": 48,
+    "family": 48,
+    "tax-revenue": 49,
+    "human-rights": 54,
+    "maritime": 47,
+    "criminal": 51,
+    "public-health": 48,
+    "environmental": 48,
+    "education": 47,
+    "labor": 46
+  },
+  "categoryLabels": {
+    "constitutional": "Constitutional Law",
+    "criminal": "Criminal Law",
+    "property": "Property & Land Law",
+    "commercial": "Commercial Law",
+    "family": "Family Law",
+    "labor": "Labor & Employment",
+    "environmental": "Environmental Law",
+    "human-rights": "Human Rights",
+    "maritime": "Maritime Law",
+    "tax-revenue": "Tax & Revenue",
+    "public-health": "Public Health",
+    "education": "Education Law"
+  },
+  "tiers": {
+    "certified": 44,
+    "verified": 8,
+    "reference": 540
+  },
+  "courts": 32,
+  "byCounty": {
+    "Montserrado": 17,
+    "Nimba": 1,
+    "Bong": 2,
+    "Grand Bassa": 2,
+    "Margibi": 1,
+    "Grand Cape Mount": 1,
+    "Maryland": 2,
+    "Lofa": 1,
+    "Sinoe": 1,
+    "River Gee": 1,
+    "Grand Kru": 1,
+    "Rivercess": 1,
+    "Gbarpolu": 1
+  },
+  "jurisdictions": 12
+}

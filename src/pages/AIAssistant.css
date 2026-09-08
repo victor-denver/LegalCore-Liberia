@@ -1,5 +1,5 @@
-.ai-page { min-height: calc(100vh - 56px); background: var(--bg); padding: 16px 24px 24px; }
-.ai-page__inner { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; min-height: calc(100vh - 80px); }
+.ai-page { min-height: calc(100vh - 56px); min-height: calc(100dvh - 56px); background: var(--bg); padding: 16px 24px 24px; }
+.ai-page__inner { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; min-height: calc(100vh - 80px); min-height: calc(100dvh - 80px); }
 .ai-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; flex-wrap: wrap; }
 .ai-header__left { display: flex; gap: 10px; align-items: center; flex: 1; min-width: 0; }
 .ai-header__icon { width: 36px; height: 36px; display: grid; place-items: center; background: var(--text-primary); color: var(--bg); border-radius: 10px; overflow: hidden; }
@@ -10,7 +10,7 @@
 .ai-koloqua-toggle--on { background: #BF0A30; color: white; border-color: #BF0A30; }
 .ai-clear { display: inline-flex; gap: 6px; align-items: center; padding: 7px 12px; background: var(--bg-pill); border: 1px solid var(--border); border-radius: 9999px; font-size: 12px; font-weight: 600; color: var(--text-secondary); }
 .ai-helper { display: flex; gap: 8px; padding: 10px 14px; background: var(--bg-pill); border: 1px solid var(--border); border-radius: 12px; font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
-.ai-trust { display: flex; gap: 12px; align-items: center; padding: 8px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 9999px; font-size: 11px; font-weight: 700; color: var(--text-muted); }
+.ai-trust { display: flex; gap: 6px 12px; align-items: center; flex-wrap: wrap; padding: 8px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 9999px; font-size: 11px; font-weight: 700; color: var(--text-muted); }
 .ai-trust span { display: inline-flex; gap: 4px; align-items: center; }
 .ai-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 14px; padding: 24px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; }
 .ai-empty__icon { width: 56px; height: 56px; display: grid; place-items: center; background: var(--text-primary); color: var(--bg); border-radius: 16px; }
@@ -27,7 +27,7 @@
 .ai-msg__avatar--ai { background: var(--text-primary); color: var(--bg); border-color: var(--text-primary); }
 .ai-msg__bubble { flex: 1; min-width: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 14px; }
 .ai-msg--user .ai-msg__bubble { background: var(--text-primary); color: var(--bg); border-color: var(--text-primary); }
-.ai-msg__text { font-size: 13px; line-height: 1.6; color: var(--text-secondary); }
+.ai-msg__text { font-size: 13px; line-height: 1.6; color: var(--text-secondary); overflow-wrap: anywhere; }
 .ai-msg--user .ai-msg__text { color: var(--bg); }
 .ai-msg__text strong { color: var(--text-primary); }
 .ai-msg--user .ai-msg__text strong { color: var(--bg); }
@@ -59,4 +59,61 @@
 .ai-input__send { display: inline-flex; gap: 6px; align-items: center; padding: 9px 14px; background: var(--text-primary); color: var(--bg); border-radius: 9999px; font-size: 13px; font-weight: 700; }
 .ai-input__send:disabled { opacity: 0.4; }
 .ai-input__helper { text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 8px; }
-@media (max-width:640px){ .ai-page{ padding: 12px 12px 16px; } }
+.ai-engine { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 10px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; font-size: 12px; color: var(--text-secondary); }
+.ai-engine__badge { display: inline-flex; gap: 6px; align-items: center; padding: 4px 10px; border-radius: 9999px; background: #002868; color: #fff; font-weight: 800; font-size: 11px; }
+.ai-engine__juris { display: inline-flex; gap: 8px; align-items: center; min-width: 0; padding: 4px 10px 4px 8px; background: var(--bg-pill); border: 1px solid var(--border); border-radius: 9999px; font-weight: 700; }
+.ai-engine__juris select { background: transparent; border: none; font-size: 12px; font-weight: 700; color: var(--text-primary); min-width: 0; max-width: 280px; }
+.ai-engine__flag { width: 22px; height: 15px; object-fit: cover; border-radius: 3px; border: 1px solid rgba(0,0,0,0.15); }
+.ai-engine__flag--text { font-size: 10px; font-weight: 800; color: #BF0A30; }
+.ai-engine__stats { font-size: 11px; color: var(--text-muted); }
+.ai-engine__stats strong { color: var(--text-primary); }
+.ai-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.ai-meta span { display: inline-flex; gap: 4px; align-items: center; }
+.ai-meta__warn { color: #B45309; }
+.ai-lang-badge { display: inline-flex; gap: 6px; align-items: center; padding: 7px 12px; border-radius: 9999px; font-size: 12px; font-weight: 800; border: 1px solid var(--border); background: #0A2E22; color: #fff; }
+.ai-juris-note { display: flex; gap: 8px; align-items: center; padding: 10px 14px; background: rgba(10,46,34,0.35); border: 1px solid #0A2E22; border-radius: 12px; font-size: 12px; color: var(--text-secondary); }
+.ai-juris-note button { font-weight: 800; color: #D4AF17; text-decoration: underline; }
+@media (min-width:1024px){
+  /* desktop: fill the screen instead of a narrow centered gutter */
+  .ai-page{ padding: 20px 32px 28px; }
+  .ai-page__inner{ max-width: 1200px; gap: 14px; }
+  .ai-msg__text{ max-width: 95ch; }
+  .ai-suggestions{ grid-template-columns: 1fr 1fr 1fr; max-width: none; }
+  .ai-sources__grid{ grid-template-columns: 1fr 1fr 1fr; }
+  .ai-empty{ padding: 32px; }
+  .ai-empty h1{ font-size: 26px; }
+}
+@media (max-width:640px){
+  .ai-page{ padding: 12px 12px 16px; }
+  .ai-page__inner{ gap: 10px; }
+  .ai-header{ padding: 12px; gap: 10px; }
+  .ai-header__title{ font-size: 13px; }
+  .ai-trust{ border-radius: 16px; }
+  .ai-engine__juris{ flex: 1 1 100%; }
+  .ai-engine__juris select{ flex: 1; max-width: none; }
+  .ai-engine__stats{ flex: 1 1 100%; }
+  .ai-empty{ padding: 20px 16px; }
+  .ai-empty h1{ font-size: 19px; }
+  .ai-msg{ gap: 8px; }
+  .ai-msg__bubble{ padding: 12px; border-radius: 14px; }
+  .ai-input__helper{ font-size: 10px; }
+}
+@media (max-width:480px){
+  /* icon-only send keeps the input usable on narrow phones */
+  .ai-input__send span{ display: none; }
+  .ai-input__send{ padding: 10px 12px; }
+  .ai-input__field{ gap: 8px; padding-left: 12px; }
+  .ai-input__field input{ font-size: 16px; } /* stops iOS auto-zoom on focus */
+  .ai-header__right{ width: 100%; justify-content: flex-end; }
+  /* mascot scales with the phone */
+  .ai-msg .law-avatar{ width: 32px !important; height: 32px !important; }
+  .ai-speak{ font-size: 10px; }
+}
+@media (max-width:900px){
+  /* lift the sticky input above the floating tab-bar pill */
+  .ai-input{ bottom: calc(84px + env(safe-area-inset-bottom)); }
+}
+@media (prefers-reduced-motion: reduce){
+  .ai-typing span{ animation: none; }
+  .ai-page__inner, .ai-msg__bubble{ scroll-behavior: auto; }
+}

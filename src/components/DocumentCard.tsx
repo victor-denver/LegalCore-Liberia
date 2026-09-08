@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { FileText, Gavel, ScrollText, BookOpen, Calendar, ArrowRight } from 'lucide-react';
 import type { LegalDocument } from '../data/legalData';
+import { ProvenanceBadge } from './Provenance';
 import './DocumentCard.css';
 
 const cfg = {
@@ -17,7 +18,7 @@ export default function DocumentCard({ doc }: { doc: LegalDocument }) {
     <Link to={`/document/${doc.id}`} className={`doc-card doc-card--${c.cls}`}>
       <div className="doc-card__header">
         <span className={`doc-tag doc-tag--${c.cls}`}><Icon size={12}/>{c.label}</span>
-        <span className="doc-card__year">{doc.year}</span>
+        <span style={{display:'inline-flex', gap:6, alignItems:'center'}}><ProvenanceBadge doc={doc} /><span className="doc-card__year">{doc.year}</span></span>
       </div>
       <h3 className="doc-card__title">{doc.title}</h3>
       <p className="doc-card__summary">{doc.summary}</p>

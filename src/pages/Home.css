@@ -45,7 +45,10 @@
 .helper { max-width: 1320px; margin: 12px auto 0; padding: 10px 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; background: #002868; color: white; border-radius: 10px; font-size: 13px; }
 .helper em { background: rgba(255,255,255,0.16); padding: 2px 6px; border-radius: 6px; font-style: normal; font-weight: 700; }
 .helper strong { color: white; }
-@media (max-width: 700px) { .pro-banner, .helper { margin-left: 16px; margin-right: 16px; } }
+.eco-banner { max-width: 1320px; margin: 12px auto 0; padding: 12px 16px; display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap; background: #0A2E22; color: white; border: 1px solid #0A2E22; border-radius: 12px; font-size: 13px; font-weight: 600; text-align: center; }
+.eco-banner strong { color: #D4AF17; }
+.eco-banner:hover { background: #0F3A2B; }
+@media (max-width: 700px) { .pro-banner, .helper, .eco-banner { margin-left: 16px; margin-right: 16px; } }
 
 /* CARDS GRID — 3 per row like screenshot */
 .cards {
@@ -55,9 +58,15 @@
 .card {
   position: relative; display: flex; flex-direction: column; gap: 12px;
   padding: 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; overflow: hidden;
-  transition: transform 150ms ease, border-color 150ms ease;
+  transition: transform 220ms cubic-bezier(0.16,1,0.3,1), border-color 150ms ease, box-shadow 220ms ease;
+  animation: fadeIn 0.5s ease forwards;
 }
-.card:hover { transform: translateY(-2px); border-color: var(--border-strong); }
+.card:nth-child(1){ animation-delay: 0.05s; }
+.card:nth-child(2){ animation-delay: 0.1s; }
+.card:nth-child(3){ animation-delay: 0.15s; }
+.card:nth-child(4){ animation-delay: 0.2s; }
+.card:nth-child(5){ animation-delay: 0.25s; }
+.card:hover { transform: translateY(-4px) scale(1.01); border-color: var(--border-strong); box-shadow: 0 12px 32px rgba(0,0,0,0.18); }
 .card__updated { position: absolute; left: 14px; top: 14px; z-index: 1; padding: 4px 8px; background: var(--bg-pill); border: 1px solid var(--border); border-radius: 9999px; font-size: 11px; font-weight: 700; color: var(--text-secondary); }
 
 .card__phone { margin-top: 28px; border-radius: 18px; overflow: hidden; border: 1px solid rgba(0,0,0,0.08); min-height: 220px; display: flex; flex-direction: column; }
