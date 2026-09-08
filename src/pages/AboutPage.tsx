@@ -54,7 +54,7 @@ export default function AboutPage(){
             <Link to="/browse" className="about-feature"><BookOpen size={20}/><h4>Browse by topic</h4><p>12 categories, from constitution to maritime.</p></Link>
             <Link to="/map" className="about-feature"><MapPin size={20}/><h4>Court map</h4><p>Every court in 15 counties — tap for directions.</p></Link>
             <div className="about-feature"><Gavel size={20}/><h4>Verified sources</h4><p>1847–2026, each doc dated, cited, verified.</p></div>
-            <div className="about-feature"><Clock3 size={20}/><h4>Fast on phone</h4><p>52kB, works in Duala or Harper, no app.</p></div>
+            <div className="about-feature"><Clock3 size={20}/><h4>Fast on phone</h4><p>Lightweight, works in Duala or Harper, no app install.</p></div>
           </div>
         </div>
       </section>
@@ -66,17 +66,6 @@ export default function AboutPage(){
             <h3>Liberia Flag — not French</h3>
             <p>11 red & white stripes for the 11 signers of independence, blue canton with white star for the Lone Star. We use it everywhere with pride 🇱🇷. French flag is vertical blue-white-red — not ours.</p>
           </div>
-        </div>
-      </section>
-
-      <section className="about-section">
-        <div className="about-container">
-          <h2 className="about-title">Documentation</h2>
-          <p style={{textAlign:'center', color:'var(--text-secondary)', marginBottom:16}}>Clear documentation on what we hold and how we capture it — cited, verified, and updated.</p>
-          <div style={{display:'flex', justifyContent:'center'}}>
-            <a href="/LegalCore_Liberia_Documentation.pdf" download className="about-btn about-btn--red" style={{textDecoration:'none'}}>Download PDF Documentation</a>
-          </div>
-          <p style={{textAlign:'center', fontSize:12, color:'var(--text-muted)', marginTop:10}}>12 pages — Cover, TOC, Executive Summary, Information Inventory, Data Capture (Sources → Collection → Processing → Storage → Updates), Verification, AI, Design, Tech Stack, Legal, Roadmap, Appendices.</p>
         </div>
       </section>
 

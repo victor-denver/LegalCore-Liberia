@@ -6,12 +6,11 @@ import './Home.css';
 
 export default function Home() {
 
-  const uiElements = [
-    'Statute Card', 'Case Card', 'Search Bar', 'Citation Pill', 'Filter Chips'
-  ];
-
-  const flows = [
-    'Search & Find', 'Ask AI & Verify', 'Browse & Filter', 'Read & Cite', 'Map & Locate'
+  const popular = [
+    { label: 'Land Rights Act 2018', to: '/search?q=Land%20Rights' },
+    { label: 'Article 20 — due process', to: '/search?q=Article%2020' },
+    { label: 'Ask the AI', to: '/ai' },
+    { label: 'Saved & briefs', to: '/saved' },
   ];
 
   const mocks = [
@@ -38,28 +37,29 @@ export default function Home() {
             </div>
           </div>
           <div className="mega__col">
-            <span className="mega__heading">Screens</span>
+            <span className="mega__heading">Explore</span>
             <div className="mega__list">
               <Link to="/search" className="mega__item">Search</Link>
               <Link to="/browse" className="mega__item">Browse</Link>
               <Link to="/map" className="mega__item">Court Map</Link>
               <Link to="/ai" className="mega__item">AI Assistant</Link>
-              <Link to="/search" className="mega__item">Document</Link>
+              <Link to="/compare" className="mega__item">Compare</Link>
             </div>
           </div>
           <div className="mega__col">
-            <span className="mega__heading">UI Elements</span>
+            <span className="mega__heading">ECOWAS</span>
             <div className="mega__list">
-              {uiElements.map(t=>(
-                <span key={t} className="mega__item">{t}</span>
-              ))}
+              <Link to="/west-africa" className="mega__item">West Africa</Link>
+              <Link to="/map" className="mega__item">Flag map</Link>
+              <Link to="/methodology" className="mega__item">Trust & sources</Link>
+              <Link to="/about" className="mega__item">About</Link>
             </div>
           </div>
           <div className="mega__col">
-            <span className="mega__heading">Flows</span>
+            <span className="mega__heading">Popular now</span>
             <div className="mega__list">
-              {flows.map(f=>(
-                <span key={f} className="mega__item">{f}</span>
+              {popular.map(p=>(
+                <Link key={p.label} to={p.to} className="mega__item">{p.label}</Link>
               ))}
             </div>
           </div>

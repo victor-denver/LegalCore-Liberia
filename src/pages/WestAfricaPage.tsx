@@ -224,7 +224,7 @@ export default function WestAfricaPage(){
         <p>{TOTAL_DOCS} instruments live • 12 states • 3 languages • 1847–2026</p>
         <div className="wa-cta__actions">
           <Link to="/about" className="wa-btn wa-btn--light">About LegalCore</Link>
-          <a href="/LegalCore_Liberia_Documentation.pdf" download className="wa-btn wa-btn--red">Download Liberia docs</a>
+          <Link to="/search" className="wa-btn wa-btn--red">Start searching</Link>
         </div>
         <span>Liberia is live today — free, no login. Other areas open after legal clearance; tap a flag above to preview each one.</span>
       </section>
