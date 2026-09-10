@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#0A2E22" />
     <title>LegalCore West Africa — ECOWAS Legal Intelligence Platform</title>
     <script>
-      (function(){ try{ var t=localStorage.getItem('legalcore-theme'); if(!t) t='dark'; document.documentElement.setAttribute('data-theme', t); }catch(e){ document.documentElement.setAttribute('data-theme','dark'); } })();
+      (function(){ document.documentElement.setAttribute('data-theme','dark'); try{ localStorage.setItem('legalcore-theme','dark'); }catch(e){} })();
     </script>
   </head>
   <body>

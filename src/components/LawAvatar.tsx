@@ -52,7 +52,7 @@ export default function LawAvatar({ speaking = false, thinking = false, size = 4
 
         {/* balancing beam + pans (tips while thinking) */}
         <g className="law-beam">
-          <circle cx="60" cy="28" r="3.4" fill="#D4AF17" stroke="#5B3D00" strokeWidth="1.6" />
+          <circle cx="60" cy="28" r="3.4" fill="#F7B733" stroke="#5B3D00" strokeWidth="1.6" />
           <line x1="60" y1="31" x2="60" y2="35" stroke="#5B3D00" strokeWidth="2.4" />
           <rect x="18" y="32" width="84" height="5.5" rx="2.75" fill="url(#law-gold)" stroke="#5B3D00" strokeWidth="1.8" />
           {/* left pan */}

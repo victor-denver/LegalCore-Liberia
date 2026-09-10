@@ -1,11 +1,13 @@
 import { useSearchParams, Link } from 'react-router-dom';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { SlidersHorizontal, X, Search, Sparkles, Clock3, Info } from 'lucide-react';
 import SearchBar from '../components/SearchBar';
 import DocumentCard from '../components/DocumentCard';
 import { documents, categories, type DocumentType, type LegalCategory } from '../data/legalData';
 import { ecowasCommunityDocs } from '../data/ecowasCommunity';
 import { useJurisdiction } from '../hooks/useJurisdiction';
+import { detectJurisdictionInQuery } from '../data/jurisdictions';
+import { rankDocuments } from '../utils/smartSearch';
 import './SearchPage.css';
 
 const searchCorpus = [...documents, ...ecowasCommunityDocs];
@@ -26,22 +28,31 @@ export default function SearchPage(){
   const [catFilter,setCatFilter]=useState<LegalCategory|'all'>((catParam as LegalCategory)||'all');
   const [showFilters,setShowFilters]=useState(false);
   const [sortBy,setSortBy]=useState<'relevance'|'newest'|'oldest'>('relevance');
-  const { code: activeCode, active: activeJ } = useJurisdiction();
+  const { code: activeCode, active: activeJ, setCode } = useJurisdiction();
+
+  useEffect(() => {
+    if (!qParam) return;
+    const named = detectJurisdictionInQuery(qParam);
+    if (named && named !== 'ECOWAS' && named !== activeCode) setCode(named);
+  }, [qParam, activeCode, setCode]);
 
   const results=useMemo(()=>{
     let f=[...searchCorpus];
     if(qParam){
-      const q=qParam.toLowerCase();
-      f=f.filter(d=> d.title.toLowerCase().includes(q) || d.summary.toLowerCase().includes(q) || d.tags.some(t=>t.toLowerCase().includes(q)) || d.body.toLowerCase().includes(q));
-      // Respect-area country first: active jurisdiction + ECOWAS community rank above comparative hits
-      const active = activeCode;
+      const named = detectJurisdictionInQuery(qParam);
+      const prefer = named && named !== 'ECOWAS' ? named : activeCode;
       const jRank = (d: typeof f[number]) => {
-        const j = (d as any).jurisdiction as string | undefined ?? 'LR';
-        if (j === active) return 0;
+        const j = (d as { jurisdiction?: string }).jurisdiction ?? 'LR';
+        if (j === prefer) return 0;
         if (j === 'ECOWAS') return 1;
         return 2;
       };
-      f.sort((a,b)=> jRank(a) - jRank(b) || ((b.title.toLowerCase().includes(q) ? 1:0) - (a.title.toLowerCase().includes(q)?1:0)));
+      const ranked = rankDocuments(f, qParam);
+      f = [...ranked].sort((a, b) => {
+        const jr = jRank(a) - jRank(b);
+        if (jr !== 0) return jr;
+        return ranked.indexOf(a) - ranked.indexOf(b);
+      });
     }
     if(typeFilter!=='all') f=f.filter(d=>d.type===typeFilter);
     if(catFilter!=='all') f=f.filter(d=>d.category===catFilter);
@@ -58,12 +69,12 @@ export default function SearchPage(){
       <div className="search-header">
         <div className="search-header__inner">
           <h1 className="search-header__title">Search {activeJ.name} Law</h1>
-          <p className="search-header__sub">Type any word — we search titles, summaries and full text for you{activeJ.language === 'fr' ? ' — posez aussi en français' : activeJ.language === 'pt' ? ' — pergunte também em português' : ''}.</p>
+          <p className="search-header__sub">Type the way you talk — misspellings are fine. We match what you meant{activeJ.language === 'fr' ? ' — posez aussi en français' : activeJ.language === 'pt' ? ' — pergunte também em português' : ''}.</p>
           <div className="search-header__bar">
-            <SearchBar initialQuery={qParam} />
+            <SearchBar key={qParam} initialQuery={qParam} />
           </div>
           <div className="search-header__helper">
-            <Info size={12}/> Try: <Link to="/search?q=land%20rights">land rights</Link> • <Link to="/search?q=Article%2020">Article 20</Link> • <Link to="/search?q=maritime">maritime</Link>
+            <Info size={12}/> Try: <Link to="/search?q=criminal%20law%20in%20liber">criminal law in liber</Link> • <Link to="/search?q=land%20rights">land rights</Link> • <Link to="/search?q=Article%2020">Article 20</Link>
           </div>
 
           <div className="search-controls">
@@ -117,7 +128,7 @@ export default function SearchPage(){
             <div className="empty">
               <div className="empty__icon"><Search size={20}/></div>
               <h3>No results for “{qParam || 'filters'}”</h3>
-              <p>Try a simpler word, or ask AI in plain English.</p>
+              <p>Try a simpler word — even a misspelling like “liber” or “crimnal” should work — or ask AI.</p>
               <div className="empty__actions">
                 <button className="btn btn--dark" onClick={clear}>Clear filters</button>
                 <Link to="/ai" className="btn btn--red"><Sparkles size={14}/> Ask AI</Link>

@@ -7,10 +7,10 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
   useEffect(() => {
     const iv = setInterval(() => {
       setProgress(p => {
-        if (p >= 100) { clearInterval(iv); setTimeout(onDone, 300); return 100; }
-        return Math.min(100, p + Math.random()*18 + 6);
+        if (p >= 100) { clearInterval(iv); setTimeout(onDone, 400); return 100; }
+        return Math.min(100, p + Math.random() * 16 + 5);
       });
-    }, 120);
+    }, 130);
     return () => clearInterval(iv);
   }, [onDone]);
 
@@ -19,14 +19,14 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
       <div className="loading-flag" />
       <div className="loading-card">
         <img src="/logo/AmaraTech IT Logo (new) - dark bg.png" alt="AmaraTech" className="loading-logo" />
-        <h1>LegalCore Liberia</h1>
-        <p>Loading Liberia's laws — 1847 to 2026 • 590+ documents • 15 counties</p>
+        <h1>LegalCore West Africa</h1>
+        <p>Loading laws across 12 ECOWAS states — 590+ documents, offline ready</p>
         <div className="loading-bar">
           <div className="loading-bar__fill" style={{ width: `${progress}%` }} />
         </div>
-        <span className="loading-pct">{Math.round(progress)}% • Eh my man, small time o!</span>
-        <div className="loading-dots"><span/><span/><span/></div>
-        <span className="loading-sub">More valuable than ChatGPT — cited, Koloqua voice, offline ready 🇱🇷</span>
+        <span className="loading-pct">{Math.round(progress)}%</span>
+        <div className="loading-dots"><span /><span /><span /></div>
+        <span className="loading-sub">Cited sources • Ask the law • Pan-African law 🇱🇷</span>
       </div>
       <div className="loading-flag loading-flag--bottom" />
     </div>

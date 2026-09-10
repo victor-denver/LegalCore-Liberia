@@ -20,7 +20,11 @@ export default function MobileTabBar(){
           const active = t.match.some(p=> loc.pathname===p || (p==='/' && loc.pathname==='/west-africa'));
           return (
             <Link key={t.to} to={t.to} className={`tabbar__tab ${active?'tabbar__tab--active':''} ${t.special?'tabbar__tab--special':''}`}>
-              <span className="tabbar__icon"><Icon size={18} /></span>
+              <span className="tabbar__icon">
+                {t.special
+                  ? <img src="/avatar/4231e846-2f39-4ead-8f30-2be6701be53e.png" alt="" className="tabbar__avatar" />
+                  : <Icon size={18} />}
+              </span>
               <span className="tabbar__label">{t.label}</span>
             </Link>
           );

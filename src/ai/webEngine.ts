@@ -17,6 +17,7 @@
  */
 import type { LegalDocument } from '../data/legalData';
 import { getJurisdiction, detectJurisdictionInQuery, type EngineLanguage } from '../data/jurisdictions';
+import { correctToken, levenshtein, queryTokens } from '../utils/smartSearch';
 
 // ── Types ──────────────────────────────────────────────────────────────
 
@@ -294,6 +295,33 @@ export class LegalCoreWebEngine {
     };
   }
 
+  /** Map typos / prefixes onto indexed terms ("liber" → liberia, "crimnal" → criminal). */
+  private fuzzyExpand(terms: string[], lang: EngineLanguage): string[] {
+    void lang;
+    const out = new Set<string>(terms);
+    for (const t of terms) {
+      const fixed = stem(correctToken(t));
+      out.add(fixed);
+      out.add(t);
+      if (this.postings.has(t) || this.postings.has(fixed)) continue;
+      let added = 0;
+      for (const k of this.postings.keys()) {
+        if (added > 12) break;
+        if (k.length < 3) continue;
+        if (k.startsWith(t) || (t.length >= 4 && t.startsWith(k))) {
+          out.add(k);
+          added++;
+          continue;
+        }
+        if (t.length >= 4 && k[0] === t[0] && Math.abs(k.length - t.length) <= 2 && levenshtein(t, k) <= (t.length > 6 ? 2 : 1)) {
+          out.add(k);
+          added++;
+        }
+      }
+    }
+    return [...out];
+  }
+
   // ── Query ──
   query(rawQuery: string, topK = 4): EngineAnswer {
     const t0 = performance.now();
@@ -324,14 +352,15 @@ export class LegalCoreWebEngine {
     }
 
     const tokens = tokenize(q, j.language);
-    if (tokens.length === 0) {
+    const intentTokens = queryTokens(q);
+    if (tokens.length === 0 && intentTokens.length === 0) {
       return {
         content: `Try simpler words like *land*, *constitution*, *tax* — or ask in ${j.languageLabel}.`,
         sources: [], confidence: 0, latencyMs: performance.now() - t0,
         jurisdiction: effCode, detectedJurisdiction: mentioned, intent, isComparative: false, scores: [],
       };
     }
-    const expanded = expandTerms(tokens, j.localSynonyms);
+    const expanded = this.fuzzyExpand(expandTerms(tokens.length ? tokens : intentTokens.map((t) => stem(t)), j.localSynonyms), j.language);
 
     // Re-target index if the query names a different jurisdiction than trained.
     const useIndexFromOther = mentioned && mentioned !== this.trainedFor;
@@ -369,30 +398,35 @@ export class LegalCoreWebEngine {
         if (!d) return;
         let boost = 0;
         const titleNorm = normalize(d.title);
+        const catNorm = normalize(d.category.replace(/-/g, ' '));
         if (qNorm.length > 5 && (titleNorm.includes(qNorm) || qNorm.includes(titleNorm.slice(0, 40)))) boost += 8;
-        // Word-overlap on raw (unstemmed) title for precision
-        const qWords = qNorm.split(' ').filter((w) => w.length > 3);
+        const qWords = qNorm.split(' ').filter((w) => w.length > 2);
         const overlap = qWords.filter((w) => titleNorm.includes(w)).length;
         boost += overlap * 1.5;
+        if (qWords.some((w) => catNorm.includes(w) || w.includes(catNorm))) boost += 5;
+        if (d.tags.some((tag) => qWords.some((w) => normalize(tag).includes(w)))) boost += 3;
         if (year && d.year === year) boost += 3;
         if (article && normalize(`${d.title} ${d.summary} ${d.body}`).includes(`article ${article}`)) boost += 4;
         if (mentioned && d.jurisdiction === mentioned) boost += getJurisdiction(mentioned === 'ECOWAS' ? 'LR' : mentioned).jurisdictionBoost;
         if (!mentioned && d.jurisdiction === this.activeJurisdiction) boost += 2;
+        // Generated filler statutes share the same template — keep them out of the way of real instruments.
+        if (id.startsWith('gen-')) boost -= Math.max(8, s * 0.85);
         scores.set(id, s + boost);
       });
 
       const ranked = [...scores.entries()]
         .filter(([, s]) => s > 0)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, topK);
-      const sources = ranked.map(([id]) => byId.get(id)!).filter(Boolean);
-      const topScores = ranked.map(([, s]) => Math.round(s * 100) / 100);
+        .sort((a, b) => b[1] - a[1]);
+      const realFirst = ranked.filter(([id]) => !id.startsWith('gen-'));
+      const picked = (realFirst.length >= 2 ? realFirst : ranked).slice(0, topK);
+      const sources = picked.map(([id]) => byId.get(id)!).filter(Boolean);
+      const topScores = picked.map(([, s]) => Math.round(s * 100) / 100);
 
       // Confidence: saturating function of top score + margin + coverage.
       let confidence = 0;
-      if (ranked.length > 0) {
-        const top = ranked[0][1];
-        const second = ranked[1]?.[1] ?? 0;
+      if (picked.length > 0) {
+        const top = picked[0][1];
+        const second = picked[1]?.[1] ?? 0;
         const margin = top - second;
         confidence = (1 - 1 / (1 + top / 5)) * 0.75 + Math.min(0.15, margin / 40) + Math.min(0.1, (overlapCoverage(q, sources[0]) * 0.1));
         confidence = Math.max(0.05, Math.min(0.98, confidence));
@@ -404,7 +438,7 @@ export class LegalCoreWebEngine {
         sources.every((d) => d.jurisdiction !== effCode);
 
       const content = this.buildAnswer(q, intent, sources, {
-        confidence, effCode, mentioned, year, article, isComparative,
+        confidence, effCode, mentioned, year, article, isComparative, terms: expanded,
       });
 
       return {
@@ -425,7 +459,7 @@ export class LegalCoreWebEngine {
   // ── Grounded answer builder (framed in the area's language: EN/FR/PT) ──
   private buildAnswer(
     q: string, intent: QueryIntent, sources: EngineDoc[],
-    ctx: { confidence: number; effCode: string; mentioned: string | null; year: number | null; article: string | null; isComparative: boolean },
+    ctx: { confidence: number; effCode: string; mentioned: string | null; year: number | null; article: string | null; isComparative: boolean; terms: string[] },
   ): string {
     const effJ = getJurisdiction(ctx.effCode === 'ECOWAS' ? 'LR' : ctx.effCode);
     const lang = ctx.effCode === 'ECOWAS' ? 'en' : effJ.language;
@@ -443,6 +477,10 @@ export class LegalCoreWebEngine {
       return T.noMatch(q, jName) + `${list}` + T.foundationsNote;
     }
 
+    const primary = [...sources].sort((a, b) => Number(a.id.startsWith('gen-')) - Number(b.id.startsWith('gen-')))[0];
+    const related = sources.filter((d) => d.id !== primary.id).slice(0, 3);
+    const passages = extractPassages(primary, ctx.terms);
+
     const intentLine =
       intent === 'procedure' ? T.intentProcedure
       : intent === 'penalty' ? T.intentPenalty
@@ -450,9 +488,12 @@ export class LegalCoreWebEngine {
       : intent === 'comparison' ? T.intentComparison
       : T.intentGeneral(jName);
 
-    const bullets = sources
-      .map((d) => `**${d.title}** — *${d.date}* (${d.type}, ${d.jurisdiction})\n${d.summary}`)
-      .join('\n\n');
+    const quotes = passages.length
+      ? '\n' + passages.map((p) => `> ${p}`).join('\n\n') + '\n'
+      : '';
+    const also = related.length
+      ? T.alsoOnPoint + related.map((d) => `• **${d.title}** (${d.year})`).join('\n')
+      : '';
 
     const mentionedName = ctx.mentioned === 'ECOWAS' ? T.ecowasName : ctx.mentioned ? getJurisdiction(ctx.mentioned).name : '';
     const switchNote =
@@ -465,9 +506,18 @@ export class LegalCoreWebEngine {
       : '';
 
     const lowNote = lowConf ? T.lowNote(Math.round(ctx.confidence * 100)) : '';
-    const footer = T.footer(sources[0].title);
+    const footer = T.footer(primary.title);
 
-    return intentLine + bullets + switchNote + comparativeNote + lowNote + footer;
+    return (
+      intentLine +
+      T.primaryHit(primary.title, primary.year, primary.type, primary.summary) +
+      quotes +
+      also +
+      switchNote +
+      comparativeNote +
+      lowNote +
+      footer
+    );
   }
 
   /** Quick self-check: each probe query must return its expected doc in top-3. */
@@ -479,6 +529,33 @@ export class LegalCoreWebEngine {
     }
     return { passed: probes.length - failures.length, total: probes.length, failures };
   }
+}
+
+function extractPassages(doc: EngineDoc, terms: string[], limit = 2): string[] {
+  const text = (doc.body || doc.summary || '').replace(/\r/g, '');
+  const chunks = text
+    .split(/\n+/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 50 && !/^[A-Z0-9 \-—–,()]{12,}$/.test(s) && !/^\([a-zivx]+\)\s/i.test(s));
+  const needles = terms.map((t) => t.toLowerCase()).filter((t) => t.length > 2);
+  const scored = chunks
+    .map((chunk) => {
+      const n = normalize(chunk);
+      let hits = 0;
+      for (const t of needles) if (n.includes(t)) hits++;
+      return { chunk, hits };
+    })
+    .filter((x) => x.hits > 0)
+    .sort((a, b) => b.hits - a.hits || a.chunk.length - b.chunk.length);
+
+  const out: string[] = [];
+  for (const { chunk } of scored) {
+    if (out.length >= limit) break;
+    const clip = chunk.length > 320 ? `${chunk.slice(0, 317)}…` : chunk;
+    if (!out.some((p) => p.slice(0, 48) === clip.slice(0, 48))) out.push(clip);
+  }
+  if (!out.length && doc.summary) out.push(doc.summary);
+  return out;
 }
 
 function overlapCoverage(q: string, top?: EngineDoc): number {
@@ -530,6 +607,8 @@ interface AnswerStrings {
   intentDefinition: string;
   intentComparison: string;
   intentGeneral: (jName: string) => string;
+  primaryHit: (title: string, year: number, type: string, summary: string) => string;
+  alsoOnPoint: string;
   switchNote: (asked: string, workspace: string) => string;
   comparativeNote: (jName: string, phase: string) => string;
   lowNote: (pct: number) => string;
@@ -547,7 +626,10 @@ const ANSWER_STRINGS: Record<'en' | 'fr' | 'pt', AnswerStrings> = {
     intentPenalty: `Here's what the cited instruments say on **penalties**:\n\n`,
     intentDefinition: `Here's the **legal meaning** from the cited instruments:\n\n`,
     intentComparison: `Here's a **comparison** grounded in the cited instruments:\n\n`,
-    intentGeneral: (jName) => `Here's what I found in **${jName}** — grounded, cited, no guessing:\n\n`,
+    intentGeneral: (jName) => `Here's the cited answer in **${jName}**:\n\n`,
+    primaryHit: (title, year, type, summary) =>
+      `**${title}** (${year} · ${type}) is the controlling instrument.\n\n${summary}\n`,
+    alsoOnPoint: `\nAlso on point:\n`,
     switchNote: (asked, workspace) =>
       `\n\n_Jurisdiction note: you asked about **${asked}** — I answered from that area's training slice. Your workspace is still set to **${workspace}**._`,
     comparativeNote: (jName, phase) =>
@@ -566,7 +648,10 @@ const ANSWER_STRINGS: Record<'en' | 'fr' | 'pt', AnswerStrings> = {
     intentPenalty: `Voici ce que disent les instruments cités sur les **peines** :\n\n`,
     intentDefinition: `Voici le **sens juridique** selon les instruments cités :\n\n`,
     intentComparison: `Voici une **comparaison** fondée sur les instruments cités :\n\n`,
-    intentGeneral: (jName) => `Voici ce que j'ai trouvé en **${jName}** — fondé, cité, sans deviner :\n\n`,
+    intentGeneral: (jName) => `Voici la réponse citée en **${jName}** :\n\n`,
+    primaryHit: (title, year, type, summary) =>
+      `**${title}** (${year} · ${type}) est l'instrument principal.\n\n${summary}\n`,
+    alsoOnPoint: `\nAussi pertinents :\n`,
     switchNote: (asked, workspace) =>
       `\n\n_Note de juridiction : vous avez demandé **${asked}** — j'ai répondu depuis la tranche de cette zone. Votre espace reste réglé sur **${workspace}**._`,
     comparativeNote: (jName, phase) =>
@@ -585,7 +670,10 @@ const ANSWER_STRINGS: Record<'en' | 'fr' | 'pt', AnswerStrings> = {
     intentPenalty: `Eis o que dizem os instrumentos citados sobre **penas**:\n\n`,
     intentDefinition: `Eis o **significado jurídico** segundo os instrumentos citados:\n\n`,
     intentComparison: `Eis uma **comparação** fundamentada nos instrumentos citados:\n\n`,
-    intentGeneral: (jName) => `Eis o que encontrei em **${jName}** — fundamentado, citado, sem adivinhar:\n\n`,
+    intentGeneral: (jName) => `Eis a resposta citada em **${jName}**:\n\n`,
+    primaryHit: (title, year, type, summary) =>
+      `**${title}** (${year} · ${type}) é o instrumento principal.\n\n${summary}\n`,
+    alsoOnPoint: `\nTambém pertinentes:\n`,
     switchNote: (asked, workspace) =>
       `\n\n_Nota de jurisdição: perguntou sobre **${asked}** — respondi a partir do recorte dessa zona. O seu espaço continua em **${workspace}**._`,
     comparativeNote: (jName, phase) =>

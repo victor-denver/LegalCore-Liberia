@@ -160,6 +160,7 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
     () => ({ dark: styles?.dark ?? defaultStyles.dark, light: styles?.light ?? defaultStyles.light }),
     [styles],
   );
+  const appliedThemeRef = useRef<Theme | null>(null);
 
   useImperativeHandle(ref, () => mapInstance as MapLibreGL.Map, [mapInstance]);
 
@@ -194,6 +195,7 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
     map.on('load', loadHandler);
     map.on('styledata', styleDataHandler);
     map.on('move', moveHandler);
+    appliedThemeRef.current = resolvedTheme;
     setMapInstance(map);
 
     return () => {
@@ -211,9 +213,10 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
 
   useEffect(() => {
     if (!mapInstance) return;
-    const nextStyle = resolvedTheme === 'dark' ? mapStyles.dark : mapStyles.light;
+    if (appliedThemeRef.current === resolvedTheme) return;
+    appliedThemeRef.current = resolvedTheme;
     setIsStyleLoaded(false);
-    mapInstance.setStyle(nextStyle);
+    mapInstance.setStyle(resolvedTheme === 'dark' ? mapStyles.dark : mapStyles.light);
   }, [resolvedTheme, mapStyles, mapInstance]);
 
   useEffect(() => {

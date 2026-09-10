@@ -63,7 +63,7 @@
   width: 8px; height: 8px; background: #22C55E; border: 1.5px solid white; border-radius: 50%;
   box-shadow: 0 0 0 2px rgba(34,197,94,0.2);
 }
-.law-avatar--speaking .law-avatar__dot { background: #D4AF17; box-shadow: 0 0 0 3px rgba(212,175,23,0.3); animation: pulse 0.8s infinite; }
+.law-avatar--speaking .law-avatar__dot { background: var(--sunrise-gold); box-shadow: 0 0 0 3px rgba(247,183,51,0.3); animation: pulse 0.8s infinite; }
 
 /* ── phones: kill the always-on idle motion, keep her alive on state ──
    (blink + talk-chomp + thinking-weigh still run; float/sway rest) */

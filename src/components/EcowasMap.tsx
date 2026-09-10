@@ -1,113 +1,118 @@
-import { useEffect } from 'react';
-import * as MapLibreGL from 'maplibre-gl';
-import { Map, MapMarker, MarkerContent, MarkerTooltip, MarkerLabel, useMap } from './MapLibre';
+import { useState } from 'react';
 import { JURISDICTIONS } from '../data/jurisdictions';
 import { useJurisdiction } from '../hooks/useJurisdiction';
+import { nationalLawCount } from './ui/heatmap-chart';
+import { ECOWAS_VIEW, ECOWAS_PATHS, ECOWAS_PINS } from '../data/ecowasSvg';
 import './EcowasMap.css';
 
-/** Capital coordinates [lng, lat] per jurisdiction. */
-const CAPITALS: Record<string, { lng: number; lat: number }> = {
-  LR: { lng: -10.8047, lat: 6.3106 },
-  SL: { lng: -13.2344, lat: 8.4844 },
-  GH: { lng: -0.187, lat: 5.6037 },
-  GM: { lng: -16.579, lat: 13.4549 },
-  NG: { lng: 7.4951, lat: 9.0579 },
-  SN: { lng: -17.4677, lat: 14.7167 },
-  CI: { lng: -5.2893, lat: 6.8276 },
-  BJ: { lng: 2.6289, lat: 6.4969 },
-  TG: { lng: 1.2123, lat: 6.1375 },
-  GN: { lng: -13.6785, lat: 9.537 },
-  CV: { lng: -23.5092, lat: 14.9177 },
-  GW: { lng: -15.1804, lat: 11.8037 },
-};
-
-/** Frame all 12 capitals on any screen size. */
-function FitECOWAS() {
-  const { map, isLoaded } = useMap();
-  useEffect(() => {
-    if (!map || !isLoaded) return;
-    map.fitBounds(
-      [
-        [-26, 3.2],
-        [10.5, 16.8],
-      ],
-      { padding: 36, duration: 800 },
-    );
-  }, [map, isLoaded]);
-  return null;
-}
-
-/** Zoom buttons that respect the app theme. */
-function MapControls() {
-  const { map, isLoaded } = useMap();
-  useEffect(() => {
-    if (!map || !isLoaded) return;
-    const nav = new MapLibreGL.NavigationControl({ showCompass: false, visualizePitch: false });
-    map.addControl(nav, 'top-right');
-    return () => {
-      try {
-        map.removeControl(nav);
-      } catch {
-        /* already removed */
-      }
-    };
-  }, [map, isLoaded]);
-  return null;
-}
+const FLAG = { w: 36, h: 24 };
 
 export default function EcowasMap() {
   const { code: activeCode, active, setCode } = useJurisdiction();
-  const countries = JURISDICTIONS.filter((j) => j.code !== 'ECOWAS' && CAPITALS[j.code]);
+  const [hover, setHover] = useState<string | null>(null);
+  const countries = JURISDICTIONS.filter((j) => j.code !== 'ECOWAS' && ECOWAS_PINS[j.code]);
+  const hoverJ = hover ? countries.find((c) => c.code === hover) : null;
 
   return (
     <div className="ecowas-map">
-      <Map
-        center={[-7.5, 10]}
-        zoom={3.5}
-        minZoom={2.5}
-        maxZoom={12}
-        scrollZoom={false}
+      <svg
+        className="ecowas-map__svg"
+        viewBox={`0 0 ${ECOWAS_VIEW.w} ${ECOWAS_VIEW.h}`}
+        role="img"
+        aria-label="ECOWAS member states. Gold is Liberia, the live library. Green states are queued."
       >
-        <FitECOWAS />
-        <MapControls />
-        {countries.map((c) => {
-          const pos = CAPITALS[c.code];
-          const isActive = activeCode === c.code;
+        <defs>
+          <clipPath id="ecowas-flag-clip" clipPathUnits="objectBoundingBox">
+            <rect x="0" y="0" width="1" height="1" rx="0.12" ry="0.16" />
+          </clipPath>
+          <filter id="ecowas-flag-shadow" x="-40%" y="-40%" width="180%" height="180%">
+            <feDropShadow dx="0" dy="1.5" stdDeviation="2" floodColor="#000" floodOpacity="0.45" />
+          </filter>
+        </defs>
+        <rect className="ecowas-map__ocean" width={ECOWAS_VIEW.w} height={ECOWAS_VIEW.h} />
+        {ECOWAS_PATHS.map((c) => {
+          const on = c.iso === activeCode;
+          const live = c.iso === 'LR';
           return (
-            <MapMarker
-              key={c.code}
-              longitude={pos.lng}
-              latitude={pos.lat}
-              onClick={() => setCode(c.code)}
+            <path
+              key={c.iso}
+              d={c.d}
+              fillRule="evenodd"
+              className={`ecowas-map__land ${live ? 'is-live' : 'is-queued'} ${on ? 'is-on' : ''}`}
+              onClick={() => setCode(c.iso)}
+              onMouseEnter={() => setHover(c.iso)}
+              onMouseLeave={() => setHover(null)}
             >
-              <MarkerContent>
-                <button
-                  className={`flag-pin ${isActive ? 'flag-pin--active' : ''} ${c.status === 'active' ? 'flag-pin--live' : ''}`}
-                  title={`${c.name} — tap to make it your area`}
-                  aria-label={`${c.name} flag marker`}
-                >
-                  <img
-                    src={`https://flagcdn.com/w80/${c.flag}.png`}
-                    srcSet={`https://flagcdn.com/w160/${c.flag}.png 2x`}
-                    alt={`${c.name} flag`}
-                    loading="lazy"
-                    draggable={false}
-                  />
-                  {c.status === 'active' && <span className="flag-pin__dot" />}
-                </button>
-              </MarkerContent>
-              <MarkerTooltip>
-                <strong>{c.name}</strong> • {c.capital} — {c.status === 'active' ? 'LIVE' : c.status === 'next' ? 'Next' : 'Queued'}
-              </MarkerTooltip>
-              {isActive && <MarkerLabel>{c.name}</MarkerLabel>}
-            </MapMarker>
+              <title>{c.name}</title>
+            </path>
           );
         })}
-      </Map>
+        {countries.map((c) => {
+          const pos = ECOWAS_PINS[c.code];
+          const isActive = activeCode === c.code;
+          const label = `${c.name}${nationalLawCount(c.code) > 0 ? ` — ${nationalLawCount(c.code)} laws live` : ' — queued'}`;
+          return (
+            <g
+              key={c.code}
+              className={`ecowas-map__flag ${isActive ? 'is-on' : ''} ${c.status === 'active' ? 'is-live' : ''}`}
+              transform={`translate(${pos.x} ${pos.y})`}
+              filter="url(#ecowas-flag-shadow)"
+              role="button"
+              tabIndex={0}
+              aria-label={label}
+              style={{ cursor: 'pointer' }}
+              onClick={() => setCode(c.code)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setCode(c.code); } }}
+              onMouseEnter={() => setHover(c.code)}
+              onMouseLeave={() => setHover(null)}
+            >
+              <title>{label}</title>
+              <rect
+                className="ecowas-map__flag-frame"
+                x={-FLAG.w / 2 - 1.4}
+                y={-FLAG.h / 2 - 1.4}
+                width={FLAG.w + 2.8}
+                height={FLAG.h + 2.8}
+                rx="4.5"
+              />
+              <image
+                href={`https://flagcdn.com/w80/${c.flag}.png`}
+                x={-FLAG.w / 2}
+                y={-FLAG.h / 2}
+                width={FLAG.w}
+                height={FLAG.h}
+                clipPath="url(#ecowas-flag-clip)"
+                preserveAspectRatio="xMidYMid slice"
+              />
+              {c.status === 'active' && (
+                <circle className="ecowas-map__flag-dot" cx={FLAG.w / 2 - 1} cy={-FLAG.h / 2 + 1} r="4.2" />
+              )}
+            </g>
+          );
+        })}
+      </svg>
+
+      {hoverJ && (
+        <div className="ecowas-map__tip" role="status">
+          <strong>{hoverJ.name}</strong>
+          {nationalLawCount(hoverJ.code) > 0
+            ? ` · ${nationalLawCount(hoverJ.code).toLocaleString()} laws live`
+            : ' · queued · ECOWAS layer only'}
+        </div>
+      )}
+
+      <div className="ecowas-map__legend" aria-hidden="true">
+        <span><i className="ecowas-map__swatch is-live" /> Live</span>
+        <span><i className="ecowas-map__swatch is-queued" /> Queued</span>
+      </div>
+
       <div className="ecowas-map__chip" aria-live="polite">
         <img src={`https://flagcdn.com/w40/${active.flag}.png`} alt="" />
         <span>
-          Viewing <strong>{active.name}</strong> — tap any flag to switch areas
+          <strong>{active.name}</strong>
+          {nationalLawCount(active.code) > 0
+            ? ` · ${nationalLawCount(active.code).toLocaleString()} laws live`
+            : ' · national library not open yet'}
         </span>
       </div>
     </div>

@@ -1,43 +1,55 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
+@font-face {
+  font-family: 'Anak Paud';
+  src: url('/font/Anak Paud.otf') format('opentype'),
+       url('/font/Anak Paud.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* ═════════════════════════════════════════
-   MOBBIN-DARK THEME — LegalCore
-   Inspired by screenshot: #0E0E0E / #1C1C1E / white bold
-   Liberia accent: red #BF0A30  blue #002868
-   ═════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   DESIGN SYSTEM — LegalCore West Africa
+   Warm palette · Minimal chrome · Editorial type
+   ══════════════════════════════════════════ */
 :root {
   --liberia-red: #BF0A30;
   --liberia-blue: #002868;
 
-  --bg: #0E0E0E;
-  --bg-elevated: #141414;
-  --bg-card: #1A1A1A;
-  --bg-card-hover: #202020;
-  --bg-pill: #1E1E1E;
-  --bg-pill-active: #2A2A2A;
-  --bg-input: #1E1E1E;
-  --bg-input-hover: #252525;
+  --kente-red: #E8543F;
+  --warm-green: #1B7A4A;
+  --warm-green-deep: #0F5233;
+  --sunrise-gold: #F7B733;
+  --sunrise-gold-light: #FDD872;
+  --terracotta: #E8543F;
+  --leaf-live: #7ED08C;
 
-  --border: #262626;
-  --border-strong: #2E2E2E;
+  --bg: #0D0D0B;
+  --bg-elevated: #111110;
+  --bg-card: #161614;
+  --bg-card-hover: #1C1B18;
+  --bg-pill: #1A1916;
+  --bg-pill-active: #22211C;
+  --bg-input: #161614;
+  --bg-input-hover: #1C1B18;
 
-  --text-primary: #FFFFFF;
-  --text-secondary: #A1A1AA;
-  --text-muted: #71717A;
-  --text-faint: #52525B;
+  --border: rgba(255,248,236,0.06);
+  --border-strong: rgba(255,248,236,0.1);
 
-  --accent: #FFFFFF;
-  --accent-red: #BF0A30;
+  --text-primary: #FFF8EC;
+  --text-secondary: #B8A88A;
+  --text-muted: #6A6050;
+  --text-faint: #4A4238;
+
+  --accent: #F7B733;
+  --accent-red: #E8543F;
   --accent-blue: #3B82F6;
 
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-full: 9999px;
+  --font-display: 'Anak Paud', 'Inter', sans-serif;
 
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -46,53 +58,53 @@
   color: var(--text-primary);
 }
 
-/* Light variant still available but default is dark mobbin */
-:root[data-theme="light"] {
-  --bg: #F5F5F5;
-  --bg-elevated: #FFFFFF;
-  --bg-card: #FFFFFF;
-  --bg-card-hover: #FAFAFA;
-  --bg-pill: #EAEAEA;
-  --bg-pill-active: #FFFFFF;
-  --bg-input: #EAEAEA;
-  --bg-input-hover: #E0E0E0;
-  --border: #E5E5E5;
-  --border-strong: #D4D4D4;
-  --text-primary: #0E0E0E;
-  --text-secondary: #52525B;
-  --text-muted: #71717A;
-  color-scheme: light;
+/* Light = still dark-premium. Never invert to cream cards. */
+:root[data-theme="light"],
+:root[data-theme="dark"] {
+  color-scheme: dark;
 }
-:root[data-theme="dark"] { color-scheme: dark; }
 
 html { scroll-behavior: smooth; }
-body { min-height: 100vh; overflow-x: hidden; background: var(--bg); color: var(--text-primary); line-height: 1.5; }
+body { min-height: 100vh; overflow-x: hidden; background: var(--bg); color: var(--text-primary); line-height: 1.55; }
 #root { min-height: 100vh; display: flex; flex-direction: column; }
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
 input { font-family: inherit; outline: none; border: none; background: none; color: inherit; }
-::selection { background: var(--liberia-blue); color: white; }
-::-webkit-scrollbar { width: 6px; height: 6px; }
+::selection { background: var(--warm-green); color: #FFF8EC; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 999px; }
+::-webkit-scrollbar-thumb { background: rgba(255,248,236,0.08); border-radius: 999px; }
 
-/* Wide screens — stretch, not boxed */
-@media (min-width: 1536px) {
-  .wa-container, .about-container, .topbar__inner, .footer__inner, .mega__grid, .cards, .filterbar, .wa-hero__inner,
-  .search-header__inner, .search-results__inner, .browse-header__inner, .browse-content__inner,
-  .doc__inner, .ai-page__inner { max-width: 1480px !important; }
-}
-@media (min-width: 1920px) {
-  .wa-container, .about-container, .topbar__inner, .footer__inner, .mega__grid, .cards, .filterbar, .wa-hero__inner,
-  .search-header__inner, .search-results__inner, .browse-header__inner, .browse-content__inner,
-  .doc__inner, .ai-page__inner { max-width: 1600px !important; }
+/* Full-bleed — no boxed website. Edge padding only. */
+.wa-container, .about-container, .topbar__inner, .footer__inner,
+.mega__grid, .cards, .filterbar, .wa-hero__inner,
+.search-header__inner, .search-results__inner,
+.browse-header__inner, .browse-content__inner,
+.doc__inner, .ai-page__inner, .home, .cmp__inner,
+.method__inner, .saved__inner, .map-eco,
+.about-hero__inner {
+  max-width: none !important;
+  width: 100%;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 
-@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.mega, .search-header, .browse-header, .about-hero, .doc,
+.saved, .method, .cmp, .map-eco, .about-section, .about-cta,
+.search-results, .browse-content, .home .cards, .home .filterbar {
+  padding-left: 5vw !important;
+  padding-right: 5vw !important;
+}
+
+/* ══════════════════════════════════════════
+   ANIMATIONS
+   ══════════════════════════════════════════ */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInScale { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
 @keyframes float { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-6px);} }
 @keyframes pulse { 0%,100%{ opacity:1; transform: scale(1);} 50%{ opacity:0.8; transform: scale(1.04);} }
 @keyframes shimmer { 0%{ transform: translateX(-100%);} 100%{ transform: translateX(100%);} }
 @keyframes mapPulse { 0%{ transform: scale(0.9); opacity:0.7;} 50%{ transform: scale(1.15); opacity:0.35;} 100%{ transform: scale(0.9); opacity:0.7;} }
 @keyframes flagWave { 0%{ transform: skewX(-1deg);} 50%{ transform: skewX(1deg);} 100%{ transform: skewX(-1deg);} }
-.animate-in { animation: fadeIn 0.35s ease forwards; }
+.animate-in { animation: fadeIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
 .animate-float { animation: float 4s ease-in-out infinite; }

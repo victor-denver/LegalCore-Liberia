@@ -2,8 +2,8 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import type L from 'leaflet';
 import { MapPin, Search, Building2, Scale, GraduationCap, Landmark, Globe2 } from 'lucide-react';
 import { courtLocations, type CourtLocation } from '../data/legalData';
-import { JURISDICTIONS } from '../data/jurisdictions';
 import { useJurisdiction } from '../hooks/useJurisdiction';
+import { CountryCoverageHeatmap } from '../components/ui/heatmap-chart';
 import 'leaflet/dist/leaflet.css';
 import './MapPage.css';
 
@@ -25,14 +25,6 @@ const icons: Record<CourtLocation['type'], any> = {
   'law-school': GraduationCap,
 };
 
-function statusLabel(code: string, status: string, phase: string) {
-  void code;
-  if (status === 'active') return 'LIVE';
-  if (status === 'next') return 'Next';
-  return `Queued ${phase}`;
-}
-
-/* ── Liberia courts (Leaflet) — rendered only when its tab is active ── */
 function CourtsView() {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInst = useRef<L.Map | null>(null);
@@ -130,7 +122,6 @@ function CourtsView() {
 export default function MapPage() {
   const [tab, setTab] = useState<'ecowas' | 'courts'>('ecowas');
   const { code, active, setCode } = useJurisdiction();
-  const countries = JURISDICTIONS.filter((j) => j.code !== 'ECOWAS');
 
   return (
     <div className="map-tabs-page">
@@ -146,25 +137,23 @@ export default function MapPage() {
       {tab === 'ecowas' ? (
         <div className="map-eco">
           <div className="map-eco__head">
-            <h1>This is ECOWAS — 12 states, one map</h1>
+            <span className="map-eco__kicker">12 ECOWAS states</span>
+            <h1>West Africa, one map</h1>
             <p>
-              Every capital flies its flag. Tap a flag to make it your area — search, AI and voice follow.
-              Viewing <strong>{active.name}</strong>.
+              Gold is Liberia — the live library. Green states are queued; they still get ECOWAS community law.
+              Tap a country on the map. Viewing <strong>{active.name}</strong>.
             </p>
           </div>
-          <Suspense fallback={<div style={{ height: 420, display: 'grid', placeItems: 'center', color: '#6EE7B7', fontSize: 13 }}>Loading live map…</div>}>
-            <EcowasMap />
-          </Suspense>
-          <div className="map-countries">
-            {countries.map((c) => (
-              <button key={c.code} className={`map-country ${code === c.code ? 'on' : ''}`} onClick={() => setCode(c.code)}>
-                <img src={`https://flagcdn.com/w80/${c.flag}.png`} srcSet={`https://flagcdn.com/w160/${c.flag}.png 2x`} alt={`${c.name} flag`} loading="lazy" />
-                <span className="map-country__info"><strong>{c.name}</strong><small>{c.capital} • {c.languageLabel}</small></span>
-                <em className={`map-country__st map-country__st--${c.status}`}>{statusLabel(c.code, c.status, c.phase)}</em>
-              </button>
-            ))}
+          <div className="map-eco__stage">
+            <Suspense fallback={<div className="map-eco__fallback">Loading live map…</div>}>
+              <EcowasMap />
+            </Suspense>
           </div>
-          <p className="map-eco__note">Liberia&apos;s {courtLocations.length} court sites live under the <strong>Liberia courts</strong> tab. Other states&apos; court directories open with their corpora.</p>
+
+          <div className="map-eco__heat">
+            <CountryCoverageHeatmap activeCode={code} onSelectCountry={setCode} />
+          </div>
+          <p className="map-eco__note">Liberia&apos;s {courtLocations.length} court sites live under the <strong>Liberia courts</strong> tab.</p>
         </div>
       ) : (
         <CourtsView />

@@ -1,11 +1,13 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Search, Menu, X, Bookmark, Bell, Maximize2, Sparkles, Sun, Moon, GitCompare } from 'lucide-react';
+import { Search, Menu, X, Bookmark, Bell, Maximize2, Sparkles, GitCompare } from 'lucide-react';
 import MobileTabBar from './MobileTabBar';
+import AiDock from './AiDock';
 import { useState, useEffect, useMemo } from 'react';
 import { useTheme } from '../hooks/useTheme';
 import { useJurisdiction } from '../hooks/useJurisdiction';
 import { documents } from '../data/legalData';
 import { ecowasCommunityDocs } from '../data/ecowasCommunity';
+import { rankDocuments } from '../utils/smartSearch';
 import './Layout.css';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -14,7 +16,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
   const [q, setQ] = useState('');
-  const { toggle, isDark } = useTheme();
+  const { isDark } = useTheme();
   const { code: jurisCode, active: juris } = useJurisdiction();
   const totalInstruments = documents.length + ecowasCommunityDocs.length;
 
@@ -31,8 +33,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const filtered = useMemo(()=>{
     if(!q.trim()) return documents.slice(0,5);
-    const t=q.toLowerCase();
-    return documents.filter(d=> d.title.toLowerCase().includes(t) || d.tags.some(x=>x.toLowerCase().includes(t))).slice(0,5);
+    return rankDocuments(documents, q).slice(0,8);
   },[q]);
 
   return (
@@ -83,9 +84,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <small>{juris.status==='active' ? 'LIVE' : juris.phase}</small>
             </button>
             <button className="topbar__icon" aria-label="Saved library" title="Saved & briefs" onClick={()=>navigate('/saved')}><Bookmark size={16}/></button>
-            <button className="topbar__theme" onClick={toggle} aria-label="Toggle theme" title={isDark ? "Switch to light" : "Switch to dark"}>
-              {isDark ? <Sun size={16}/> : <Moon size={16}/>}
-            </button>
             <button className="topbar__icon" aria-label="Notifications"><Bell size={16}/></button>
             <span className="topbar__avatar">LC</span>
             <button className="topbar__menu" onClick={()=>setMobileOpen(!mobileOpen)} aria-label="Menu" aria-expanded={mobileOpen}>
@@ -117,10 +115,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="cmd-box" onClick={e=>e.stopPropagation()}>
             <div className="cmd-box__header">
               <Search size={16}/>
-              <input autoFocus placeholder={`Search ${juris.name} law — try Land Rights Act, OHADA, free movement`} value={q} onChange={e=>setQ(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter'&&filtered[0]){ navigate(`/document/${filtered[0].id}`); setCmdOpen(false);}}} />
+              <input autoFocus placeholder={`Search ${juris.name} law — misspellings are fine`} value={q} onChange={e=>setQ(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter'){ e.preventDefault(); if(q.trim()){ navigate(`/search?q=${encodeURIComponent(q.trim())}`); setCmdOpen(false);} }}} />
               <span className="cmd-esc">ESC</span>
             </div>
             <div className="cmd-box__list">
+              {q.trim() && (
+                <button className="cmd-item" onClick={()=>{ navigate(`/search?q=${encodeURIComponent(q.trim())}`); setCmdOpen(false);}}>
+                  <span className="cmd-tag cmd-tag--constitution">search</span>
+                  <span className="cmd-title">All results for “{q.trim()}”</span>
+                </button>
+              )}
               {filtered.map(d=>(
                 <button key={d.id} className="cmd-item" onClick={()=>{ navigate(`/document/${d.id}`); setCmdOpen(false);}}>
                   <span className={`cmd-tag cmd-tag--${d.type}`}>{d.type}</span>
@@ -133,6 +137,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       )}
 
       <main className="main-content">{children}</main>
+      <AiDock />
       <MobileTabBar />
 
       <footer className="footer">

@@ -34,7 +34,7 @@ export interface Jurisdiction {
 export const JURISDICTIONS: Jurisdiction[] = [
   {
     code: 'LR', name: 'Liberia', capital: 'Monrovia',
-    language: 'en', languageLabel: 'English + Koloqua',
+    language: 'en', languageLabel: 'English',
     tradition: 'common-law', traditionLabel: 'Common law (US-influenced)',
     status: 'active', flag: 'lr', phase: 'LIVE',
     jurisdictionBoost: 6,
@@ -51,7 +51,7 @@ export const JURISDICTIONS: Jurisdiction[] = [
       maritime: ['shipping', 'vessel', 'LiMA', 'port', 'flag state'],
       rights: ['human rights', 'TRC', 'discrimination', 'equality'],
     },
-    voiceNote: 'Koloqua ON — Liberian English attitude',
+    voiceNote: 'Liberian English',
   },
   {
     code: 'SL', name: 'Sierra Leone', capital: 'Freetown',
@@ -232,7 +232,19 @@ export const ACTIVE_JURISDICTIONS = JURISDICTIONS.filter((j) => j.status === 'ac
 
 /** Detect an explicitly named jurisdiction inside a query. */
 const ALIASES: Record<string, string> = {
-  liberia: 'LR', liberian: 'LR', monrovia: 'LR',
+  liberia: 'LR', liberian: 'LR', monrovia: 'LR', liber: 'LR', libria: 'LR',
+  'sierra leone': 'SL', freetown: 'SL', krio: 'SL',
+  ghana: 'GH', accra: 'GH', twi: 'GH', gahna: 'GH',
+  gambia: 'GM', banjul: 'GM',
+  nigeria: 'NG', abuja: 'NG', lagos: 'NG', nigeira: 'NG',
+  senegal: 'SN', dakar: 'SN', wolof: 'SN',
+  "cote d'ivoire": 'CI', 'cote divoire': 'CI', 'ivory coast': 'CI', abidjan: 'CI',
+  benin: 'BJ', 'porto-novo': 'BJ', cotonou: 'BJ',
+  togo: 'TG', lome: 'TG', 'lomé': 'TG',
+  guinea: 'GN', conakry: 'GN',
+  'cabo verde': 'CV', 'cape verde': 'CV', praia: 'CV',
+  'guinea-bissau': 'GW', bissau: 'GW',
+  ecowas: 'ECOWAS', ohada: 'ECOWAS', 'community court': 'ECOWAS',
   'sierra leone': 'SL', freetown: 'SL', krio: 'SL',
   ghana: 'GH', accra: 'GH', twi: 'GH',
   gambia: 'GM', banjul: 'GM',

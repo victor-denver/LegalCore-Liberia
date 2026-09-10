@@ -1,20 +1,45 @@
+/* ── Search Bar — Minimal ── */
 .search-bar { width: 100%; }
+
 .search-bar__field {
-  display: flex; align-items: center; gap: 10px;
-  background: var(--bg-input); border: 1px solid var(--border); border-radius: 9999px;
-  padding: 6px 6px 6px 14px; transition: all 150ms ease;
+  display: flex; align-items: center; gap: 12px;
+  background: rgba(255,248,236,0.03);
+  border: 1px solid rgba(255,248,236,0.06);
+  border-radius: 12px;
+  padding: 8px 8px 8px 18px;
+  transition: all 200ms ease;
 }
-.search-bar__field:focus-within { border-color: var(--text-primary); background: var(--bg-input-hover); }
+.search-bar__field:focus-within {
+  border-color: rgba(247,183,51,0.3);
+  background: rgba(255,248,236,0.05);
+}
+
 .search-bar__icon { color: var(--text-muted); flex-shrink: 0; }
-.search-bar__input { flex: 1; font-size: 14px; font-weight: 500; color: var(--text-primary); min-width: 0; }
+.search-bar__field:focus-within .search-bar__icon { color: var(--text-secondary); }
+
+.search-bar__input {
+  flex: 1; font-size: 15px; font-weight: 400;
+  color: var(--text-primary); min-width: 0;
+}
 .search-bar__input::placeholder { color: var(--text-muted); }
+
 .search-bar__btn {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 9px 14px; background: var(--text-primary); color: var(--bg); border-radius: 9999px;
-  font-size: 13px; font-weight: 700; flex-shrink: 0;
+  padding: 10px 20px;
+  background: var(--text-primary); color: var(--bg);
+  border-radius: 10px;
+  font-size: 13px; font-weight: 600; flex-shrink: 0;
+  transition: opacity 200ms ease;
 }
-:root[data-theme="light"] .search-bar__btn { background: #0E0E0E; color: white; }
-.search-bar__btn:hover { opacity: 0.9; }
-.search-bar--hero .search-bar__field { padding: 8px 8px 8px 16px; }
-.search-bar--hero .search-bar__input { font-size: 14px; }
-@media (max-width: 640px) { .search-bar__btn span { display: none; } }
+.search-bar__btn:hover { opacity: 0.85; }
+
+:root[data-theme="light"] .search-bar__btn { background: #1A1508; color: #FFF8EC; }
+
+.search-bar--hero .search-bar__field { padding: 10px 10px 10px 20px; }
+.search-bar--hero .search-bar__input { font-size: 16px; }
+.search-bar--hero .search-bar__btn { padding: 12px 24px; font-size: 14px; }
+
+@media (max-width: 640px) {
+  .search-bar__btn span { display: none; }
+  .search-bar__btn { padding: 10px 14px; }
+}

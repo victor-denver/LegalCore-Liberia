@@ -12,7 +12,7 @@ export default function AboutPage(){
           <img src="/logo/AmaraTech IT Logo (new) - dark bg.png" alt="AmaraTech" className="about-hero__logo" />
           <span className="about-hero__badge"><Scale size={12}/> About LegalCore Liberia • AmaraTech IT Solutions</span>
           <h1>Law for <span>every Liberian.</span></h1>
-          <p>LegalCore is the first <strong>complete, cited, and Koloqua-voiced</strong> library of Liberian law — from the 1847 Constitution to today's statutes. Built for students, market sellers, lawyers and chiefs — if you can tap, you can use it.</p>
+          <p>LegalCore is the first <strong>complete, cited library</strong> of Liberian law — from the 1847 Constitution to today's statutes. Built for students, market sellers, lawyers and chiefs — if you can tap, you can use it.</p>
           <div className="about-hero__stats">
             <span><strong>{stats.totalDocuments}</strong> laws</span>
             <span><strong>1847—2026</strong></span>
@@ -21,7 +21,7 @@ export default function AboutPage(){
           </div>
           <div className="about-hero__actions">
             <Link to="/search" className="about-btn about-btn--red">Search laws <ArrowRight size={14}/></Link>
-            <Link to="/ai" className="about-btn about-btn--light"><Sparkles size={14}/> Ask in Koloqua</Link>
+            <Link to="/ai" className="about-btn about-btn--light"><Sparkles size={14}/> Ask the law</Link>
           </div>
         </div>
       </section>
@@ -50,7 +50,7 @@ export default function AboutPage(){
           <h2 className="about-title">What you can do</h2>
           <div className="about-features">
             <Link to="/search" className="about-feature"><SearchIcon/><h4>Instant search</h4><p>Type any word — get laws in ~18ms, even with typos.</p></Link>
-            <Link to="/ai" className="about-feature"><Sparkles size={20}/><h4>Koloqua AI</h4><p>Ask in plain English or Koloqua, hear Liberia voice.</p></Link>
+            <Link to="/ai" className="about-feature"><Sparkles size={20}/><h4>Cited AI</h4><p>Ask in plain English. Every answer links to the full text.</p></Link>
             <Link to="/browse" className="about-feature"><BookOpen size={20}/><h4>Browse by topic</h4><p>12 categories, from constitution to maritime.</p></Link>
             <Link to="/map" className="about-feature"><MapPin size={20}/><h4>Court map</h4><p>Every court in 15 counties — tap for directions.</p></Link>
             <div className="about-feature"><Gavel size={20}/><h4>Verified sources</h4><p>1847–2026, each doc dated, cited, verified.</p></div>
@@ -75,7 +75,7 @@ export default function AboutPage(){
           <p>No sign-up. No fee. Just tap and go — like Facebook, but for law.</p>
           <div className="about-cta__actions">
             <Link to="/search" className="about-btn about-btn--red">Start searching</Link>
-            <Link to="/ai" className="about-btn about-btn--dark">Try Koloqua voice</Link>
+            <Link to="/ai" className="about-btn about-btn--dark">Ask LegalCore AI</Link>
           </div>
         </div>
       </section>
