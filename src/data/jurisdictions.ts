@@ -245,18 +245,6 @@ const ALIASES: Record<string, string> = {
   'cabo verde': 'CV', 'cape verde': 'CV', praia: 'CV',
   'guinea-bissau': 'GW', bissau: 'GW',
   ecowas: 'ECOWAS', ohada: 'ECOWAS', 'community court': 'ECOWAS',
-  'sierra leone': 'SL', freetown: 'SL', krio: 'SL',
-  ghana: 'GH', accra: 'GH', twi: 'GH',
-  gambia: 'GM', banjul: 'GM',
-  nigeria: 'NG', abuja: 'NG', lagos: 'NG',
-  senegal: 'SN', dakar: 'SN', wolof: 'SN',
-  "cote d'ivoire": 'CI', 'cote divoire': 'CI', 'ivory coast': 'CI', abidjan: 'CI',
-  benin: 'BJ', 'porto-novo': 'BJ', cotonou: 'BJ',
-  togo: 'TG', lome: 'TG', 'lomé': 'TG',
-  guinea: 'GN', conakry: 'GN',
-  'cabo verde': 'CV', 'cape verde': 'CV', praia: 'CV',
-  'guinea-bissau': 'GW', bissau: 'GW',
-  ecowas: 'ECOWAS', ohada: 'ECOWAS', 'community court': 'ECOWAS',
 };
 
 export function detectJurisdictionInQuery(query: string): string | null {
