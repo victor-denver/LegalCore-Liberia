@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck, MessageSquareWarning, Bell, Users, RefreshCw, Check, X, Eye, BarChart3, MessageSquareHeart, FilePlus2, Settings2 } from 'lucide-react';
+import { ShieldCheck, MessageSquareWarning, Bell, Users, RefreshCw, Check, X, Eye, BarChart3, MessageSquareHeart, FilePlus2, Settings2, Trash2, Loader2 } from 'lucide-react';
 import { supabase, type Profile } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { titleById, countryName } from './admin/shared';
@@ -57,6 +57,9 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | CorrectionRow['status']>('open');
+  /** Row awaiting a second click before its account is destroyed. */
+  const [confirmDel, setConfirmDel] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   const apply = useCallback((s: Snapshot) => {
     setErr(s.error);
@@ -86,6 +89,22 @@ export default function AdminPage() {
     const { error } = await supabase.from('profiles').update({ role }).eq('id', id);
     if (error) { setErr(error.message); return; }
     setUsers((p) => p.map((u) => (u.id === id ? { ...u, role } : u)));
+  };
+
+  /**
+   * Permanent. Runs through the admin_delete_user RPC because removing a row from
+   * auth.users needs privileges the browser does not have — the same guards (no
+   * self-delete, no deleting an admin) are enforced again in the database.
+   */
+  const deleteUser = async (id: string) => {
+    if (!supabase || id === user?.id) return;
+    setDeleting(id);
+    setErr(null);
+    const { error } = await supabase.rpc('admin_delete_user', { target: id });
+    setDeleting(null);
+    if (error) { setErr(error.message); return; }
+    setConfirmDel(null);
+    setUsers((p) => p.filter((u) => u.id !== id));
   };
 
   const visible = useMemo(() => (filter === 'all' ? corrections : corrections.filter((c) => c.status === filter)), [corrections, filter]);
@@ -180,8 +199,14 @@ export default function AdminPage() {
 
         {tab === 'users' && (
           <section>
+            <p className="admin-note">
+              Deleting an account is permanent and revokes their sign-in immediately. Their saved
+              laws and briefs go with it; their feedback, corrections and activity stay but are
+              detached from any name. You can't delete yourself, or an admin — set an admin back to
+              <strong> user</strong> first.
+            </p>
             <table className="admin-table">
-              <thead><tr><th>User</th><th>Email</th><th>Joined</th><th>Country</th><th>Who</th><th>Last seen</th><th>Role</th></tr></thead>
+              <thead><tr><th>User</th><th>Email</th><th>Joined</th><th>Country</th><th>Who</th><th>Last seen</th><th>Role</th><th></th></tr></thead>
               <tbody>
                 {users.map((u) => (
                   <tr key={u.id}>
@@ -199,6 +224,29 @@ export default function AdminPage() {
                         <option value="user">user</option>
                         <option value="admin">admin</option>
                       </select>
+                    </td>
+                    <td className="admin-del">
+                      {u.id === user?.id ? (
+                        <span className="admin-del__na" title="You cannot delete the account you are signed in with">—</span>
+                      ) : u.role === 'admin' ? (
+                        <span className="admin-del__na" title="Set this account to 'user' first — deleting a colleague should take two deliberate steps">—</span>
+                      ) : confirmDel === u.id ? (
+                        <span className="admin-del__confirm">
+                          <button
+                            className="admin-del__yes"
+                            onClick={() => void deleteUser(u.id)}
+                            disabled={deleting === u.id}
+                            title={`Permanently delete ${u.email ?? 'this account'}`}
+                          >
+                            {deleting === u.id ? <Loader2 size={12} className="spin" /> : <Check size={12} />} Delete
+                          </button>
+                          <button className="admin-del__no" onClick={() => setConfirmDel(null)} title="Cancel"><X size={12} /></button>
+                        </span>
+                      ) : (
+                        <button className="admin-del__btn" onClick={() => setConfirmDel(u.id)} title="Delete this account">
+                          <Trash2 size={13} />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}

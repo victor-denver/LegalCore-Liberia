@@ -270,3 +270,76 @@
   .cfg-row { flex-direction: column; }
   .admin-table th:nth-child(3), .admin-table td:nth-child(3) { display: none; }
 }
+
+/* ── Users tab: account deletion ──────────────────────────────── */
+
+.admin-note {
+  margin: 0 0 16px;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent-red);
+  border-radius: 8px;
+  background: var(--bg-card);
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.admin-note strong { color: var(--text-primary); }
+
+.admin-del { white-space: nowrap; text-align: right; }
+
+.admin-del__na { color: var(--text-faint); cursor: help; }
+
+.admin-del__btn {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text-faint);
+  cursor: pointer;
+  transition: color 140ms ease, border-color 140ms ease, background-color 140ms ease;
+}
+
+.admin-del__btn:hover {
+  color: var(--accent-red);
+  border-color: var(--accent-red);
+  background: rgba(194, 60, 40, 0.08);
+}
+
+.admin-del__confirm { display: inline-flex; gap: 6px; align-items: center; }
+
+.admin-del__yes,
+.admin-del__no {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  height: 28px;
+  padding: 0 9px;
+  border-radius: 7px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 140ms ease;
+}
+
+.admin-del__yes {
+  border: 1px solid var(--accent-red);
+  background: var(--accent-red);
+  color: #FFF6F4;
+}
+
+.admin-del__yes:hover:not(:disabled) { filter: brightness(1.1); }
+.admin-del__yes:disabled { opacity: 0.65; cursor: default; }
+
+.admin-del__no {
+  padding: 0 7px;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.admin-del__no:hover { color: var(--text-primary); background: var(--bg-card-hover); }

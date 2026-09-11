@@ -29,7 +29,10 @@ export type EventName =
   | 'nudge_shown'
   | 'nudge_clicked'
   | 'auth_gate_shown'
-  | 'country_changed';
+  | 'country_changed'
+  /** Written by the admin_delete_user function, not the client — listed so the
+   *  event vocabulary in the database is documented in one place. */
+  | 'user_deleted';
 
 interface Row {
   user_id: string | null;
