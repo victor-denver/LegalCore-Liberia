@@ -4,6 +4,8 @@ import { Maximize2, Send, X } from 'lucide-react';
 import { documents } from '../data/legalData';
 import { ecowasCommunityDocs } from '../data/ecowasCommunity';
 import { useJurisdiction } from '../hooks/useJurisdiction';
+import { useAuth } from '../hooks/useAuth';
+import { useAppConfigState } from '../hooks/useAppConfig';
 import { ensureEngineTrained, getWebEngine } from '../ai/webEngine';
 import './AiDock.css';
 
@@ -14,6 +16,8 @@ type Msg = { id: string; role: 'user' | 'assistant'; content: string };
 export default function AiDock() {
   const loc = useLocation();
   const { active } = useJurisdiction();
+  const { status, enabled } = useAuth();
+  const { cfg, ready } = useAppConfigState();
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
   const [typing, setTyping] = useState(false);
@@ -21,9 +25,14 @@ export default function AiDock() {
   const endRef = useRef<HTMLDivElement>(null);
   const engine = useMemo(() => getWebEngine(), []);
 
+  // The dock is a full AI on every page, so it honours the same gate as /ai —
+  // otherwise walling that route would achieve nothing.
+  const gated = enabled && ready && cfg.auth_required && status === 'signed-out';
+
   useEffect(() => {
+    if (gated) return; // No point indexing the corpus for someone who can't query it.
     ensureEngineTrained(documents, ecowasCommunityDocs, active.code);
-  }, [engine, active.code]);
+  }, [engine, active.code, gated]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -33,7 +42,7 @@ export default function AiDock() {
 
   const send = (text: string) => {
     const q = text.trim();
-    if (!q || typing) return;
+    if (!q || typing || gated) return;
     setInput('');
     setMessages((m) => [...m, { id: String(Date.now()), role: 'user', content: q }]);
     setTyping(true);
@@ -66,36 +75,56 @@ export default function AiDock() {
             </div>
           </div>
 
-          <div className="ai-dock__body">
-            {messages.length === 0 && (
-              <p className="ai-dock__empty">Ask a legal question. Answers are cited from the live corpus.</p>
-            )}
-            {messages.map((m) => (
-              <div key={m.id} className={`ai-dock__msg ai-dock__msg--${m.role}`}>
-                {m.content}
+          {gated ? (
+            <div className="ai-dock__gate">
+              <p>
+                <strong>Ask anything about the law.</strong>
+                Every answer quotes the instrument it came from. A free account unlocks the
+                AI and full-text search.
+              </p>
+              <Link
+                to={`/login?next=${encodeURIComponent(loc.pathname + loc.search)}&mode=signup`}
+                className="ai-dock__gate-cta"
+                onClick={() => setOpen(false)}
+              >
+                Create a free account
+              </Link>
+              <span className="ai-dock__gate-foot">Free, no card. Reading the law stays open.</span>
+            </div>
+          ) : (
+            <>
+              <div className="ai-dock__body">
+                {messages.length === 0 && (
+                  <p className="ai-dock__empty">Ask a legal question. Answers are cited from the live corpus.</p>
+                )}
+                {messages.map((m) => (
+                  <div key={m.id} className={`ai-dock__msg ai-dock__msg--${m.role}`}>
+                    {m.content}
+                  </div>
+                ))}
+                {typing && <div className="ai-dock__msg ai-dock__msg--assistant">Thinking…</div>}
+                <div ref={endRef} />
               </div>
-            ))}
-            {typing && <div className="ai-dock__msg ai-dock__msg--assistant">Thinking…</div>}
-            <div ref={endRef} />
-          </div>
 
-          <form
-            className="ai-dock__form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              send(input);
-            }}
-          >
-            <input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask about the law…"
-              autoFocus
-            />
-            <button type="submit" disabled={!input.trim() || typing} aria-label="Send">
-              <Send size={15} />
-            </button>
-          </form>
+              <form
+                className="ai-dock__form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  send(input);
+                }}
+              >
+                <input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Ask about the law…"
+                  autoFocus
+                />
+                <button type="submit" disabled={!input.trim() || typing} aria-label="Send">
+                  <Send size={15} />
+                </button>
+              </form>
+            </>
+          )}
         </div>
       )}
 

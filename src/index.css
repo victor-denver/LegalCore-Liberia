@@ -134,6 +134,8 @@
 :root[data-theme="light"] .admin-filter button.on,
 :root[data-theme="light"] .cal__badge,
 :root[data-theme="light"] .login__primary,
+:root[data-theme="light"] .gate__primary,
+:root[data-theme="light"] .ai-dock__gate-cta,
 :root[data-theme="light"] .certificate__seal,
 :root[data-theme="light"] .saved__cta,
 :root[data-theme="light"] .method__cta {

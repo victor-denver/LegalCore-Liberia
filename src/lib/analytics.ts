@@ -28,6 +28,7 @@ export type EventName =
   | 'feature_interest'
   | 'nudge_shown'
   | 'nudge_clicked'
+  | 'auth_gate_shown'
   | 'country_changed';
 
 interface Row {

@@ -9,6 +9,7 @@ export default function ConfigTab() {
   const [paywall, setPaywall] = useState(cfg.paywall_enabled);
   const [google, setGoogle] = useState(cfg.google_login_enabled);
   const [nudge, setNudge] = useState(cfg.nudge_after_views);
+  const [authReq, setAuthReq] = useState(cfg.auth_required);
   const [annText, setAnnText] = useState(cfg.announcement?.text ?? '');
   const [annHref, setAnnHref] = useState(cfg.announcement?.href ?? '');
   const [annTone, setAnnTone] = useState<'gold' | 'info' | 'red'>(cfg.announcement?.tone ?? 'gold');
@@ -24,6 +25,7 @@ export default function ConfigTab() {
       { key: 'paywall_enabled', value: paywall, updated_at: new Date().toISOString() },
       { key: 'nudge_after_views', value: Math.max(0, Math.floor(nudge)), updated_at: new Date().toISOString() },
       { key: 'google_login_enabled', value: google, updated_at: new Date().toISOString() },
+      { key: 'auth_required', value: authReq, updated_at: new Date().toISOString() },
       { key: 'announcement', value: announcement, updated_at: new Date().toISOString() },
     ];
     const { error } = await supabase.from('app_config').upsert(rows, { onConflict: 'key' });
@@ -58,6 +60,10 @@ export default function ConfigTab() {
 
       <section className="ins-card">
         <h3>Growth</h3>
+        <label className="cfg-toggle">
+          <input type="checkbox" checked={authReq} onChange={(e) => setAuthReq(e.target.checked)} />
+          <span><strong>Require an account to search and use the AI</strong><small>On = visitors must sign up before searching or asking the AI; their query is preserved and runs the moment they finish. Browsing and reading a document stay open either way, so shared links still work and the library stays indexable. Turn off if sign-ups are costing you more traffic than they earn.</small></span>
+        </label>
         <label className="cfg-field">Show sign-in nudge after N document reads (0 = immediately, 999 = never)
           <input type="number" min={0} max={999} value={nudge} onChange={(e) => setNudge(Number(e.target.value))} />
         </label>

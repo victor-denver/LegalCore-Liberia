@@ -18,6 +18,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import AdminPage from './pages/AdminPage';
 import PlansPage from './pages/PlansPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import AuthGate from './components/AuthGate';
 import LoadingScreen from './components/LoadingScreen';
 import { JurisdictionProvider } from './hooks/useJurisdiction';
 import { StoreProvider } from './hooks/useStore';
@@ -38,11 +39,11 @@ export default function App() {
       <Routes>
         <Route path="/" element={<WestAfricaPage />} />
         <Route path="/home" element={<Home />} />
-        <Route path="/search" element={<SearchPage />} />
+        <Route path="/search" element={<AuthGate feature="search"><SearchPage /></AuthGate>} />
         <Route path="/document/:id" element={<DocumentPage />} />
         <Route path="/browse" element={<BrowsePage />} />
         <Route path="/map" element={<MapPage />} />
-        <Route path="/ai" element={<AIAssistant />} />
+        <Route path="/ai" element={<AuthGate feature="ai"><AIAssistant /></AuthGate>} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/west-africa" element={<WestAfricaPage />} />
         <Route path="/saved" element={<SavedPage />} />

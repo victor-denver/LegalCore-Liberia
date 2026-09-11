@@ -75,5 +75,10 @@ export interface AppConfig {
   nudge_after_views: number;
   /** Show "Continue with Google" on the login page. Off until the Google OAuth client is configured. */
   google_login_enabled: boolean;
+  /**
+   * Require an account for search and the AI. Browsing and reading stay open either
+   * way, so the library is still indexable and a shared link still resolves.
+   */
+  auth_required: boolean;
 }
-export const DEFAULT_CONFIG: AppConfig = { paywall_enabled: false, announcement: null, nudge_after_views: 3, google_login_enabled: false };
+export const DEFAULT_CONFIG: AppConfig = { paywall_enabled: false, announcement: null, nudge_after_views: 3, google_login_enabled: false, auth_required: true };

@@ -186,3 +186,46 @@
     bottom: calc(96px + env(safe-area-inset-bottom));
   }
 }
+
+/* Sign-up prompt shown in place of the chat when app_config.auth_required is on. */
+.ai-dock__gate {
+  padding: 20px 18px 18px;
+  display: grid;
+  gap: 12px;
+  text-align: center;
+}
+
+.ai-dock__gate p {
+  margin: 0;
+  font-size: 0.83rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.ai-dock__gate strong {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 0.93rem;
+  color: var(--text-primary);
+}
+
+.ai-dock__gate-cta {
+  display: grid;
+  place-items: center;
+  height: 40px;
+  border-radius: 9px;
+  background: var(--sunrise-gold);
+  border: 1px solid var(--sunrise-gold);
+  color: #1A1508;
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: filter 140ms ease;
+}
+
+.ai-dock__gate-cta:hover { filter: brightness(1.07); }
+
+.ai-dock__gate-foot {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}

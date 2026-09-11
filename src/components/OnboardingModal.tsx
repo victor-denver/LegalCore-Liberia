@@ -70,7 +70,7 @@ export default function OnboardingModal() {
       <div className="ob-card animate-in" role="dialog" aria-modal="true" aria-labelledby="ob-title">
         <span className="ob-kicker">WELCOME</span>
         <h2 id="ob-title">Two quick questions so LegalCore fits you</h2>
-        <p className="ob-lead">We'll default every search, the AI and the map to your country. You can change it any time from the flag in the header.</p>
+        <p className="ob-lead">Please answer the two questions below. We'll default every search, the AI and the map to your country — you can change it any time from the flag in the header.</p>
 
         <div className="ob-section">
           <h3>Which country's law do you work with most?</h3>
