@@ -10,7 +10,7 @@
 /* ── Hero — Morphic-style split + image grid ── */
 .wa-hero {
   color: #fff;
-  background: #050505;
+  background: var(--bg);
   position: relative;
   overflow: hidden;
   min-height: 0;
@@ -33,7 +33,7 @@
   margin-bottom: 22px;
   padding: 5px 16px 5px 5px;
   border-radius: 999px;
-  background: #161616;
+  background: var(--bg-card);
   color: #c8c8c8;
   font-size: 13px;
   font-weight: 500;
@@ -103,7 +103,7 @@
 }
 
 .wa-hero__btn--ghost {
-  background: #1c1c1c;
+  background: var(--bg-card-hover);
   color: #fff;
 }
 
@@ -113,7 +113,7 @@
   gap: 14px;
   padding: 0 6vw 14px;
   font-size: 13px;
-  color: #7a7a7a;
+  color: var(--text-muted);
 }
 
 .wa-hero__made {
@@ -122,12 +122,12 @@
 }
 
 .wa-hero__strip a {
-  color: #8a8a8a;
+  color: var(--text-secondary);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
-.wa-hero__strip a:hover { color: #fff; }
+.wa-hero__strip a:hover { color: var(--text-primary); }
 
 .wa-hero__arrows {
   margin-left: auto;
@@ -139,13 +139,13 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #1a1a1a;
-  color: #fff;
+  background: var(--bg-pill);
+  color: var(--text-primary);
   display: grid;
   place-items: center;
 }
 
-.wa-hero__arrows button:hover { background: #2a2a2a; }
+.wa-hero__arrows button:hover { background: var(--bg-pill-active); }
 
 .wa-hero__track {
   display: flex;
@@ -155,8 +155,17 @@
   padding: 0 6vw 36px;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  scroll-behavior: smooth;
+  /* No scroll-behavior here on purpose: the auto-drift writes scrollLeft every
+     frame, and a smooth scroller would fight it. The arrows ask for smooth
+     explicitly instead. */
   mask-image: linear-gradient(90deg, transparent 0, #000 4%, #000 96%, transparent 100%);
+}
+
+/* One lap of the gallery. Rendered three times so the wrap point is never visible. */
+.wa-hero__loop {
+  display: flex;
+  gap: 10px;
+  flex: 0 0 auto;
 }
 
 .wa-hero__track::-webkit-scrollbar { display: none; }
@@ -179,7 +188,7 @@
   min-height: 0;
   border-radius: 16px;
   overflow: hidden;
-  background: #111;
+  background: var(--bg-card);
 }
 
 .wa-hero__tile img {
@@ -227,9 +236,9 @@
 
 /* ── ECOWAS Banner — clean strip below hero ── */
 .wa-ecowas-banner {
-  background: #0A0A09;
-  border-top: 1px solid rgba(255,248,236,0.04);
-  border-bottom: 1px solid rgba(255,248,236,0.04);
+  background: var(--bg);
+  border-top: 1px solid rgba(var(--ink),0.04);
+  border-bottom: 1px solid rgba(var(--ink),0.04);
   padding: 28px 5vw;
 }
 .wa-ecowas-banner__inner {
@@ -245,7 +254,7 @@
   font-size: 13px; font-weight: 500; color: var(--text-muted);
   letter-spacing: 0.02em;
 }
-.wa-ecowas-banner__sep { color: rgba(255,248,236,0.12); }
+.wa-ecowas-banner__sep { color: rgba(var(--ink),0.12); }
 @media (max-width: 640px) {
   .wa-ecowas-banner__inner { flex-direction: column; gap: 12px; }
   .wa-ecowas-banner__text { flex-wrap: wrap; justify-content: center; font-size: 11px; }
@@ -259,16 +268,16 @@
 }
 
 .wa-section--dark {
-  background: #0D0D0B;
-  color: #FFF8EC;
+  background: var(--bg);
+  color: var(--text-primary);
 }
 
 .wa-section--alt {
-  background: #111110;
+  background: var(--bg-elevated);
 }
 
 .wa-section--light {
-  background: #111110;
+  background: var(--bg-elevated);
 }
 
 .wa-container {
@@ -282,7 +291,7 @@
   font-size: clamp(32px, 4vw, 52px);
   font-weight: 700;
   letter-spacing: -0.03em;
-  color: #FFF8EC;
+  color: var(--text-primary);
   margin-bottom: 20px;
   line-height: 1.1;
 }
@@ -297,7 +306,7 @@
 }
 
 .wa-title--white {
-  color: #FFF8EC;
+  color: var(--text-primary);
 }
 
 /* ── Lead / body text ── */
@@ -331,7 +340,7 @@
 }
 
 .wa-section--dark .wa-callout {
-  background: rgba(255, 248, 236, 0.03);
+  background: rgba(var(--ink), 0.03);
   border-left-color: var(--sunrise-gold);
   color: #E5E0D0;
 }
@@ -345,8 +354,8 @@
 }
 
 .wa-card {
-  background: #141310;
-  border: 1px solid rgba(255,248,236,0.05);
+  background: var(--bg-elevated);
+  border: 1px solid rgba(var(--ink),0.05);
   border-radius: 20px;
   padding: 28px 24px;
   transition: transform 0.25s ease;
@@ -357,8 +366,8 @@
 }
 
 .wa-section--dark .wa-card {
-  background: #1A1916;
-  color: #FFF8EC;
+  background: var(--bg-pill);
+  color: var(--text-primary);
 }
 
 .wa-card__num {
@@ -375,7 +384,7 @@
   font-size: 16px;
   font-weight: 700;
   margin-bottom: 10px;
-  color: #FFF8EC;
+  color: var(--text-primary);
   line-height: 1.3;
 }
 
@@ -399,7 +408,7 @@
 }
 
 .wa-section--dark .wa-table {
-  background: #1A1916;
+  background: var(--bg-pill);
 }
 
 .wa-table__head,
@@ -436,8 +445,8 @@
 }
 
 .wa-mini {
-  background: #141310;
-  border: 1px solid rgba(255,248,236,0.05);
+  background: var(--bg-elevated);
+  border: 1px solid rgba(var(--ink),0.05);
   border-radius: 20px;
   padding: 28px 24px;
   transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), background 0.25s;
@@ -445,18 +454,18 @@
 
 .wa-mini:hover {
   transform: translateY(-3px);
-  background: #1A1916;
+  background: var(--bg-pill);
 }
 
 .wa-section--dark .wa-mini {
-  background: #141310;
+  background: var(--bg-elevated);
 }
 
 .wa-mini span {
   font-family: var(--font-sans);
   font-size: 42px;
   font-weight: 200;
-  color: #FFF8EC;
+  color: var(--text-primary);
   display: block;
   margin-bottom: 14px;
   line-height: 1;
@@ -467,11 +476,11 @@
   font-size: 15px;
   font-weight: 600;
   margin-bottom: 8px;
-  color: #FFF8EC;
+  color: var(--text-primary);
 }
 
 .wa-section--dark .wa-mini h4 {
-  color: #FFF8EC;
+  color: var(--text-primary);
 }
 
 .wa-mini p {
@@ -484,7 +493,7 @@
   margin-top: 20px;
   font-size: 13px;
   color: var(--text-muted);
-  background: rgba(255, 248, 236, 0.02);
+  background: rgba(var(--ink), 0.02);
   padding: 16px 20px;
   border-radius: 10px;
   line-height: 1.6;
@@ -536,7 +545,7 @@
 .wa-phase {
   padding: 32px 28px;
   position: relative;
-  background: #141310;
+  background: var(--bg-elevated);
   transition: background 0.2s;
 }
 
@@ -562,7 +571,7 @@
 
 .wa-phase--dark {
   background: var(--warm-green-deep);
-  color: #FFF8EC;
+  color: var(--text-primary);
 }
 
 .wa-phase span {
@@ -590,7 +599,7 @@
 }
 
 .wa-phase--dark p {
-  color: rgba(255, 248, 236, 0.75);
+  color: rgba(var(--ink), 0.75);
 }
 
 .wa-phase em {
@@ -640,7 +649,7 @@
 }
 
 .wa-work__card--icon {
-  background: #111110;
+  background: var(--bg-elevated);
   border-radius: 16px;
   padding: 32px 24px;
   text-align: center;
@@ -663,7 +672,7 @@
   font-family: var(--font-display);
   font-size: 18px;
   font-weight: 800;
-  color: #FFF8EC;
+  color: var(--text-primary);
   margin-top: 4px;
 }
 
@@ -728,7 +737,7 @@
   border-radius: 0;
   padding: 8px 0 32px;
   text-align: left;
-  border-top: 1px solid rgba(255,248,236,0.08);
+  border-top: 1px solid rgba(var(--ink),0.08);
 }
 
 .wa-metrics div.dark {
@@ -739,14 +748,14 @@
   font-family: var(--font-sans);
   font-size: clamp(48px, 6vw, 72px);
   font-weight: 200;
-  color: #FFF8EC;
+  color: var(--text-primary);
   display: block;
   line-height: 1;
   letter-spacing: -0.04em;
 }
 
 .wa-metrics div:not(.dark) span {
-  color: #FFF8EC;
+  color: var(--text-primary);
 }
 
 .wa-metrics p {
@@ -780,7 +789,7 @@
   font-size: 15px;
   line-height: 1.6;
   color: #8A7E68;
-  background: #141310;
+  background: var(--bg-elevated);
   position: relative;
 }
 
@@ -818,7 +827,7 @@
 /* ── CTA — clean, no patterns ── */
 .wa-cta {
   background: var(--warm-green-deep);
-  color: #FFF8EC;
+  color: var(--text-primary);
   padding: 100px 32px;
   text-align: center;
 }
@@ -832,7 +841,7 @@
 }
 
 .wa-cta p {
-  color: rgba(255, 248, 236, 0.5);
+  color: rgba(var(--ink), 0.5);
   margin-bottom: 32px;
   font-size: 16px;
   letter-spacing: 0.02em;
@@ -864,12 +873,12 @@
 }
 
 .wa-btn--light:hover {
-  box-shadow: 0 6px 24px rgba(255, 248, 238, 0.2);
+  box-shadow: 0 6px 24px rgba(var(--ink), 0.2);
 }
 
 .wa-btn--red {
   background: var(--kente-red);
-  color: #FFF8EC;
+  color: var(--text-primary);
 }
 
 .wa-btn--red:hover {
@@ -880,7 +889,7 @@
   display: block;
   margin-top: 20px;
   font-size: 13px;
-  color: rgba(255, 248, 236, 0.35);
+  color: rgba(var(--ink), 0.35);
 }
 
 /* ── Country chooser — logo-grid ── */
@@ -891,8 +900,8 @@
   align-items: baseline;
   padding: 16px 0 28px;
   margin-top: 8px;
-  border-top: 1px solid rgba(255,248,236,0.1);
-  border-bottom: 1px solid rgba(255,248,236,0.1);
+  border-top: 1px solid rgba(var(--ink),0.1);
+  border-bottom: 1px solid rgba(var(--ink),0.1);
   font-size: 13px;
   color: #8A7E68;
 }
@@ -905,7 +914,7 @@
 }
 
 .wa-country {
-  background: #161614;
+  background: var(--bg-card);
   border: none;
   border-radius: 14px;
   padding: 28px 16px 20px;
@@ -919,7 +928,7 @@
 }
 
 .wa-country:hover {
-  background: #1E1D1A;
+  background: var(--bg-pill-active);
   transform: translateY(-2px);
 }
 
@@ -933,7 +942,7 @@
 .wa-country strong {
   font-size: 13px;
   font-weight: 600;
-  color: #FFF8EC;
+  color: var(--text-primary);
   letter-spacing: -0.01em;
 }
 
@@ -947,8 +956,8 @@
 .wa-country--live > span { color: #7ED08C; }
 
 .wa-country--viewing {
-  background: #1E1D1A;
-  box-shadow: inset 0 0 0 1px rgba(255,248,236,0.18);
+  background: var(--bg-pill-active);
+  box-shadow: inset 0 0 0 1px rgba(var(--ink),0.18);
 }
 
 @media (max-width: 960px) {

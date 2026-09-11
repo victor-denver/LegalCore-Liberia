@@ -1,6 +1,8 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Building2, Tag, FileText, Gavel, ScrollText, BookOpen, Copy, Check, Printer, Share2, Hash, Sparkles, Clock3, ShieldCheck, ListTree, ExternalLink, Bookmark, BookmarkCheck, Briefcase, Quote, FileDown, ScanLine } from 'lucide-react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { track } from '../lib/analytics';
+import { bumpViewCount } from '../lib/nudge';
 import { documents } from '../data/legalData';
 import { ecowasCommunityDocs } from '../data/ecowasCommunity';
 import { ProvenanceBadge, CertificateCard } from '../components/Provenance';
@@ -29,6 +31,9 @@ export default function DocumentPage(){
   const navigate = useNavigate();
   const { toggleSaved, isSaved, addToBrief } = useStore();
   const citedBy=useMemo(()=> doc ? getCitedBy(doc, allDocs) : [],[doc]);
+  useEffect(() => {
+    if (doc) { track('doc_view', { doc_id: doc.id, type: doc.type, category: doc.category }); bumpViewCount(); }
+  }, [doc]);
   const headings = useMemo(()=> doc ? doc.body.split('\n').filter(l=> l && l===l.toUpperCase() && l.length>3 && !l.startsWith('(')).slice(0,8) : [],[doc]);
 
   if(!doc){
@@ -82,12 +87,12 @@ export default function DocumentPage(){
                 <button className="toolbar-btn toolbar-btn--primary" onClick={copyText}>{copied ? <Check size={14}/> : <Copy size={14}/>}{copied ? 'Copied!' : 'Copy text'}</button>
                 <button className="toolbar-btn" onClick={copyCite}>{copiedCite ? <Check size={14}/> : <Copy size={14}/>}{copiedCite ? 'Copied!' : 'Copy citation'}</button>
                 <button className="toolbar-btn" onClick={()=>window.print()}><Printer size={14}/> Print</button>
-                <button className="toolbar-btn toolbar-btn--pdf" disabled={pdfBusy} onClick={async()=>{ if(pdfBusy) return; setPdfBusy(true); try{ await exportDocumentPdf(doc); } finally{ setPdfBusy(false); } }}>{pdfBusy ? 'Making PDF…' : <><FileDown size={14}/> PDF</>}</button>
+                <button className="toolbar-btn toolbar-btn--pdf" disabled={pdfBusy} onClick={async()=>{ if(pdfBusy) return; setPdfBusy(true); track('doc_export', { doc_id: doc.id }); try{ await exportDocumentPdf(doc); } finally{ setPdfBusy(false); } }}>{pdfBusy ? 'Making PDF…' : <><FileDown size={14}/> PDF</>}</button>
                 <button className="toolbar-btn" onClick={()=> navigator.share ? navigator.share({title:doc.title, url:location.href}) : navigator.clipboard.writeText(location.href)}><Share2 size={14}/> Share</button>
                 <button
                   className={`toolbar-btn ${saved?'toolbar-btn--saved':''}`}
                   title={saved ? 'Saved — tap to remove' : 'Save to my library'}
-                  onClick={()=> toggleSaved(doc.id)}
+                  onClick={()=> { if (toggleSaved(doc.id) === 'saved') track('doc_save', { doc_id: doc.id }); }}
                 >{saved ? <BookmarkCheck size={14}/> : <Bookmark size={14}/>}{saved ? 'Saved' : 'Save'}</button>
                 <button
                   className="toolbar-btn"

@@ -10,9 +10,9 @@
   max-width: 380px; margin: 0 auto;
   display: flex; align-items: center; justify-content: space-around; gap: 2px;
   padding: 6px 8px;
-  background: rgba(10,10,9,0.95);
+  background: var(--bg-glass-strong);
   backdrop-filter: blur(24px) saturate(1.4);
-  border: 1px solid rgba(255,248,236,0.04);
+  border: 1px solid rgba(var(--ink),0.04);
   border-radius: 20px;
   box-shadow: 0 8px 40px rgba(0,0,0,0.5);
   pointer-events: auto;

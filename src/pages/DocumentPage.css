@@ -209,8 +209,8 @@
   align-items: center;
   gap: 8px;
   padding: 16px 0;
-  border-top: 1px solid rgba(255, 248, 236, 0.04);
-  border-bottom: 1px solid rgba(255, 248, 236, 0.04);
+  border-top: 1px solid rgba(var(--ink), 0.04);
+  border-bottom: 1px solid rgba(var(--ink), 0.04);
   margin-bottom: 24px;
 }
 
@@ -275,7 +275,7 @@
   align-items: center;
   gap: 10px;
   padding: 14px 24px;
-  border-bottom: 1px solid rgba(255, 248, 236, 0.04);
+  border-bottom: 1px solid rgba(var(--ink), 0.04);
 }
 
 .doc-paper__flag-img {
@@ -325,7 +325,7 @@
   padding: 12px 24px;
   font-size: 11px;
   color: var(--text-muted);
-  border-top: 1px solid rgba(255, 248, 236, 0.04);
+  border-top: 1px solid rgba(var(--ink), 0.04);
 }
 
 /* ── Citations ── */
@@ -477,7 +477,7 @@
 
 /* AI aside card */
 .doc-aside__card--ai {
-  background: linear-gradient(165deg, #141310 0%, #0F1A14 100%);
+  background: linear-gradient(165deg, var(--bg-elevated) 0%, var(--bg-card) 100%);
 }
 
 .doc-aside__ai-head {
@@ -556,7 +556,7 @@
   justify-content: space-between;
   padding: 6px 0;
   font-size: 13px;
-  border-bottom: 1px solid rgba(255, 248, 236, 0.04);
+  border-bottom: 1px solid rgba(var(--ink), 0.04);
 }
 
 .doc-aside__kv span {

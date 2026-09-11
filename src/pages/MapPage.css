@@ -35,7 +35,7 @@
 }
 
 .map-tabs button.on {
-  background: #161614;
+  background: var(--bg-card);
   color: var(--text-primary);
 }
 
@@ -66,7 +66,7 @@
   font-weight: 600;
   letter-spacing: -0.04em;
   margin: 0 0 10px;
-  color: #FFF8EC;
+  color: var(--text-primary);
 }
 
 .map-eco__head p {
@@ -88,8 +88,8 @@
   margin: 0 0 28px;
 }
 .map-coverage {
-  background: #161614;
-  border: 1px solid rgba(255,248,236,0.04);
+  background: var(--bg-card);
+  border: 1px solid rgba(var(--ink),0.04);
   border-radius: 16px;
   padding: 22px 22px 10px;
 }
@@ -98,7 +98,7 @@
   font-size: 16px;
   font-weight: 600;
   letter-spacing: -0.02em;
-  color: #FFF8EC;
+  color: var(--text-primary);
 }
 .map-coverage__head p {
   margin: 0 0 18px;
@@ -128,8 +128,8 @@
   text-align: left;
   cursor: pointer;
 }
-.map-coverage__row:hover { background: #1C1B18; }
-.map-coverage__row.on { background: #1C1B18; }
+.map-coverage__row:hover { background: var(--bg-card-hover); }
+.map-coverage__row.on { background: var(--bg-card-hover); }
 .map-coverage__row img {
   width: 28px; height: 18px;
   object-fit: cover; border-radius: 3px;
@@ -141,7 +141,7 @@
   display: block;
   height: 8px;
   border-radius: 999px;
-  background: rgba(255,248,236,0.06);
+  background: rgba(var(--ink),0.06);
   overflow: hidden;
 }
 .map-coverage__bar i {
@@ -156,7 +156,7 @@
   align-items: flex-end;
   font-size: 14px;
   font-weight: 650;
-  color: #FFF8EC;
+  color: var(--text-primary);
 }
 .map-coverage__n small { font-size: 10px; font-weight: 500; color: var(--text-muted); }
 
@@ -174,7 +174,7 @@
   place-items: center;
   color: var(--text-muted);
   font-size: 13px;
-  background: #0A0A09 url('/design-assets/west_africa_map.png') center / contain no-repeat;
+  background: var(--bg) url('/design-assets/west_africa_map.png') center / contain no-repeat;
   border-radius: 16px;
 }
 
@@ -444,7 +444,7 @@
 /* ── Detail panel ── */
 .map-detail {
   padding: 16px 20px;
-  border-top: 1px solid rgba(255, 248, 236, 0.04);
+  border-top: 1px solid rgba(var(--ink), 0.04);
 }
 
 .map-detail__top {

@@ -8,6 +8,8 @@ import { ecowasCommunityDocs } from '../data/ecowasCommunity';
 import { useJurisdiction } from '../hooks/useJurisdiction';
 import { detectJurisdictionInQuery } from '../data/jurisdictions';
 import { rankDocuments } from '../utils/smartSearch';
+import { track } from '../lib/analytics';
+import RequestLawButton from '../components/RequestLawButton';
 import './SearchPage.css';
 
 const searchCorpus = [...documents, ...ecowasCommunityDocs];
@@ -63,6 +65,13 @@ export default function SearchPage(){
 
   const hasFilters=typeFilter!=='all'||catFilter!=='all';
   const clear=()=>{setTypeFilter('all');setCatFilter('all');};
+
+  // Analytics: one row per distinct query (debounced so typing doesn't spam).
+  useEffect(() => {
+    if (!qParam.trim()) return;
+    const t = setTimeout(() => track('search', { q: qParam.trim(), results: results.length, country: activeCode }), 800);
+    return () => clearTimeout(t);
+  }, [qParam, results.length, activeCode]);
 
   return (
     <div className="search-page">
@@ -128,10 +137,11 @@ export default function SearchPage(){
             <div className="empty">
               <div className="empty__icon"><Search size={20}/></div>
               <h3>No results for “{qParam || 'filters'}”</h3>
-              <p>Try a simpler word — even a misspelling like “liber” or “crimnal” should work — or ask AI.</p>
+              <p>Try a simpler word — even a misspelling like “liber” or “crimnal” should work — or ask AI. If the law exists but we don't have it yet, tell us and we'll source it.</p>
               <div className="empty__actions">
                 <button className="btn btn--dark" onClick={clear}>Clear filters</button>
                 <Link to="/ai" className="btn btn--red"><Sparkles size={14}/> Ask AI</Link>
+                {qParam && <RequestLawButton query={qParam} country={activeCode} />}
               </div>
             </div>
           )}

@@ -21,8 +21,8 @@
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: #141310;
-  color: #FFF8EC;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -43,8 +43,8 @@
 }
 
 .ai-dock--open .ai-dock__fab {
-  background: #1A1916;
-  color: #FFF8EC;
+  background: var(--bg-pill);
+  color: var(--text-primary);
 }
 
 .ai-dock__avatar {
@@ -59,8 +59,8 @@
 .ai-dock__panel {
   width: min(380px, calc(100vw - 32px));
   height: min(560px, 70vh);
-  background: #111110;
-  border: 1px solid rgba(255,248,236,0.08);
+  background: var(--bg-elevated);
+  border: 1px solid rgba(var(--ink),0.08);
   border-radius: 20px;
   box-shadow: 0 24px 80px rgba(0,0,0,0.55);
   display: flex;
@@ -74,7 +74,7 @@
   justify-content: space-between;
   gap: 8px;
   padding: 14px 14px 12px 16px;
-  border-bottom: 1px solid rgba(255,248,236,0.06);
+  border-bottom: 1px solid rgba(var(--ink),0.06);
 }
 
 .ai-dock__brand {
@@ -88,7 +88,7 @@
   display: block;
   font-size: 13px;
   font-weight: 700;
-  color: #FFF8EC;
+  color: var(--text-primary);
 }
 
 .ai-dock__brand span {
@@ -111,7 +111,7 @@
   color: #8A7E68;
 }
 
-.ai-dock__icon:hover { color: #FFF8EC; background: rgba(255,248,236,0.05); }
+.ai-dock__icon:hover { color: var(--text-primary); background: rgba(var(--ink),0.05); }
 
 .ai-dock__body {
   flex: 1;
@@ -137,8 +137,8 @@
 
 .ai-dock__msg--user {
   align-self: flex-end;
-  color: #FFF8EC;
-  background: #1A1916;
+  color: var(--text-primary);
+  background: var(--bg-pill);
   padding: 10px 12px;
   border-radius: 14px 14px 4px 14px;
 }
@@ -152,17 +152,17 @@
   display: flex;
   gap: 8px;
   padding: 12px 14px 14px;
-  border-top: 1px solid rgba(255,248,236,0.06);
+  border-top: 1px solid rgba(var(--ink),0.06);
 }
 
 .ai-dock__form input {
   flex: 1;
-  background: #0A0A09;
-  border: 1px solid rgba(255,248,236,0.08);
+  background: var(--bg);
+  border: 1px solid rgba(var(--ink),0.08);
   border-radius: 12px;
   padding: 10px 12px;
   font-size: 13px;
-  color: #FFF8EC;
+  color: var(--text-primary);
 }
 
 .ai-dock__form input::placeholder { color: #6A6050; }

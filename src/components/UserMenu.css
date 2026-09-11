@@ -1,0 +1,37 @@
+.usermenu { position: relative; }
+.usermenu__btn { position: relative; overflow: visible; padding: 0; }
+.usermenu__btn img { width: 30px; height: 30px; border-radius: 8px; object-fit: cover; display: block; }
+.usermenu__admin-dot {
+  position: absolute; right: -3px; bottom: -3px; width: 10px; height: 10px; border-radius: 999px;
+  background: var(--sunrise-gold); border: 2px solid var(--bg);
+}
+.usermenu__signin {
+  display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 8px;
+  font-size: 12px; font-weight: 600; color: var(--text-secondary);
+  background: rgba(var(--ink),0.03); border: 1px solid rgba(var(--ink),0.06);
+  transition: border-color 200ms ease, color 200ms ease;
+}
+.usermenu__signin:hover { color: var(--text-primary); border-color: var(--border-strong); }
+
+.usermenu__panel {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 160; min-width: 240px;
+  padding: 6px; background: var(--bg-elevated); border: 1px solid rgba(var(--ink),0.08); border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  animation: fadeIn 0.18s cubic-bezier(0.16,1,0.3,1);
+}
+.usermenu__who { display: flex; flex-direction: column; gap: 2px; padding: 10px 10px 12px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.usermenu__who strong { font-size: 13px; }
+.usermenu__who small { font-size: 11.5px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.usermenu__sync { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; color: var(--leaf-live); margin-top: 6px; }
+.usermenu__panel a, .usermenu__panel > button {
+  display: flex; align-items: center; gap: 8px; width: 100%; padding: 9px 10px; border-radius: 8px;
+  font-size: 13px; color: var(--text-secondary); text-align: left;
+}
+.usermenu__panel a:hover, .usermenu__panel > button:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+.usermenu__adminlink { color: var(--sunrise-gold) !important; }
+.usermenu__foot { display: flex; align-items: center; gap: 5px; padding: 8px 10px 6px; font-size: 10.5px; color: var(--text-faint); }
+
+@media (max-width: 768px) {
+  .usermenu__signin span { display: none; }
+  .usermenu__signin { width: 34px; padding: 0; justify-content: center; }
+}

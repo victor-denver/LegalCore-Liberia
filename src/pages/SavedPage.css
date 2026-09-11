@@ -372,7 +372,7 @@
 .brief-sheet li {
   counter-increment: brief;
   padding: 16px 0;
-  border-bottom: 1px solid rgba(255, 248, 236, 0.04);
+  border-bottom: 1px solid rgba(var(--ink), 0.04);
 }
 
 .brief-sheet li::before {
@@ -416,7 +416,7 @@
 .brief-sheet footer {
   margin-top: 24px;
   padding-top: 16px;
-  border-top: 1px solid rgba(255, 248, 236, 0.04);
+  border-top: 1px solid rgba(var(--ink), 0.04);
 }
 
 .brief-sheet footer p {

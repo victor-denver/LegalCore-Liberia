@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { lazy, Suspense, useRef } from 'react';
+import { lazy, Suspense, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useJurisdiction } from '../hooks/useJurisdiction';
 import { documents, courtLocations } from '../data/legalData';
@@ -42,6 +42,16 @@ const HERO_COLS: HeroCol[] = [
   ]},
 ];
 
+/** Copies of the strip laid end to end. Three is enough that the seam is always
+ *  off-screen, even on very wide monitors. */
+const LOOPS = [0, 1, 2];
+/** Drift speed of the gallery, px/second. Slow enough to actually look at. */
+const DRIFT = 26;
+/** How far one arrow click travels. */
+const STEP = 380;
+/** Auto-scroll stays out of the way for this long after the reader takes over. */
+const HOLD_MS = 2600;
+
 // Heavy MapLibre GL chunk loads only when this page renders.
 const EcowasMap = lazy(() => import('../components/EcowasMap'));
 
@@ -53,6 +63,8 @@ export default function WestAfricaPage(){
   const { code: activeCode, setCode } = useJurisdiction();
 
   const gridRef = useRef<HTMLDivElement>(null);
+  const loopRef = useRef<HTMLDivElement>(null);
+  const holdRef = useRef<() => void>(() => {});
 
   const chooseCountry = (code: string, status: string) => {
     setCode(code.toUpperCase());
@@ -60,9 +72,85 @@ export default function WestAfricaPage(){
     navigate(status === 'active' ? '/search' : '/ai');
   };
 
-  const scrollHero = (dir: number) => {
-    gridRef.current?.scrollBy({ left: dir * 380, behavior: 'smooth' });
+  /** Width of one copy of the strip, including the gap before the next copy. */
+  const lapWidth = () => {
+    const track = gridRef.current;
+    const loop = loopRef.current;
+    if (!track || !loop) return 0;
+    const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+    return loop.offsetWidth + gap;
   };
+
+  const scrollHero = (dir: number) => {
+    const track = gridRef.current;
+    if (!track) return;
+    holdRef.current();
+    // Hop forward a whole lap before stepping back past the start, so the arrows
+    // are endless in both directions rather than hitting a wall at zero.
+    if (dir < 0 && track.scrollLeft < STEP) track.scrollLeft += lapWidth();
+    track.scrollBy({ left: dir * STEP, behavior: 'smooth' });
+  };
+
+  // Continuous drift. Yields to the reader: pauses on hover, on keyboard focus,
+  // while off-screen or on a hidden tab, and for a beat after any manual scroll.
+  useEffect(() => {
+    const track = gridRef.current;
+    const loop = loopRef.current;
+    if (!track || !loop) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    let hovered = false;
+    let offscreen = false;
+    let resumeAt = 0;
+    let last = 0;
+    let raf = 0;
+
+    const frame = (now: number) => {
+      raf = requestAnimationFrame(frame);
+      const idle = hovered || offscreen || document.hidden || now < resumeAt;
+      if (idle) { last = now; return; }
+      if (!last) { last = now; return; }
+      // Clamp the delta so returning to a backgrounded tab doesn't lurch.
+      const dt = Math.min(now - last, 48) / 1000;
+      last = now;
+
+      track.scrollLeft += DRIFT * dt;
+      const lap = loop.offsetWidth + (parseFloat(getComputedStyle(track).columnGap) || 0);
+      if (lap > 0 && track.scrollLeft >= lap) track.scrollLeft -= lap;
+    };
+    raf = requestAnimationFrame(frame);
+
+    const hold = () => { resumeAt = performance.now() + HOLD_MS; };
+    holdRef.current = hold;
+
+    const enter = () => { hovered = true; };
+    const leave = () => { hovered = false; };
+
+    track.addEventListener('mouseenter', enter);
+    track.addEventListener('mouseleave', leave);
+    track.addEventListener('focusin', enter);
+    track.addEventListener('focusout', leave);
+    track.addEventListener('touchstart', hold, { passive: true });
+    track.addEventListener('wheel', hold, { passive: true });
+
+    const io = new IntersectionObserver(
+      ([entry]) => { offscreen = !entry.isIntersecting; },
+      { threshold: 0 },
+    );
+    io.observe(track);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      holdRef.current = () => {};
+      track.removeEventListener('mouseenter', enter);
+      track.removeEventListener('mouseleave', leave);
+      track.removeEventListener('focusin', enter);
+      track.removeEventListener('focusout', leave);
+      track.removeEventListener('touchstart', hold);
+      track.removeEventListener('wheel', hold);
+      io.disconnect();
+    };
+  }, []);
 
   return (
     <div className="wa">
@@ -94,12 +182,21 @@ export default function WestAfricaPage(){
         </div>
 
         <div className="wa-hero__track" ref={gridRef}>
-          {HERO_COLS.map((col, i) => (
-            <div key={i} className={`wa-hero__col wa-hero__col--${col.width}`}>
-              {col.tiles.map((tile) => (
-                <figure key={tile.src} className="wa-hero__tile">
-                  <img src={tile.src} alt={tile.alt} />
-                </figure>
+          {LOOPS.map((copy) => (
+            <div
+              key={copy}
+              className="wa-hero__loop"
+              ref={copy === 0 ? loopRef : undefined}
+              aria-hidden={copy > 0 || undefined}
+            >
+              {HERO_COLS.map((col, i) => (
+                <div key={i} className={`wa-hero__col wa-hero__col--${col.width}`}>
+                  {col.tiles.map((tile) => (
+                    <figure key={tile.src} className="wa-hero__tile">
+                      <img src={tile.src} alt={copy === 0 ? tile.alt : ''} />
+                    </figure>
+                  ))}
+                </div>
               ))}
             </div>
           ))}

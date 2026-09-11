@@ -46,11 +46,11 @@
 .maplibregl-ctrl-group {
   border-radius: 10px !important; overflow: hidden;
   box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
-  border: 1px solid rgba(255,248,236,0.06) !important;
+  border: 1px solid rgba(var(--ink),0.06) !important;
 }
 .maplibregl-ctrl-group button {
   background: rgba(10,10,9,0.9) !important;
   color: var(--text-secondary) !important;
-  border-bottom-color: rgba(255,248,236,0.04) !important;
+  border-bottom-color: rgba(var(--ink),0.04) !important;
 }
-.maplibregl-ctrl-group button:hover { background: #1A1916 !important; }
+.maplibregl-ctrl-group button:hover { background: var(--bg-pill) !important; }

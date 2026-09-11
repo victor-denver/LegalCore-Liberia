@@ -1,7 +1,14 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Search, Menu, X, Bookmark, Bell, Maximize2, Sparkles, GitCompare } from 'lucide-react';
+import { Search, Menu, X, Bookmark, Bell, Maximize2, Sparkles, GitCompare, LogIn, ShieldCheck, Sun, Moon } from 'lucide-react';
 import MobileTabBar from './MobileTabBar';
 import AiDock from './AiDock';
+import UserMenu from './UserMenu';
+import FeedbackWidget from './FeedbackWidget';
+import LoginNudge from './LoginNudge';
+import OnboardingModal from './OnboardingModal';
+import { useAppConfig } from '../hooks/useAppConfig';
+import { useAuth } from '../hooks/useAuth';
+import { track } from '../lib/analytics';
 import { useState, useEffect, useMemo } from 'react';
 import { useTheme } from '../hooks/useTheme';
 import { useJurisdiction } from '../hooks/useJurisdiction';
@@ -16,9 +23,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
   const [q, setQ] = useState('');
-  const { isDark } = useTheme();
+  const { isDark, toggle: toggleTheme } = useTheme();
   const { code: jurisCode, active: juris } = useJurisdiction();
   const totalInstruments = documents.length + ecowasCommunityDocs.length;
+  const cfg = useAppConfig();
+  const { isAdmin } = useAuth();
+  const [annClosed, setAnnClosed] = useState(false);
+
+  useEffect(() => { track('page_view'); }, [location.pathname]);
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
@@ -28,7 +40,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     window.addEventListener('keydown', h);
     return ()=> window.removeEventListener('keydown', h);
   }, []);
-  useEffect(()=> setMobileOpen(false), [location.pathname]);
+  // Navigating away closes the mobile menu. Adjusting state during render is the
+  // documented pattern for this; an effect would cost an extra render pass.
+  const [menuPath, setMenuPath] = useState(location.pathname);
+  if (location.pathname !== menuPath) {
+    setMenuPath(location.pathname);
+    if (mobileOpen) setMobileOpen(false);
+  }
+
   useEffect(()=> { document.body.style.overflow = cmdOpen||mobileOpen ? 'hidden' : ''; return ()=>{document.body.style.overflow='';}; },[cmdOpen,mobileOpen]);
 
   const filtered = useMemo(()=>{
@@ -51,6 +70,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </span>
       </div>
       <div className="liberia-flag-bar" aria-label="Liberia Flag" title="Liberia Flag — 11 red and white stripes, blue canton with star" />
+      {cfg.announcement?.text && !annClosed && (
+        <div className={`announce announce--${cfg.announcement.tone ?? 'gold'}`} role="status">
+          {cfg.announcement.href ? <a href={cfg.announcement.href}>{cfg.announcement.text}</a> : <span>{cfg.announcement.text}</span>}
+          <button onClick={() => setAnnClosed(true)} aria-label="Dismiss announcement"><X size={13} /></button>
+        </div>
+      )}
       <nav className="topbar">
         <div className="topbar__inner">
           <div className="topbar__left">
@@ -68,6 +93,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Link to="/compare" className={`topbar__link ${location.pathname==='/compare'?'topbar__link--active':''}`}>Compare</Link>
               <Link to="/ai" className={`topbar__link ${location.pathname==='/ai'?'topbar__link--active':''}`}>AI</Link>
               <Link to="/west-africa" className={`topbar__link ${(location.pathname==='/west-africa' || location.pathname==='/')?'topbar__link--active':''}`}>ECOWAS</Link>
+              {isAdmin && <Link to="/admin" className={`topbar__link topbar__link--admin ${location.pathname.startsWith('/admin')?'topbar__link--active':''}`}><ShieldCheck size={13}/> Admin</Link>}
             </div>
           </div>
 
@@ -85,7 +111,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </button>
             <button className="topbar__icon" aria-label="Saved library" title="Saved & briefs" onClick={()=>navigate('/saved')}><Bookmark size={16}/></button>
             <button className="topbar__icon" aria-label="Notifications"><Bell size={16}/></button>
-            <span className="topbar__avatar">LC</span>
+            <button
+              className="topbar__theme"
+              onClick={toggleTheme}
+              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+              title={isDark ? 'Light mode' : 'Dark mode'}
+            >
+              {isDark ? <Sun size={16}/> : <Moon size={16}/>}
+            </button>
+            <UserMenu />
             <button className="topbar__menu" onClick={()=>setMobileOpen(!mobileOpen)} aria-label="Menu" aria-expanded={mobileOpen}>
               {mobileOpen ? <X size={18}/> : <Menu size={18}/>}
             </button>
@@ -105,6 +139,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Link to="/methodology" onClick={()=>setMobileOpen(false)} className={location.pathname==='/methodology'?'active':''}>Methodology</Link>
               <Link to="/about" onClick={()=>setMobileOpen(false)} className={location.pathname==='/about'?'active':''}>About Us</Link>
               <Link to="/west-africa" onClick={()=>setMobileOpen(false)} className={(location.pathname==='/west-africa'||location.pathname==='/')?'active':''}>ECOWAS Plan</Link>
+              <Link to="/plans" onClick={()=>setMobileOpen(false)} className={location.pathname==='/plans'?'active':''}><Sparkles size={14}/> Plans & roadmap</Link>
+              {isAdmin && <Link to="/admin" onClick={()=>setMobileOpen(false)} className={`mobile-menu__admin ${location.pathname.startsWith('/admin')?'active':''}`}><ShieldCheck size={14}/> Admin dashboard</Link>}
+              <Link to="/login" onClick={()=>setMobileOpen(false)} className={location.pathname==='/login'?'active':''}><LogIn size={14}/> Sign in</Link>
+              <button className="mobile-menu__theme" onClick={toggleTheme}>
+                {isDark ? <><Sun size={14}/> Light mode</> : <><Moon size={14}/> Dark mode</>}
+              </button>
             </div>
           </>
         )}
@@ -139,6 +179,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <main className="main-content">{children}</main>
       <AiDock />
       <MobileTabBar />
+      <FeedbackWidget />
+      <LoginNudge />
+      <OnboardingModal />
 
       <footer className="footer">
         <div className="footer__flag" aria-label="Liberia Flag — 11 stripes red & white, blue canton with star" />
@@ -155,6 +198,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Link to="/methodology">Methodology</Link>
             <span>•</span>
             <Link to="/ai">AI Assistant</Link>
+            <span>•</span>
+            <Link to="/plans">Plans</Link>
           </div>
           <span>© {new Date().getFullYear()} LegalCore {juris.name} — AmaraTech • {totalInstruments} instruments • 1847–2026 • Viewing {jurisCode}{juris.status==='active' ? '' : ' (queued — ECOWAS + comparative)'}</span>
           <span>For everyone • Type anything → Press Enter</span>

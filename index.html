@@ -7,8 +7,18 @@
     <meta name="description" content="LegalCore West Africa — ECOWAS-wide legal intelligence: 12 states, 3 traditions, 590+ laws. Search primary law instantly." />
     <meta name="theme-color" content="#0A2E22" />
     <title>LegalCore West Africa — ECOWAS Legal Intelligence Platform</title>
+    <!-- Resolve the theme before first paint so there is no flash of the wrong one. -->
     <script>
-      (function(){ document.documentElement.setAttribute('data-theme','dark'); try{ localStorage.setItem('legalcore-theme','dark'); }catch(e){} })();
+      (function () {
+        var t = 'dark';
+        try {
+          var saved = localStorage.getItem('legalcore-theme');
+          if (saved === 'light' || saved === 'dark') t = saved;
+          else if (window.matchMedia('(prefers-color-scheme: light)').matches) t = 'light';
+        } catch (e) { /* private mode — fall back to dark */ }
+        document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.style.colorScheme = t;
+      })();
     </script>
   </head>
   <body>

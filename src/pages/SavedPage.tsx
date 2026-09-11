@@ -5,13 +5,15 @@ import { documents } from '../data/legalData';
 import { ecowasCommunityDocs } from '../data/ecowasCommunity';
 import { getProvenance, VERIFIED_ON } from '../data/provenance';
 import { useStore } from '../hooks/useStore';
+import { useAuth } from '../hooks/useAuth';
 import './SavedPage.css';
 
 const allDocs = [...documents, ...ecowasCommunityDocs];
 const byId = new Map(allDocs.map((d) => [d.id, d]));
 
 export default function SavedPage() {
-  const { savedIds, toggleSaved, brief, addToBrief, removeFromBrief, updateBriefNote, moveBrief, clearBrief } = useStore();
+  const { savedIds, toggleSaved, brief, addToBrief, removeFromBrief, updateBriefNote, moveBrief, clearBrief, syncing } = useStore();
+  const { enabled: authEnabled, status: authStatus } = useAuth();
   const [tab, setTab] = useState<'saved' | 'brief'>('saved');
   const [title, setTitle] = useState('Legal Memorandum');
   const [matter, setMatter] = useState('');
@@ -24,7 +26,11 @@ export default function SavedPage() {
         <header className="saved-head no-print">
           <div>
             <h1>My Library</h1>
-            <p>Saved authorities & briefs live on this device — free, no login, no limits.</p>
+            <p>
+              {authStatus === 'signed-in'
+                ? (syncing ? 'Syncing your library…' : 'Synced to your account — available on every device. Free, no limits.')
+                : <>Saved on this device — free, no login required, no limits.{authEnabled && <> <Link to="/login?next=/saved">Sign in</Link> to sync across devices.</>}</>}
+            </p>
           </div>
           <div className="saved-tabs">
             <button className={tab === 'saved' ? 'on' : ''} onClick={() => setTab('saved')}><Bookmark size={13} /> Saved ({savedIds.length})</button>

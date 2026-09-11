@@ -3,7 +3,7 @@
   display: flex; flex-direction: column; gap: 12px;
   padding: 24px;
   background: var(--bg-card);
-  border: 1px solid rgba(255,248,236,0.04);
+  border: 1px solid rgba(var(--ink),0.04);
   border-radius: 16px;
   transition: all 250ms cubic-bezier(0.16,1,0.3,1);
 }
@@ -23,7 +23,7 @@
 }
 .doc-tag--statute      { background: rgba(37,99,235,0.1);  color: #60A5FA; }
 .doc-tag--case         { background: rgba(190,18,60,0.1);  color: #FDA4AF; }
-.doc-tag--constitution { background: rgba(255,248,236,0.08); color: var(--text-primary); }
+.doc-tag--constitution { background: rgba(var(--ink),0.08); color: var(--text-primary); }
 .doc-tag--opinion      { background: rgba(22,163,74,0.1);  color: #86EFAC; }
 
 :root[data-theme="light"] .doc-tag--statute      { background: #EFF6FF; color: #1D4ED8; }
@@ -35,7 +35,7 @@
   font-size: 11px; font-weight: 600;
   padding: 3px 10px; border-radius: 6px;
   color: var(--text-muted);
-  background: rgba(255,248,236,0.04);
+  background: rgba(var(--ink),0.04);
 }
 
 .doc-card__title {
@@ -53,7 +53,7 @@
 .doc-card__footer {
   display: flex; justify-content: space-between; align-items: center;
   padding-top: 12px;
-  border-top: 1px solid rgba(255,248,236,0.04);
+  border-top: 1px solid rgba(var(--ink),0.04);
   margin-top: auto;
 }
 

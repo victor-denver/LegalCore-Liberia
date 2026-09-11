@@ -6,6 +6,7 @@ import { ecowasCommunityDocs } from '../data/ecowasCommunity';
 import { JURISDICTIONS, getJurisdiction } from '../data/jurisdictions';
 import { useJurisdiction } from '../hooks/useJurisdiction';
 import { getWebEngine, ensureEngineTrained, type TrainingStats } from '../ai/webEngine';
+import { track } from '../lib/analytics';
 import { ProvenanceBadge } from '../components/Provenance';
 import LawAvatar from '../components/LawAvatar';
 import './AIAssistant.css';
@@ -188,6 +189,7 @@ export default function AIAssistant() {
       setInput(''); setTyping(true); setStream('');
       // ── Query OUR engine (trained per-country), not an external API ──
       const result = engine.query(text);
+      track('ai_query', { q: text.trim(), confidence: result.confidence, sources: result.sources?.length ?? 0, jurisdiction: result.jurisdiction, comparative: result.isComparative });
       const out = result.content;
       let idx = 0;
       const iv = setInterval(() => {

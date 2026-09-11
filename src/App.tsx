@@ -12,9 +12,16 @@ import WestAfricaPage from './pages/WestAfricaPage';
 import SavedPage from './pages/SavedPage';
 import ComparePage from './pages/ComparePage';
 import MethodologyPage from './pages/MethodologyPage';
+import LoginPage from './pages/LoginPage';
+import AuthCallbackPage from './pages/AuthCallbackPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+import AdminPage from './pages/AdminPage';
+import PlansPage from './pages/PlansPage';
+import ProtectedRoute from './components/ProtectedRoute';
 import LoadingScreen from './components/LoadingScreen';
 import { JurisdictionProvider } from './hooks/useJurisdiction';
 import { StoreProvider } from './hooks/useStore';
+import { AuthProvider } from './hooks/useAuth';
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -24,6 +31,7 @@ export default function App() {
   }, []);
   if (loading) return <LoadingScreen onDone={() => setLoading(false)} />;
   return (
+    <AuthProvider>
     <JurisdictionProvider>
     <StoreProvider>
     <Layout>
@@ -40,9 +48,17 @@ export default function App() {
         <Route path="/saved" element={<SavedPage />} />
         <Route path="/compare" element={<ComparePage />} />
         <Route path="/methodology" element={<MethodologyPage />} />
+        <Route path="/plans" element={<PlansPage />} />
+
+        {/* Auth */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/auth/callback" element={<AuthCallbackPage />} />
+        <Route path="/auth/reset" element={<ResetPasswordPage />} />
+        <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminPage /></ProtectedRoute>} />
       </Routes>
     </Layout>
     </StoreProvider>
     </JurisdictionProvider>
+    </AuthProvider>
   );
 }

@@ -327,7 +327,7 @@
 
 /* AI card — clean dark with green accent */
 .card--ai {
-  background: linear-gradient(165deg, #141310 0%, #0F1A14 100%);
+  background: linear-gradient(165deg, var(--bg-elevated) 0%, var(--bg-card) 100%);
 }
 
 .card__ai {
