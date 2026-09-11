@@ -91,7 +91,8 @@ export default function LoginPage() {
 
         {!enabled && (
           <div className="login__alert">
-            Sign-in isn't configured yet. Add <code>VITE_SUPABASE_URL</code> and <code>VITE_SUPABASE_PUBLISHABLE_KEY</code> to <code>.env.local</code>.
+            Accounts are temporarily unavailable. You can still search and read the full
+            library — saving works on this device in the meantime.
           </div>
         )}
 

@@ -3,19 +3,34 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 /**
  * Supabase browser client.
  *
- * Both values are public by design (the publishable key is protected by Row Level
- * Security). Secrets like the service-role key must NEVER be put in VITE_* vars.
+ * The project connection is built in, so a fresh clone or a brand-new deployment
+ * works with no configuration at all — sign-in behaves the same on localhost as it
+ * does in production. Environment variables still take precedence when present,
+ * which is how a build gets pointed at a different project.
  *
- * If the env vars are missing (e.g. a fresh clone), the app still runs — auth and
- * cloud sync simply switch off and the UI falls back to local-only mode.
+ * Why hard-coding these is safe: both values are public by design. The publishable
+ * key carries no privileges — every request made with it is still evaluated by Row
+ * Level Security as the anonymous or signed-in user. It is compiled into the
+ * JavaScript that every visitor downloads either way, so keeping it here is no more
+ * exposed than keeping it in a VITE_ variable. The protection is RLS, not secrecy.
+ *
+ * NEVER put the secret / service-role key here, or in any VITE_ variable. That one
+ * bypasses RLS completely and would hand over the whole database.
  */
-const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
+const DEFAULT_URL = 'https://tmwxbdhoulgrxabmutbh.supabase.co';
+const DEFAULT_PUBLISHABLE_KEY = 'sb_publishable_bHD9MkmTnGilPDCwlJTgQQ_Y5BrUOcZ';
+
+const envUrl = (import.meta.env.VITE_SUPABASE_URL as string | undefined)?.trim();
+const envKey = (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined)?.trim();
+
+// A trailing slash breaks the REST paths, so normalise whatever we were handed.
+const url = (envUrl || DEFAULT_URL).replace(/\/+$/, '');
+const key = envKey || DEFAULT_PUBLISHABLE_KEY;
 
 export const isSupabaseConfigured = Boolean(url && key && !url.includes('YOUR-PROJECT-REF'));
 
 export const supabase: SupabaseClient | null = isSupabaseConfigured
-  ? createClient(url!, key!, {
+  ? createClient(url, key, {
       auth: {
         // PKCE is the recommended OAuth flow for browser SPAs.
         flowType: 'pkce',
@@ -27,7 +42,7 @@ export const supabase: SupabaseClient | null = isSupabaseConfigured
   : null;
 
 if (!isSupabaseConfigured && import.meta.env.DEV) {
-  console.warn('[LegalCore] Supabase is not configured — set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY in .env.local. Running in local-only mode.');
+  console.warn('[LegalCore] Supabase is not configured. Running in local-only mode — the law is still searchable, but accounts and cloud sync are off.');
 }
 
 /** Roles are assigned server-side (profiles.role). Never trust a role stored on the client. */
