@@ -1,1491 +1,772 @@
 <!doctype html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>LegalCore West Africa — System Blueprint</title>
-  <style>
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0
-    }
-
-    :root {
-      --bg: #0B0B0A;
-      --panel: #121211;
-      --card: #17161400;
-      --line: rgba(255, 248, 236, .08);
-      --line2: rgba(255, 248, 236, .16);
-      --ink: #FFF8EC;
-      --dim: #B8A88A;
-      --mute: #6F6554;
-      --faint: #4A4238;
-      --gold: #F7B733;
-      --green: #7ED08C;
-      --red: #E8543F;
-      --blue: #7FB3FF;
-      --violet: #C4A6FF;
-      --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-      --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--ink);
-      font-family: var(--sans);
-      line-height: 1.55;
-      -webkit-font-smoothing: antialiased
-    }
-
-    a {
-      color: var(--gold);
-      text-decoration: none
-    }
-
-    /* ── Shell ── */
-    .wrap {
-      display: grid;
-      grid-template-columns: 248px 1fr;
-      min-height: 100vh
-    }
-
-    aside {
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow-y: auto;
-      border-right: 1px solid var(--line);
-      padding: 26px 18px;
-      background: var(--panel)
-    }
-
-    .brand {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      margin-bottom: 26px
-    }
-
-    .brand b {
-      font-size: 15px;
-      letter-spacing: -.01em
-    }
-
-    .brand span {
-      font-size: 9px;
-      font-weight: 800;
-      letter-spacing: .2em;
-      color: var(--gold)
-    }
-
-    nav {
-      display: flex;
-      flex-direction: column;
-      gap: 2px
-    }
-
-    nav button {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      width: 100%;
-      text-align: left;
-      font: inherit;
-      font-size: 13px;
-      color: var(--mute);
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 9px 11px;
-      border-radius: 9px;
-      transition: .15s
-    }
-
-    nav button:hover {
-      color: var(--dim);
-      background: rgba(255, 248, 236, .03)
-    }
-
-    nav button.on {
-      color: var(--ink);
-      background: rgba(255, 248, 236, .06)
-    }
-
-    nav button i {
-      font-style: normal;
-      width: 16px;
-      text-align: center;
-      opacity: .75;
-      font-size: 12px
-    }
-
-    .sidefoot {
-      margin-top: 28px;
-      padding-top: 18px;
-      border-top: 1px solid var(--line);
-      font-size: 10.5px;
-      color: var(--faint);
-      line-height: 1.7
-    }
-
-    main {
-      padding: 40px 44px 96px;
-      max-width: 1180px
-    }
-
-    .pane {
-      display: none;
-      animation: in .25s ease
-    }
-
-    .pane.on {
-      display: block
-    }
-
-    @keyframes in {
-      from {
-        opacity: 0;
-        transform: translateY(7px)
-      }
-
-      to {
-        opacity: 1;
-        transform: none
-      }
-    }
-
-    h1 {
-      font-size: 30px;
-      letter-spacing: -.025em;
-      margin-bottom: 8px
-    }
-
-    .lede {
-      font-size: 14px;
-      color: var(--dim);
-      max-width: 78ch;
-      margin-bottom: 32px
-    }
-
-    h2 {
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin: 40px 0 16px
-    }
-
-    h2:first-of-type {
-      margin-top: 0
-    }
-
-    h3 {
-      font-size: 14px;
-      margin-bottom: 6px
-    }
-
-    p {
-      font-size: 13.5px;
-      color: var(--dim);
-      max-width: 82ch
-    }
-
-    p+p {
-      margin-top: 10px
-    }
-
-    code {
-      font-family: var(--mono);
-      font-size: .9em;
-      background: rgba(255, 248, 236, .06);
-      padding: 1.5px 5px;
-      border-radius: 4px;
-      color: var(--ink)
-    }
-
-    /* ── Layer stack ── */
-    .stack {
-      display: flex;
-      flex-direction: column;
-      gap: 0
-    }
-
-    .layer {
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 16px 18px;
-      background: var(--panel)
-    }
-
-    .layer+.layer {
-      margin-top: 26px
-    }
-
-    .layer__head {
-      display: flex;
-      align-items: baseline;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 13px
-    }
-
-    .layer__head b {
-      font-size: 13.5px
-    }
-
-    .layer__head em {
-      font-style: normal;
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      color: var(--faint)
-    }
-
-    .layer__head .tag {
-      font-size: 9.5px;
-      font-weight: 800;
-      letter-spacing: .09em;
-      text-transform: uppercase;
-      padding: 2.5px 8px;
-      border-radius: 999px
-    }
-
-    .pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px
-    }
-
-    .pill {
-      font-family: var(--mono);
-      font-size: 11px;
-      padding: 5px 10px;
-      border-radius: 7px;
-      background: rgba(255, 248, 236, .045);
-      border: 1px solid var(--line);
-      color: var(--dim);
-      white-space: nowrap
-    }
-
-    .pill b {
-      color: var(--ink);
-      font-weight: 600
-    }
-
-    .flow {
-      display: flex;
-      justify-content: center;
-      padding: 9px 0;
-      color: var(--faint);
-      font-size: 17px;
-      line-height: 1
-    }
-
-    .t-gold {
-      color: var(--gold);
-      background: rgba(247, 183, 51, .12)
-    }
-
-    .t-green {
-      color: var(--green);
-      background: rgba(126, 208, 140, .12)
-    }
-
-    .t-blue {
-      color: var(--blue);
-      background: rgba(127, 179, 255, .12)
-    }
-
-    .t-red {
-      color: var(--red);
-      background: rgba(232, 84, 63, .13)
-    }
-
-    .t-violet {
-      color: var(--violet);
-      background: rgba(196, 166, 255, .12)
-    }
-
-    .b-gold {
-      border-left: 2px solid var(--gold)
-    }
-
-    .b-green {
-      border-left: 2px solid var(--green)
-    }
-
-    .b-blue {
-      border-left: 2px solid var(--blue)
-    }
-
-    .b-violet {
-      border-left: 2px solid var(--violet)
-    }
-
-    /* ── Grids & cards ── */
-    .grid {
-      display: grid;
-      gap: 12px
-    }
-
-    .g2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr))
-    }
-
-    .g3 {
-      grid-template-columns: repeat(3, minmax(0, 1fr))
-    }
-
-    .g4 {
-      grid-template-columns: repeat(4, minmax(0, 1fr))
-    }
-
-    .card {
-      border: 1px solid var(--line);
-      border-radius: 13px;
-      padding: 15px 16px;
-      background: var(--panel)
-    }
-
-    .card h3 {
-      display: flex;
-      align-items: center;
-      gap: 7px
-    }
-
-    .card p {
-      font-size: 12.5px;
-      margin-top: 5px
-    }
-
-    .card ul {
-      margin: 9px 0 0 0;
-      padding-left: 16px
-    }
-
-    .card li {
-      font-size: 12.5px;
-      color: var(--dim);
-      margin-bottom: 4px
-    }
-
-    .stat {
-      border: 1px solid var(--line);
-      border-radius: 13px;
-      padding: 15px 16px;
-      background: linear-gradient(160deg, rgba(255, 248, 236, .04), rgba(255, 248, 236, .008))
-    }
-
-    .stat b {
-      display: block;
-      font-size: 27px;
-      font-weight: 800;
-      letter-spacing: -.03em;
-      line-height: 1;
-      font-variant-numeric: tabular-nums
-    }
-
-    .stat span {
-      display: block;
-      font-size: 11px;
-      color: var(--mute);
-      margin-top: 5px
-    }
-
-    /* ── Tables ── */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12.5px;
-      margin-top: 4px
-    }
-
-    th {
-      text-align: left;
-      font-size: 9.5px;
-      font-weight: 800;
-      letter-spacing: .11em;
-      text-transform: uppercase;
-      color: var(--faint);
-      padding: 8px 11px;
-      border-bottom: 1px solid var(--line2);
-      white-space: nowrap
-    }
-
-    td {
-      padding: 9px 11px;
-      border-bottom: 1px solid var(--line);
-      color: var(--dim);
-      vertical-align: top
-    }
-
-    tr:last-child td {
-      border-bottom: none
-    }
-
-    td code {
-      font-size: 11.5px
-    }
-
-    td b {
-      color: var(--ink);
-      font-weight: 600
-    }
-
-    /* ── Sequence diagram ── */
-    .seq {
-      border: 1px solid var(--line);
-      border-radius: 13px;
-      padding: 18px;
-      background: var(--panel);
-      overflow-x: auto
-    }
-
-    .seq ol {
-      list-style: none;
-      counter-reset: s;
-      min-width: 520px
-    }
-
-    .seq li {
-      counter-increment: s;
-      display: grid;
-      grid-template-columns: 26px 150px 1fr;
-      gap: 13px;
-      align-items: start;
-      padding: 10px 0;
-      border-bottom: 1px dashed var(--line)
-    }
-
-    .seq li:last-child {
-      border-bottom: none
-    }
-
-    .seq li::before {
-      content: counter(s);
-      font-family: var(--mono);
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--bg);
-      background: var(--gold);
-      width: 20px;
-      height: 20px;
-      border-radius: 6px;
-      display: grid;
-      place-items: center;
-      margin-top: 1px
-    }
-
-    .seq .who {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--ink);
-      padding-top: 2px
-    }
-
-    .seq .what {
-      font-size: 12.5px;
-      color: var(--dim)
-    }
-
-    .seq .what b {
-      color: var(--ink);
-      font-weight: 600
-    }
-
-    /* ── ADR ── */
-    .adr {
-      border: 1px solid var(--line);
-      border-left: 2px solid var(--gold);
-      border-radius: 0 13px 13px 0;
-      padding: 16px 18px;
-      background: var(--panel)
-    }
-
-    .adr+.adr {
-      margin-top: 12px
-    }
-
-    .adr__t {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 9px
-    }
-
-    .adr__t b {
-      font-size: 13.5px
-    }
-
-    .adr__n {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--faint)
-    }
-
-    .adr dl {
-      display: grid;
-      grid-template-columns: 82px 1fr;
-      gap: 6px 13px;
-      font-size: 12.5px;
-      margin-top: 4px
-    }
-
-    .adr dt {
-      font-size: 9.5px;
-      font-weight: 800;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      color: var(--faint);
-      padding-top: 3px
-    }
-
-    .adr dd {
-      color: var(--dim)
-    }
-
-    .note {
-      border: 1px solid rgba(247, 183, 51, .28);
-      background: rgba(247, 183, 51, .05);
-      border-radius: 11px;
-      padding: 13px 15px;
-      font-size: 12.5px;
-      color: var(--dim);
-      margin-top: 16px
-    }
-
-    .note b {
-      color: var(--gold)
-    }
-
-    .danger {
-      border-color: rgba(232, 84, 63, .32);
-      background: rgba(232, 84, 63, .05)
-    }
-
-    .danger b {
-      color: var(--red)
-    }
-
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      margin-top: 14px;
-      font-size: 11px;
-      color: var(--faint)
-    }
-
-    .legend span {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px
-    }
-
-    .legend i {
-      width: 9px;
-      height: 9px;
-      border-radius: 3px;
-      display: block
-    }
-
-    @media(max-width:1000px) {
-      .wrap {
-        grid-template-columns: 1fr
-      }
-
-      aside {
-        position: static;
-        height: auto;
-        border-right: none;
-        border-bottom: 1px solid var(--line)
-      }
-
-      nav {
-        flex-direction: row;
-        flex-wrap: wrap
-      }
-
-      main {
-        padding: 28px 20px 72px
-      }
-
-      .g4,
-      .g3,
-      .g2 {
-        grid-template-columns: 1fr
-      }
-
-      .seq li {
-        grid-template-columns: 26px 1fr
-      }
-
-      .seq .who {
-        grid-column: 2
-      }
-
-      .seq .what {
-        grid-column: 2
-      }
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LegalCore West Africa — System Blueprint</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0B0B0A; --panel:#121211; --card:#17161400; --line:rgba(255,248,236,.08);
+    --line2:rgba(255,248,236,.16); --ink:#FFF8EC; --dim:#B8A88A; --mute:#6F6554; --faint:#4A4238;
+    --gold:#F7B733; --green:#7ED08C; --red:#E8543F; --blue:#7FB3FF; --violet:#C4A6FF;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:var(--gold);text-decoration:none}
+
+  /* ── Shell ── */
+  .wrap{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+  aside{position:sticky;top:0;height:100vh;overflow-y:auto;border-right:1px solid var(--line);padding:26px 18px;background:var(--panel)}
+  .brand{display:flex;flex-direction:column;gap:2px;margin-bottom:26px}
+  .brand b{font-size:15px;letter-spacing:-.01em}
+  .brand span{font-size:9px;font-weight:800;letter-spacing:.2em;color:var(--gold)}
+  nav{display:flex;flex-direction:column;gap:2px}
+  nav button{display:flex;align-items:center;gap:9px;width:100%;text-align:left;font:inherit;font-size:13px;
+    color:var(--mute);background:none;border:none;cursor:pointer;padding:9px 11px;border-radius:9px;transition:.15s}
+  nav button:hover{color:var(--dim);background:rgba(255,248,236,.03)}
+  nav button.on{color:var(--ink);background:rgba(255,248,236,.06)}
+  nav button i{font-style:normal;width:16px;text-align:center;opacity:.75;font-size:12px}
+  .sidefoot{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);font-size:10.5px;color:var(--faint);line-height:1.7}
+
+  main{padding:40px 44px 96px;max-width:1180px}
+  .pane{display:none;animation:in .25s ease}
+  .pane.on{display:block}
+  @keyframes in{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+
+  h1{font-size:30px;letter-spacing:-.025em;margin-bottom:8px}
+  .lede{font-size:14px;color:var(--dim);max-width:78ch;margin-bottom:32px}
+  h2{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin:40px 0 16px}
+  h2:first-of-type{margin-top:0}
+  h3{font-size:14px;margin-bottom:6px}
+  p{font-size:13.5px;color:var(--dim);max-width:82ch}
+  p+p{margin-top:10px}
+  code{font-family:var(--mono);font-size:.9em;background:rgba(255,248,236,.06);padding:1.5px 5px;border-radius:4px;color:var(--ink)}
+
+  /* ── Layer stack ── */
+  .stack{display:flex;flex-direction:column;gap:0}
+  .layer{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:var(--panel)}
+  .layer+.layer{margin-top:26px}
+  .layer__head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:13px}
+  .layer__head b{font-size:13.5px}
+  .layer__head em{font-style:normal;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+  .layer__head .tag{font-size:9.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;padding:2.5px 8px;border-radius:999px}
+  .pills{display:flex;flex-wrap:wrap;gap:6px}
+  .pill{font-family:var(--mono);font-size:11px;padding:5px 10px;border-radius:7px;background:rgba(255,248,236,.045);
+    border:1px solid var(--line);color:var(--dim);white-space:nowrap}
+  .pill b{color:var(--ink);font-weight:600}
+  .flow{display:flex;justify-content:center;padding:9px 0;color:var(--faint);font-size:17px;line-height:1}
+
+  .t-gold{color:var(--gold);background:rgba(247,183,51,.12)}
+  .t-green{color:var(--green);background:rgba(126,208,140,.12)}
+  .t-blue{color:var(--blue);background:rgba(127,179,255,.12)}
+  .t-red{color:var(--red);background:rgba(232,84,63,.13)}
+  .t-violet{color:var(--violet);background:rgba(196,166,255,.12)}
+  .b-gold{border-left:2px solid var(--gold)}
+  .b-green{border-left:2px solid var(--green)}
+  .b-blue{border-left:2px solid var(--blue)}
+  .b-violet{border-left:2px solid var(--violet)}
+
+  /* ── Grids & cards ── */
+  .grid{display:grid;gap:12px}
+  .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .card{border:1px solid var(--line);border-radius:13px;padding:15px 16px;background:var(--panel)}
+  .card h3{display:flex;align-items:center;gap:7px}
+  .card p{font-size:12.5px;margin-top:5px}
+  .card ul{margin:9px 0 0 0;padding-left:16px}
+  .card li{font-size:12.5px;color:var(--dim);margin-bottom:4px}
+
+  .stat{border:1px solid var(--line);border-radius:13px;padding:15px 16px;
+    background:linear-gradient(160deg,rgba(255,248,236,.04),rgba(255,248,236,.008))}
+  .stat b{display:block;font-size:27px;font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+  .stat span{display:block;font-size:11px;color:var(--mute);margin-top:5px}
+
+  /* ── Tables ── */
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:4px}
+  th{text-align:left;font-size:9.5px;font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:var(--faint);
+    padding:8px 11px;border-bottom:1px solid var(--line2);white-space:nowrap}
+  td{padding:9px 11px;border-bottom:1px solid var(--line);color:var(--dim);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td code{font-size:11.5px}
+  td b{color:var(--ink);font-weight:600}
+
+  /* ── Sequence diagram ── */
+  .seq{border:1px solid var(--line);border-radius:13px;padding:18px;background:var(--panel);overflow-x:auto}
+  .seq ol{list-style:none;counter-reset:s;min-width:520px}
+  .seq li{counter-increment:s;display:grid;grid-template-columns:26px 150px 1fr;gap:13px;align-items:start;
+    padding:10px 0;border-bottom:1px dashed var(--line)}
+  .seq li:last-child{border-bottom:none}
+  .seq li::before{content:counter(s);font-family:var(--mono);font-size:10px;font-weight:700;color:var(--bg);
+    background:var(--gold);width:20px;height:20px;border-radius:6px;display:grid;place-items:center;margin-top:1px}
+  .seq .who{font-family:var(--mono);font-size:11px;color:var(--ink);padding-top:2px}
+  .seq .what{font-size:12.5px;color:var(--dim)}
+  .seq .what b{color:var(--ink);font-weight:600}
+
+  /* ── ADR ── */
+  .adr{border:1px solid var(--line);border-left:2px solid var(--gold);border-radius:0 13px 13px 0;padding:16px 18px;background:var(--panel)}
+  .adr+.adr{margin-top:12px}
+  .adr__t{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:9px}
+  .adr__t b{font-size:13.5px}
+  .adr__n{font-family:var(--mono);font-size:10px;color:var(--faint)}
+  .adr dl{display:grid;grid-template-columns:82px 1fr;gap:6px 13px;font-size:12.5px;margin-top:4px}
+  .adr dt{font-size:9.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);padding-top:3px}
+  .adr dd{color:var(--dim)}
+
+  .note{border:1px solid rgba(247,183,51,.28);background:rgba(247,183,51,.05);border-radius:11px;
+    padding:13px 15px;font-size:12.5px;color:var(--dim);margin-top:16px}
+  .note b{color:var(--gold)}
+  .danger{border-color:rgba(232,84,63,.32);background:rgba(232,84,63,.05)}
+  .danger b{color:var(--red)}
+
+  .legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:14px;font-size:11px;color:var(--faint)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend i{width:9px;height:9px;border-radius:3px;display:block}
+
+  @media(max-width:1000px){
+    .wrap{grid-template-columns:1fr}
+    aside{position:static;height:auto;border-right:none;border-bottom:1px solid var(--line)}
+    nav{flex-direction:row;flex-wrap:wrap}
+    main{padding:28px 20px 72px}
+    .g4,.g3,.g2{grid-template-columns:1fr}
+    .seq li{grid-template-columns:26px 1fr}
+    .seq .who{grid-column:2}
+    .seq .what{grid-column:2}
+  }
+</style>
 </head>
-
 <body>
-  <div class="wrap">
+<div class="wrap">
 
-    <aside>
-      <div class="brand">
-        <b>LegalCore</b>
-        <span>SYSTEM BLUEPRINT</span>
+<aside>
+  <div class="brand">
+    <b>LegalCore</b>
+    <span>SYSTEM BLUEPRINT</span>
+  </div>
+  <nav id="nav">
+    <button class="on" data-p="overview"><i>◈</i> Overview</button>
+    <button data-p="frontend"><i>▣</i> Frontend</button>
+    <button data-p="backend"><i>▤</i> Data &amp; Backend</button>
+    <button data-p="security"><i>⛨</i> Security model</button>
+    <button data-p="flows"><i>⇄</i> Runtime flows</button>
+    <button data-p="product"><i>◎</i> Product &amp; revenue</button>
+    <button data-p="decisions"><i>✦</i> Design decisions</button>
+    <button data-p="ops"><i>⚙</i> Build &amp; deploy</button>
+  </nav>
+  <div class="sidefoot">
+    Legal research platform for the<br>12 ECOWAS member states.<br><br>
+    Liberia library live ·<br>ECOWAS corpus regional<br><br>
+    <span style="color:var(--mute)">AmaraTech IT</span>
+  </div>
+</aside>
+
+<main>
+
+<!-- ══════════════ OVERVIEW ══════════════ -->
+<section class="pane on" id="overview">
+  <h1>System architecture</h1>
+  <p class="lede">
+    LegalCore West Africa is a single-page React application backed by Postgres. There is no
+    application server of our own: the browser talks straight to the database, and Postgres
+    row-level security — not middleware — is what enforces who may read and write what.
+    Reading the law needs no account at all.
+  </p>
+
+  <h2>Runtime topology</h2>
+  <div class="stack">
+
+    <div class="layer b-gold">
+      <div class="layer__head">
+        <b>Client</b><em>browser</em>
+        <span class="tag t-gold">React 19 SPA</span>
       </div>
-      <nav id="nav">
-        <button class="on" data-p="overview"><i>◈</i> Overview</button>
-        <button data-p="frontend"><i>▣</i> Frontend</button>
-        <button data-p="backend"><i>▤</i> Data &amp; Backend</button>
-        <button data-p="backend"><i>▤</i> Data &amp; Backend</button>
-        <button data-p="security"><i>⛨</i> Security model</button>
-        <button data-p="flows"><i>⇄</i> Runtime flows</button>
-        <button data-p="product"><i>◎</i> Product &amp; revenue</button>
-        <button data-p="decisions"><i>✦</i> Design decisions</button>
-        <button data-p="ops"><i>⚙</i> Build &amp; deploy</button>
-      </nav>
-      <div class="sidefoot">
-        Legal research platform for the<br>12 ECOWAS member states.<br><br>
-        Liberia library live ·<br>ECOWAS corpus regional<br><br>
-        <span style="color:var(--mute)">AmaraTech IT</span>
+      <div class="pills">
+        <span class="pill"><b>22</b> routed pages</span>
+        <span class="pill"><b>18</b> components</span>
+        <span class="pill">react-router <b>7</b></span>
+        <span class="pill">TypeScript <b>5.9</b></span>
+        <span class="pill">plain CSS + custom properties</span>
+        <span class="pill">dark / light themes</span>
+        <span class="pill">MapLibre GL + Leaflet</span>
+        <span class="pill">jsPDF export</span>
+        <span class="pill">@visx charts</span>
       </div>
-    </aside>
+    </div>
 
-    <main>
+    <div class="flow">↓ &nbsp; HTTPS · PostgREST + GoTrue · anon or user JWT &nbsp; ↓</div>
 
-      <!-- ══════════════ OVERVIEW ══════════════ -->
-      <section class="pane on" id="overview">
-        <h1>System architecture</h1>
-        <p class="lede">
-          LegalCore West Africa is a single-page React application backed by Postgres. There is no
-          application server of our own: the browser talks straight to the database, and Postgres
-          row-level security — not middleware — is what enforces who may read and write what.
-          Reading the law needs no account at all.
-        </p>
+    <div class="layer b-green">
+      <div class="layer__head">
+        <b>Backend</b><em>managed</em>
+        <span class="tag t-green">Supabase</span>
+      </div>
+      <div class="pills">
+        <span class="pill">Postgres <b>15</b></span>
+        <span class="pill"><b>10</b> tables</span>
+        <span class="pill"><b>8</b> insight views</span>
+        <span class="pill"><b>22</b> RLS policies</span>
+        <span class="pill"><b>3</b> security-definer functions</span>
+        <span class="pill"><b>2</b> triggers</span>
+        <span class="pill">GoTrue auth · email + PKCE</span>
+        <span class="pill">auto REST API</span>
+      </div>
+    </div>
 
-        <h2>Runtime topology</h2>
-        <div class="stack">
+    <div class="flow">↓ &nbsp; static assets from edge &nbsp; ↓</div>
 
-          <div class="layer b-gold">
-            <div class="layer__head">
-              <b>Client</b><em>browser</em>
-              <span class="tag t-gold">React 19 SPA</span>
-            </div>
-            <div class="pills">
-              <span class="pill"><b>22</b> routed pages</span>
-              <span class="pill"><b>18</b> components</span>
-              <span class="pill">react-router <b>7</b></span>
-              <span class="pill">TypeScript <b>5.9</b></span>
-              <span class="pill">plain CSS + custom properties</span>
-              <span class="pill">dark / light themes</span>
-              <span class="pill">MapLibre GL + Leaflet</span>
-              <span class="pill">jsPDF export</span>
-              <span class="pill">@visx charts</span>
-            </div>
-          </div>
+    <div class="layer b-blue">
+      <div class="layer__head">
+        <b>Delivery</b><em>edge</em>
+        <span class="tag t-blue">Vercel</span>
+      </div>
+      <div class="pills">
+        <span class="pill">global CDN</span>
+        <span class="pill">immutable hashed bundles</span>
+        <span class="pill">build-time env injection</span>
+        <span class="pill">git push → deploy</span>
+      </div>
+    </div>
 
-          <div class="flow">↓ &nbsp; HTTPS · PostgREST + GoTrue · anon or user JWT &nbsp; ↓</div>
+    <div class="layer b-violet" style="margin-top:26px">
+      <div class="layer__head">
+        <b>Law corpus</b><em>compiled into the bundle</em>
+        <span class="tag t-violet">Static</span>
+      </div>
+      <p style="margin-bottom:12px">
+        Primary law ships as typed TypeScript modules rather than database rows. It is read-only,
+        identical for every visitor, and therefore cacheable at the edge — so search works with
+        zero network round-trips and the site stays usable on a weak connection.
+      </p>
+      <div class="pills">
+        <span class="pill">Liberian instruments</span>
+        <span class="pill">ECOWAS community corpus</span>
+        <span class="pill">12 jurisdictions</span>
+        <span class="pill">court locations</span>
+        <span class="pill">provenance tiers</span>
+      </div>
+    </div>
 
-          <div class="layer b-green">
-            <div class="layer__head">
-              <b>Backend</b><em>managed</em>
-              <span class="tag t-green">Supabase</span>
-            </div>
-            <div class="pills">
-              <span class="pill">Postgres <b>15</b></span>
-              <span class="pill"><b>10</b> tables</span>
-              <span class="pill"><b>8</b> insight views</span>
-              <span class="pill"><b>22</b> RLS policies</span>
-              <span class="pill"><b>3</b> security-definer functions</span>
-              <span class="pill"><b>2</b> triggers</span>
-              <span class="pill">GoTrue auth · email + PKCE</span>
-              <span class="pill">auto REST API</span>
-            </div>
-          </div>
-
-          <div class="flow">↓ &nbsp; static assets from edge &nbsp; ↓</div>
-
-          <div class="layer b-blue">
-            <div class="layer__head">
-              <b>Delivery</b><em>edge</em>
-              <span class="tag t-blue">Vercel</span>
-            </div>
-            <div class="pills">
-              <span class="pill">global CDN</span>
-              <span class="pill">immutable hashed bundles</span>
-              <span class="pill">build-time env injection</span>
-              <span class="pill">git push → deploy</span>
-            </div>
-          </div>
-
-          <div class="layer b-violet" style="margin-top:26px">
-            <div class="layer__head">
-              <b>Law corpus</b><em>compiled into the bundle</em>
-              <span class="tag t-violet">Static</span>
-            </div>
-            <p style="margin-bottom:12px">
-              Primary law ships as typed TypeScript modules rather than database rows. It is read-only,
-              identical for every visitor, and therefore cacheable at the edge — so search works with
-              zero network round-trips and the site stays usable on a weak connection.
-            </p>
-            <div class="pills">
-              <span class="pill">Liberian instruments</span>
-              <span class="pill">ECOWAS community corpus</span>
-              <span class="pill">12 jurisdictions</span>
-              <span class="pill">court locations</span>
-              <span class="pill">provenance tiers</span>
-            </div>
-          </div>
-
-        </div>
-
-        <div class="legend">
-          <span><i style="background:var(--gold)"></i> runs in the browser</span>
-          <span><i style="background:var(--green)"></i> managed service</span>
-          <span><i style="background:var(--blue)"></i> edge / delivery</span>
-          <span><i style="background:var(--violet)"></i> build-time data</span>
-        </div>
-
-        <h2>Scale of the system</h2>
-        <div class="grid g4">
-          <div class="stat"><b>14,045</b><span>lines of TS / TSX / CSS</span></div>
-          <div class="stat"><b>22</b><span>pages</span></div>
-          <div class="stat"><b>10</b><span>tables</span></div>
-          <div class="stat"><b>22</b><span>RLS policies</span></div>
-        </div>
-
-        <h2>The one architectural idea</h2>
-        <p>
-          Most products put an API server between the client and the database so that the server can
-          decide who is allowed to do what. This system deletes that layer and pushes the same decision
-          into Postgres itself, as row-level security policies attached to each table.
-        </p>
-        <p>
-          That is why the browser can safely hold a publishable API key: the key identifies the project,
-          it does not grant permission. Every query it makes still runs as the signed-in user — or as an
-          anonymous visitor — and the database rejects anything the policies do not allow. One less
-          service to run, one less place for an authorisation bug to hide.
-        </p>
-      </section>
-
-      <!-- ══════════════ FRONTEND ══════════════ -->
-      <section class="pane" id="frontend">
-        <h1>Frontend</h1>
-        <p class="lede">
-          A conventional React SPA, organised so that state has exactly one owner. Four providers wrap
-          the router; everything below them reads from hooks rather than passing props down.
-        </p>
-
-        <h2>Provider tree</h2>
-        <div class="seq">
-          <ol>
-            <li><span class="who">AuthProvider</span><span class="what">Session, profile row and <b>isAdmin</b>.
-                Subscribes to Supabase auth events and keeps <code>profiles</code> in sync.</span></li>
-            <li><span class="who">JurisdictionProvider</span><span class="what">Which of the 12 ECOWAS countries the
-                visitor is browsing. Drives search scope, AI context and copy.</span></li>
-            <li><span class="who">StoreProvider</span><span class="what">Saved documents, brief items and watchlist.
-                Local-first, merged with the cloud on sign-in.</span></li>
-            <li><span class="who">Layout</span><span class="what">Chrome: nav, command palette, announcement bar, AI
-                dock, feedback widget, onboarding.</span></li>
-            <li><span class="who">Routes</span><span class="what">22 pages. <code>/admin</code> is the only one behind a
-                guard.</span></li>
-          </ol>
-        </div>
-
-        <h2>Module map</h2>
-        <table>
-          <tr>
-            <th>Directory</th>
-            <th>Holds</th>
-            <th>Rule it follows</th>
-          </tr>
-          <tr>
-            <td><code>pages/</code></td>
-            <td><b>22</b> route components, plus <code>pages/admin/</code> tabs</td>
-            <td>Fetch their own data; no shared global store</td>
-          </tr>
-          <tr>
-            <td><code>components/</code></td>
-            <td><b>18</b> reusable pieces of UI</td>
-            <td>Presentational; side effects go through hooks</td>
-          </tr>
-          <tr>
-            <td><code>hooks/</code></td>
-            <td>auth, jurisdiction, store, theme, app config</td>
-            <td>One concern each, exposed as a provider or a hook</td>
-          </tr>
-          <tr>
-            <td><code>lib/</code></td>
-            <td>supabase client, analytics, nudge, feedback bus, auth redirect</td>
-            <td>Framework-free; no React imports</td>
-          </tr>
-          <tr>
-            <td><code>data/</code></td>
-            <td>the law corpus, jurisdictions, plans, provenance</td>
-            <td>Typed constants, never mutated at runtime</td>
-          </tr>
-          <tr>
-            <td><code>utils/</code></td>
-            <td>smart search, citator, PDF export</td>
-            <td>Pure functions, unit-testable in isolation</td>
-          </tr>
-        </table>
-
-        <h2>Notable client capabilities</h2>
-        <div class="grid g2">
-          <div class="card">
-            <h3>Typo-tolerant search</h3>
-            <p>Ranking runs entirely in the browser against the bundled corpus, so results appear as you
-              type and keep working offline. Misspellings still match.</p>
-          </div>
-          <div class="card">
-            <h3>Local-first library</h3>
-            <p>Saving a document works signed out and persists locally. Sign in later and the local set is
-              union-merged with the cloud — nothing is lost, and no feature is held hostage to an account.</p>
-          </div>
-          <div class="card">
-            <h3>Country-aware experience</h3>
-            <p>Jurisdiction drives search scope, the AI assistant's context, and the copy shown. A visitor's
-              choice is written to their profile and restored on any device.</p>
-          </div>
-          <div class="card">
-            <h3>Citable exports</h3>
-            <p>Documents export to PDF with provenance, a QR code back to the source and a generated
-              citation, so a brief filed in court can be traced to the instrument.</p>
-          </div>
-          <div class="card">
-            <h3>Dual theme</h3>
-            <p>Every colour resolves from CSS custom properties on <code>&lt;html data-theme&gt;</code>. Theme
-              is resolved before first paint, follows the OS by default, then remembers the choice.</p>
-          </div>
-          <div class="card">
-            <h3>Remote configuration</h3>
-            <p>Announcement banner, sign-in providers, nudge threshold and the paywall switch all read from
-              <code>app_config</code> — changeable from the admin console with no redeploy.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- ══════════════ BACKEND ══════════════ -->
-      <section class="pane" id="backend">
-        <h1>Data &amp; backend</h1>
-        <p class="lede">
-          Ten tables in three groups: who the user is, what they produced, and what the product learned.
-          Eight views sit on top to answer product questions without shipping raw rows to the client.
-        </p>
-
-        <h2>Identity</h2>
-        <table>
-          <tr>
-            <th>Table</th>
-            <th>Purpose</th>
-            <th>Notes</th>
-          </tr>
-          <tr>
-            <td><code>profiles</code></td>
-            <td>Public-facing user record, keyed to <code>auth.users</code></td>
-            <td>Holds <b>role</b>, <b>plan</b>, country, profession, organisation, onboarding state, last seen</td>
-          </tr>
-        </table>
-        <p style="margin-top:10px">
-          Created automatically by the <code>handle_new_user</code> trigger the moment an account appears,
-          so there is never a signed-in user without a profile.
-        </p>
-
-        <h2>User-generated content</h2>
-        <table>
-          <tr>
-            <th>Table</th>
-            <th>Purpose</th>
-          </tr>
-          <tr>
-            <td><code>saved_documents</code></td>
-            <td>A user's personal library</td>
-          </tr>
-          <tr>
-            <td><code>brief_items</code></td>
-            <td>Documents gathered into a working brief</td>
-          </tr>
-          <tr>
-            <td><code>watchlist</code></td>
-            <td>Instruments to be alerted about when amended</td>
-          </tr>
-          <tr>
-            <td><code>corrections</code></td>
-            <td>Reader-reported errors in the law text</td>
-          </tr>
-          <tr>
-            <td><code>feedback</code></td>
-            <td>Bug reports, ideas, praise, content notes, with a rating</td>
-          </tr>
-          <tr>
-            <td><code>document_requests</code></td>
-            <td>"This law is missing" — the content backlog, sourced from demand</td>
-          </tr>
-        </table>
-
-        <h2>Product intelligence</h2>
-        <table>
-          <tr>
-            <th>Table</th>
-            <th>Purpose</th>
-          </tr>
-          <tr>
-            <td><code>events</code></td>
-            <td>First-party analytics. Page views, searches, reads, AI questions, exports</td>
-          </tr>
-          <tr>
-            <td><code>feature_interest</code></td>
-            <td>"I'd pay for this" votes against roadmap features — demand before build</td>
-          </tr>
-          <tr>
-            <td><code>app_config</code></td>
-            <td>Key/value feature flags read by the live app</td>
-          </tr>
-        </table>
-
-        <h2>Views behind the admin console</h2>
-        <div class="pills">
-          <span class="pill">insights_daily</span>
-          <span class="pill">insights_top_searches</span>
-          <span class="pill">insights_zero_result_searches</span>
-          <span class="pill">insights_top_documents</span>
-          <span class="pill">insights_country_activity</span>
-          <span class="pill">insights_feature_interest</span>
-          <span class="pill">insights_activity_heatmap</span>
-          <span class="pill">insights_inbox_daily</span>
-        </div>
-        <div class="note">
-          <b>Why views, not client-side aggregation.</b> Every view is declared
-          <code>security_invoker = true</code>, which means row-level security still applies when it is
-          queried. An aggregate is therefore admin-only by the same rules as the underlying table — the
-          client never receives the raw rows it would need to compute these itself.
-        </div>
-
-        <h2>The two that pay for themselves</h2>
-        <div class="grid g2">
-          <div class="card">
-            <h3>Zero-result searches</h3>
-            <p>Every search that returned nothing, ranked by frequency and grouped by country. This is a
-              content roadmap written by users: it names the exact laws to digitise next, in demand order.</p>
-          </div>
-          <div class="card">
-            <h3>Country activity</h3>
-            <p>Sessions, searches, reads and AI questions per country. Decides which national library to
-              open next using evidence rather than instinct.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- ══════════════ SECURITY ══════════════ -->
-      <section class="pane" id="security">
-        <h1>Security model</h1>
-        <p class="lede">
-          There is no server to trust, so nothing is enforced in the UI. Access rules live in the database
-          and apply identically to the app, a stray <code>curl</code>, or anyone poking at the API from a
-          console.
-        </p>
-
-        <h2>Three rules</h2>
-        <div class="grid g3">
-          <div class="card">
-            <h3>Deny by default</h3>
-            <p>RLS is enabled on every table. With no policy matching, a row is invisible. Access is
-              granted explicitly, never assumed.</p>
-          </div>
-          <div class="card">
-            <h3>Own your rows</h3>
-            <p>A user may read and write only rows where <code>user_id = auth.uid()</code>. Admins get
-              separate read policies through a security-definer <code>is_admin()</code> helper.</p>
-          </div>
-          <div class="card">
-            <h3>Privilege is not self-service</h3>
-            <p>A trigger on <code>profiles</code> rejects any change to <b>role</b> or <b>plan</b> that
-              did not come from an admin — so a user cannot promote themselves or grant themselves a paid
-              plan by editing their own row.</p>
-          </div>
-        </div>
-
-        <h2>Keys</h2>
-        <table>
-          <tr>
-            <th>Key</th>
-            <th>Where it lives</th>
-            <th>Why that is safe</th>
-          </tr>
-          <tr>
-            <td><b>Publishable</b></td>
-            <td>Browser bundle, via <code>VITE_</code> env var</td>
-            <td>Identifies the project; grants nothing. Every request is still evaluated against RLS as the anonymous or
-              signed-in user.</td>
-          </tr>
-          <tr>
-            <td><b>Secret / service role</b></td>
-            <td><b>Nowhere in this project</b></td>
-            <td>It bypasses RLS entirely. It is never placed in a <code>VITE_</code> variable, a credentials file, or
-              any committed file.</td>
-          </tr>
-        </table>
-        <div class="note danger">
-          <b>Hard rule.</b> Any variable prefixed <code>VITE_</code> is compiled into JavaScript that
-          every visitor downloads. Only the publishable key may ever go there. Credentials live in
-          git-ignored files and are never committed.
-        </div>
-
-        <h2>Authentication</h2>
-        <table>
-          <tr>
-            <th>Path</th>
-            <th>Status</th>
-            <th>Detail</th>
-          </tr>
-          <tr>
-            <td>Email + password</td>
-            <td><b>Live</b></td>
-            <td>Sign up, sign in, reset. One door for everyone.</td>
-          </tr>
-          <tr>
-            <td>Magic link</td>
-            <td>Wired</td>
-            <td>Passwordless email sign-in.</td>
-          </tr>
-          <tr>
-            <td>Google OAuth</td>
-            <td>Built, disabled</td>
-            <td>PKCE flow ready; hidden until <code>google_login_enabled</code> is flipped in the admin console.</td>
-          </tr>
-        </table>
-        <div class="note">
-          <b>The sign-in page reveals nothing about roles.</b> There is no "admin login" and no hint that
-          privileged accounts exist. Administrators use the same form as everyone else and are routed by
-          the <code>role</code> the database reports after authentication. Failed sign-ins return one
-          generic message, so the form cannot be used to discover which email addresses are registered.
-        </div>
-
-        <h2>Privacy posture</h2>
-        <div class="grid g2">
-          <div class="card">
-            <h3>First-party analytics only</h3>
-            <p>No third-party trackers, no advertising pixels, no cookies for measurement. Events go to our
-              own Postgres table and nowhere else.</p>
-          </div>
-          <div class="card">
-            <h3>Minimal collection</h3>
-            <p>No IP addresses or fingerprints are stored. Events carry a random session id, a country, and
-              what happened — enough to improve the product, not enough to follow a person.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- ══════════════ FLOWS ══════════════ -->
-      <section class="pane" id="flows">
-        <h1>Runtime flows</h1>
-        <p class="lede">The four paths worth knowing, end to end.</p>
-
-        <h2>Reading the law — no account, no network</h2>
-        <div class="seq">
-          <ol>
-            <li><span class="who">Browser</span><span class="what">Loads the hashed bundle from the Vercel edge. The
-                full corpus is already inside it.</span></li>
-            <li><span class="who">Client</span><span class="what">Ranks the corpus locally as the visitor types. <b>No
-                  request is made.</b></span></li>
-            <li><span class="who">Client</span><span class="what">Renders the instrument with provenance, citation and
-                export controls.</span></li>
-            <li><span class="who">Analytics</span><span class="what">Queues a <code>search</code> and a
-                <code>doc_view</code> event for later batching.</span></li>
-          </ol>
-        </div>
-
-        <h2>Signing in and merging a library</h2>
-        <div class="seq">
-          <ol>
-            <li><span class="who">User</span><span class="what">Submits email and password on a single form with no role
-                hints.</span></li>
-            <li><span class="who">GoTrue</span><span class="what">Verifies and returns a JWT. Failures return one
-                generic message.</span></li>
-            <li><span class="who">AuthProvider</span><span class="what">Loads the <code>profiles</code> row, exposing
-                role, plan, country and <b>isAdmin</b>.</span></li>
-            <li><span class="who">StoreProvider</span><span class="what">Fetches the cloud library and
-                <b>union-merges</b> it with whatever was saved locally while signed out.</span></li>
-            <li><span class="who">Postgres</span><span class="what">Accepts the writes only for rows belonging to this
-                user, per RLS.</span></li>
-            <li><span class="who">Router</span><span class="what">Sends admins to the console, everyone else to where
-                they were headed.</span></li>
-          </ol>
-        </div>
-
-        <h2>Analytics — batched, cheap, interruption-proof</h2>
-        <div class="seq">
-          <ol>
-            <li><span class="who">Any page</span><span class="what">Calls <code>track(name, props)</code>. The event
-                goes into an in-memory queue.</span></li>
-            <li><span class="who">Queue</span><span class="what">Flushes on a timer, or once the batch is full — one
-                insert instead of dozens of requests.</span></li>
-            <li><span class="who">Browser</span><span class="what">Also flushes on <code>visibilitychange</code> and
-                <code>pagehide</code>, so closing the tab does not lose the session.</span></li>
-            <li><span class="who">Postgres</span><span class="what">Insert-only for clients. Nobody can read the events
-                table back except an admin.</span></li>
-          </ol>
-        </div>
-
-        <h2>Admin console</h2>
-        <div class="seq">
-          <ol>
-            <li><span class="who">Route guard</span><span class="what"><code>ProtectedRoute requireAdmin</code> hides
-                the page — convenience, not security.</span></li>
-            <li><span class="who">Console</span><span class="what">Queries the eight insight views in parallel on
-                load.</span></li>
-            <li><span class="who">Postgres</span><span class="what">Because the views are <code>security_invoker</code>,
-                a non-admin gets nothing — the guard is in the database.</span></li>
-            <li><span class="who">Admin</span><span class="what">Triages feedback, requests and corrections; reads
-                insights; flips feature flags.</span></li>
-            <li><span class="who">app_config</span><span class="what">A flag change reaches every live visitor on their
-                next config read. <b>No deploy.</b></span></li>
-          </ol>
-        </div>
-      </section>
-
-      <!-- ══════════════ PRODUCT ══════════════ -->
-      <section class="pane" id="product">
-        <h1>Product &amp; revenue</h1>
-        <p class="lede">
-          Reading primary law is free and stays free — that is the mission, and it is also the moat.
-          Revenue comes from professional workflow built on top of it.
-        </p>
-
-        <h2>The split</h2>
-        <div class="grid g2">
-          <div class="card b-green" style="border-left-width:2px">
-            <h3>Free, permanently</h3>
-            <ul>
-              <li>Full-text search across every instrument</li>
-              <li>Read, copy, print and export any law</li>
-              <li>AI assistant, per country</li>
-              <li>Compare provisions across ECOWAS states</li>
-              <li>Saved library and brief builder</li>
-              <li>Report a correction · courts map</li>
-            </ul>
-            <p>Free access is what earns the traffic, the goodwill and the institutional trust that nothing
-              else in this market has.</p>
-          </div>
-          <div class="card b-gold" style="border-left-width:2px">
-            <h3>Paid later — professional workflow</h3>
-            <ul>
-              <li>Citation and amendment alerts</li>
-              <li>Firm workspace with shared briefs and roles</li>
-              <li>AI memo drafting with pinned citations</li>
-              <li>Offline country packs</li>
-              <li>Branded exports with a table of authorities</li>
-              <li>Compliance checklists · developer API</li>
-            </ul>
-            <p>None of it restricts access to the law. It sells time saved to people whose time is billable.</p>
-          </div>
-        </div>
-
-        <h2>Demand before build</h2>
-        <p>
-          Every roadmap feature ships to the public plans page with an "I'd pay for this" button. Votes
-          land in <code>feature_interest</code> and surface in the admin console ranked by demand. Features
-          are built in the order users are willing to pay for them, not in the order they were imagined.
-        </p>
-
-        <h2>Switching revenue on</h2>
-        <p>
-          The groundwork is already in the schema: <code>profiles.plan</code> exists and is
-          trigger-protected against self-service upgrades, and <code>app_config.paywall_enabled</code> is
-          the single switch that turns gating on. Adding billing later is a payment webhook writing to
-          <code>plan</code> plus flipping one flag — not a re-architecture.
-        </p>
-        <div class="note">
-          <b>Everything is free today.</b> The paywall flag ships in the off position deliberately. The
-          machinery exists so that the decision to charge is a business decision, available on any given
-          Tuesday, rather than an engineering project.
-        </div>
-      </section>
-
-      <!-- ══════════════ DECISIONS ══════════════ -->
-      <section class="pane" id="decisions">
-        <h1>Design decisions</h1>
-        <p class="lede">
-          The choices that shaped the system, and what each one cost. Recorded so that a future
-          maintainer can tell a deliberate trade-off from an accident.
-        </p>
-
-        <div class="adr">
-          <div class="adr__t"><span class="adr__n">ADR-01</span><b>No API server — RLS is the authorisation layer</b>
-          </div>
-          <dl>
-            <dt>Context</dt>
-            <dd>A small team needs authorisation it cannot get wrong.</dd>
-            <dt>Decision</dt>
-            <dd>The browser queries Postgres directly. Row-level security policies are the only access control.</dd>
-            <dt>Gains</dt>
-            <dd>No server to run, patch or pay for. One place to audit. Rules apply to every client equally, including
-              ones we did not write.</dd>
-            <dt>Costs</dt>
-            <dd>Authorisation is expressed in SQL, which is less familiar than middleware. Policy mistakes are severe,
-              so migrations need careful review.</dd>
-          </dl>
-        </div>
-
-        <div class="adr">
-          <div class="adr__t"><span class="adr__n">ADR-02</span><b>The law corpus is a build artefact, not database
-              rows</b></div>
-          <dl>
-            <dt>Context</dt>
-            <dd>Connectivity across West Africa is uneven and often metered.</dd>
-            <dt>Decision</dt>
-            <dd>Primary law is compiled into the bundle as typed modules and served from the CDN.</dd>
-            <dt>Gains</dt>
-            <dd>Search is instant and offline-capable. Zero database cost for the most common action. Read-only data
-              cannot be corrupted at runtime.</dd>
-            <dt>Costs</dt>
-            <dd>Publishing a new law requires a deploy, and the bundle grows with the corpus. Both become limiting as
-              coverage expands beyond a few countries.</dd>
-            <dt>Revisit</dt>
-            <dd>Move the corpus into Postgres with full-text indexes once editors need to publish without engineers, or
-              the bundle outgrows a cheap download.</dd>
-          </dl>
-        </div>
-
-        <div class="adr">
-          <div class="adr__t"><span class="adr__n">ADR-03</span><b>Local-first storage, merged on sign-in</b></div>
-          <dl>
-            <dt>Context</dt>
-            <dd>Forcing an account before a first-time visitor can save anything loses the visitor.</dd>
-            <dt>Decision</dt>
-            <dd>Saving works signed out and persists locally; signing in union-merges local and cloud state.</dd>
-            <dt>Gains</dt>
-            <dd>No feature is gated behind registration. Nothing is ever lost by signing in late. Sign-up is encouraged
-              by value, not by a wall.</dd>
-            <dt>Costs</dt>
-            <dd>Two sources of truth to reconcile. Merge is additive, so a deletion made while signed out does not
-              propagate.</dd>
-          </dl>
-        </div>
-
-        <div class="adr">
-          <div class="adr__t"><span class="adr__n">ADR-04</span><b>One sign-in door, no role hints</b></div>
-          <dl>
-            <dt>Context</dt>
-            <dd>A visible "admin login" advertises where the valuable accounts are.</dd>
-            <dt>Decision</dt>
-            <dd>Everyone uses one form. Role is read from the database after authentication and only ever affects
-              routing.</dd>
-            <dt>Gains</dt>
-            <dd>No reconnaissance surface. Generic failure messages prevent using the form to enumerate registered
-              emails.</dd>
-            <dt>Costs</dt>
-            <dd>Administrators get no dedicated entry point and must know to look for the console.</dd>
-          </dl>
-        </div>
-
-        <div class="adr">
-          <div class="adr__t"><span class="adr__n">ADR-05</span><b>Feature flags in the database, not the bundle</b>
-          </div>
-          <dl>
-            <dt>Context</dt>
-            <dd>Announcements, sign-in providers and the paywall need to change faster than a deploy cycle.</dd>
-            <dt>Decision</dt>
-            <dd>Behaviour reads from <code>app_config</code>, editable in the admin console.</dd>
-            <dt>Gains</dt>
-            <dd>Operational changes take seconds. A broken provider can be switched off without a rebuild.</dd>
-            <dt>Costs</dt>
-            <dd>A config read on load, and the need for sane defaults so the app still works if the fetch fails.</dd>
-          </dl>
-        </div>
-
-        <div class="adr">
-          <div class="adr__t"><span class="adr__n">ADR-06</span><b>First-party analytics, deliberately incomplete</b>
-          </div>
-          <dl>
-            <dt>Context</dt>
-            <dd>A legal platform must not leak what a person is researching.</dd>
-            <dt>Decision</dt>
-            <dd>Batched inserts into our own table. No third parties, no IP addresses, no fingerprints, no measurement
-              cookies.</dd>
-            <dt>Gains</dt>
-            <dd>Credible privacy for a sensitive use case. Data stays inside the same database the rest of the product
-              uses.</dd>
-            <dt>Costs</dt>
-            <dd>No funnel tooling out of the box, and coarser attribution than a commercial analytics product would
-              give.</dd>
-          </dl>
-        </div>
-
-        <div class="adr">
-          <div class="adr__t"><span class="adr__n">ADR-07</span><b>Insights as security-invoker views</b></div>
-          <dl>
-            <dt>Context</dt>
-            <dd>Aggregates would otherwise require shipping raw rows to the client.</dd>
-            <dt>Decision</dt>
-            <dd>Aggregate in Postgres through views declared <code>security_invoker = true</code>.</dd>
-            <dt>Gains</dt>
-            <dd>RLS still applies to the aggregate, so a non-admin gets nothing. The client downloads summaries, not the
-              event log.</dd>
-            <dt>Costs</dt>
-            <dd>Aggregation happens per request; heavy views will eventually need materialising.</dd>
-          </dl>
-        </div>
-      </section>
-
-      <!-- ══════════════ OPS ══════════════ -->
-      <section class="pane" id="ops">
-        <h1>Build &amp; deploy</h1>
-
-        <h2>Pipeline</h2>
-        <div class="seq">
-          <ol>
-            <li><span class="who">git push</span><span class="what">Vercel picks up the commit.</span></li>
-            <li><span class="who">tsc -b</span><span class="what">Whole-project typecheck. A type error fails the build
-                before anything ships.</span></li>
-            <li><span class="who">vite build</span><span class="what">Bundles and hashes assets. <code>VITE_</code> env
-                vars are <b>baked in at this moment</b>.</span></li>
-            <li><span class="who">Vercel</span><span class="what">Publishes immutable assets to the global edge.</span>
-            </li>
-          </ol>
-        </div>
-        <div class="note">
-          <b>Consequence worth remembering.</b> Because environment variables are compiled in at build
-          time, changing one in the hosting dashboard does nothing until the next deploy. New env var,
-          new build — always.
-        </div>
-
-        <h2>Environment</h2>
-        <table>
-          <tr>
-            <th>Variable</th>
-            <th>Purpose</th>
-          </tr>
-          <tr>
-            <td><code>VITE_SUPABASE_URL</code></td>
-            <td>Project endpoint</td>
-          </tr>
-          <tr>
-            <td><code>VITE_SUPABASE_PUBLISHABLE_KEY</code></td>
-            <td>Browser-safe project key</td>
-          </tr>
-        </table>
-        <p style="margin-top:10px">
-          Absent either one, the Supabase client is <code>null</code> and the app runs fully local: the law
-          is still searchable and readable, accounts and sync are simply unavailable. Degradation is a
-          designed state, not a crash.
-        </p>
-
-        <h2>Migrations</h2>
-        <table>
-          <tr>
-            <th>File</th>
-            <th>Establishes</th>
-          </tr>
-          <tr>
-            <td><code>0001_auth_and_library.sql</code></td>
-            <td>Roles, profiles, the personal library, corrections, RLS, privilege-escalation trigger</td>
-          </tr>
-          <tr>
-            <td><code>0002_product_platform.sql</code></td>
-            <td>Profile preferences, feedback, document requests, events, feature interest, config, six insight views
-            </td>
-          </tr>
-          <tr>
-            <td><code>0003_admin_insights.sql</code></td>
-            <td>Activity heatmap and inbox calendar views</td>
-          </tr>
-        </table>
-        <p style="margin-top:10px">Applied in order. Numbered, forward-only, each one idempotent where it can be.</p>
-
-        <h2>Quality gates</h2>
-        <div class="grid g3">
-          <div class="card">
-            <h3>TypeScript strict</h3>
-            <p>Build fails on any type error across the project.</p>
-          </div>
-          <div class="card">
-            <h3>ESLint</h3>
-            <p>React Hooks rules enforced, including purity and effect discipline.</p>
-          </div>
-          <div class="card">
-            <h3>Production build</h3>
-            <p>Every change verified against a real <code>vite build</code>, not just the dev server.</p>
-          </div>
-        </div>
-
-        <h2>Known limits</h2>
-        <table>
-          <tr>
-            <th>Limit</th>
-            <th>Bites when</th>
-            <th>Answer</th>
-          </tr>
-          <tr>
-            <td>Corpus ships in the bundle</td>
-            <td>Coverage passes a few countries</td>
-            <td>Move to Postgres full-text search; keep a cached offline pack</td>
-          </tr>
-          <tr>
-            <td>Single JS chunk over 500&nbsp;kB</td>
-            <td>First load on a slow connection</td>
-            <td>Route-level code splitting; maps and PDF are already lazy</td>
-          </tr>
-          <tr>
-            <td>Views aggregate per request</td>
-            <td>Event volume grows</td>
-            <td>Materialised views on a refresh schedule</td>
-          </tr>
-          <tr>
-            <td>Publishing needs a deploy</td>
-            <td>Non-engineers become editors</td>
-            <td>Corpus in the database with an editor role and review workflow</td>
-          </tr>
-        </table>
-      </section>
-
-    </main>
   </div>
 
-  <script>
-    const nav = document.getElementById('nav');
-    const panes = document.querySelectorAll('.pane');
-    const buttons = nav.querySelectorAll('button');
+  <div class="legend">
+    <span><i style="background:var(--gold)"></i> runs in the browser</span>
+    <span><i style="background:var(--green)"></i> managed service</span>
+    <span><i style="background:var(--blue)"></i> edge / delivery</span>
+    <span><i style="background:var(--violet)"></i> build-time data</span>
+  </div>
 
-    function show(id, push) {
-      panes.forEach(p => p.classList.toggle('on', p.id === id));
-      buttons.forEach(b => b.classList.toggle('on', b.dataset.p === id));
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      if (push) history.replaceState(null, '', '#' + id);
+  <h2>Scale of the system</h2>
+  <div class="grid g4">
+    <div class="stat"><b>14,045</b><span>lines of TS / TSX / CSS</span></div>
+    <div class="stat"><b>22</b><span>pages</span></div>
+    <div class="stat"><b>10</b><span>tables</span></div>
+    <div class="stat"><b>22</b><span>RLS policies</span></div>
+  </div>
+
+  <h2>The one architectural idea</h2>
+  <p>
+    Most products put an API server between the client and the database so that the server can
+    decide who is allowed to do what. This system deletes that layer and pushes the same decision
+    into Postgres itself, as row-level security policies attached to each table.
+  </p>
+  <p>
+    That is why the browser can safely hold a publishable API key: the key identifies the project,
+    it does not grant permission. Every query it makes still runs as the signed-in user — or as an
+    anonymous visitor — and the database rejects anything the policies do not allow. One less
+    service to run, one less place for an authorisation bug to hide.
+  </p>
+</section>
+
+<!-- ══════════════ FRONTEND ══════════════ -->
+<section class="pane" id="frontend">
+  <h1>Frontend</h1>
+  <p class="lede">
+    A conventional React SPA, organised so that state has exactly one owner. Four providers wrap
+    the router; everything below them reads from hooks rather than passing props down.
+  </p>
+
+  <h2>Provider tree</h2>
+  <div class="seq">
+    <ol>
+      <li><span class="who">AuthProvider</span><span class="what">Session, profile row and <b>isAdmin</b>. Subscribes to Supabase auth events and keeps <code>profiles</code> in sync.</span></li>
+      <li><span class="who">JurisdictionProvider</span><span class="what">Which of the 12 ECOWAS countries the visitor is browsing. Drives search scope, AI context and copy.</span></li>
+      <li><span class="who">StoreProvider</span><span class="what">Saved documents, brief items and watchlist. Local-first, merged with the cloud on sign-in.</span></li>
+      <li><span class="who">Layout</span><span class="what">Chrome: nav, command palette, announcement bar, AI dock, feedback widget, onboarding.</span></li>
+      <li><span class="who">Routes</span><span class="what">22 pages. <code>/admin</code> is the only one behind a guard.</span></li>
+    </ol>
+  </div>
+
+  <h2>Module map</h2>
+  <table>
+    <tr><th>Directory</th><th>Holds</th><th>Rule it follows</th></tr>
+    <tr><td><code>pages/</code></td><td><b>22</b> route components, plus <code>pages/admin/</code> tabs</td><td>Fetch their own data; no shared global store</td></tr>
+    <tr><td><code>components/</code></td><td><b>18</b> reusable pieces of UI</td><td>Presentational; side effects go through hooks</td></tr>
+    <tr><td><code>hooks/</code></td><td>auth, jurisdiction, store, theme, app config</td><td>One concern each, exposed as a provider or a hook</td></tr>
+    <tr><td><code>lib/</code></td><td>supabase client, analytics, nudge, feedback bus, auth redirect</td><td>Framework-free; no React imports</td></tr>
+    <tr><td><code>data/</code></td><td>the law corpus, jurisdictions, plans, provenance</td><td>Typed constants, never mutated at runtime</td></tr>
+    <tr><td><code>utils/</code></td><td>smart search, citator, PDF export</td><td>Pure functions, unit-testable in isolation</td></tr>
+  </table>
+
+  <h2>Notable client capabilities</h2>
+  <div class="grid g2">
+    <div class="card">
+      <h3>Typo-tolerant search</h3>
+      <p>Ranking runs entirely in the browser against the bundled corpus, so results appear as you
+      type and keep working offline. Misspellings still match.</p>
+    </div>
+    <div class="card">
+      <h3>Local-first library</h3>
+      <p>Saving a document works signed out and persists locally. Sign in later and the local set is
+      union-merged with the cloud — nothing is lost, and no feature is held hostage to an account.</p>
+    </div>
+    <div class="card">
+      <h3>Country-aware experience</h3>
+      <p>Jurisdiction drives search scope, the AI assistant's context, and the copy shown. A visitor's
+      choice is written to their profile and restored on any device.</p>
+    </div>
+    <div class="card">
+      <h3>Citable exports</h3>
+      <p>Documents export to PDF with provenance, a QR code back to the source and a generated
+      citation, so a brief filed in court can be traced to the instrument.</p>
+    </div>
+    <div class="card">
+      <h3>Dual theme</h3>
+      <p>Every colour resolves from CSS custom properties on <code>&lt;html data-theme&gt;</code>. Theme
+      is resolved before first paint, follows the OS by default, then remembers the choice.</p>
+    </div>
+    <div class="card">
+      <h3>Remote configuration</h3>
+      <p>Announcement banner, sign-in providers, nudge threshold and the paywall switch all read from
+      <code>app_config</code> — changeable from the admin console with no redeploy.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ BACKEND ══════════════ -->
+<section class="pane" id="backend">
+  <h1>Data &amp; backend</h1>
+  <p class="lede">
+    Ten tables in three groups: who the user is, what they produced, and what the product learned.
+    Eight views sit on top to answer product questions without shipping raw rows to the client.
+  </p>
+
+  <h2>Identity</h2>
+  <table>
+    <tr><th>Table</th><th>Purpose</th><th>Notes</th></tr>
+    <tr><td><code>profiles</code></td><td>Public-facing user record, keyed to <code>auth.users</code></td><td>Holds <b>role</b>, <b>plan</b>, country, profession, organisation, onboarding state, last seen</td></tr>
+  </table>
+  <p style="margin-top:10px">
+    Created automatically by the <code>handle_new_user</code> trigger the moment an account appears,
+    so there is never a signed-in user without a profile.
+  </p>
+
+  <h2>User-generated content</h2>
+  <table>
+    <tr><th>Table</th><th>Purpose</th></tr>
+    <tr><td><code>saved_documents</code></td><td>A user's personal library</td></tr>
+    <tr><td><code>brief_items</code></td><td>Documents gathered into a working brief</td></tr>
+    <tr><td><code>watchlist</code></td><td>Instruments to be alerted about when amended</td></tr>
+    <tr><td><code>corrections</code></td><td>Reader-reported errors in the law text</td></tr>
+    <tr><td><code>feedback</code></td><td>Bug reports, ideas, praise, content notes, with a rating</td></tr>
+    <tr><td><code>document_requests</code></td><td>"This law is missing" — the content backlog, sourced from demand</td></tr>
+  </table>
+
+  <h2>Product intelligence</h2>
+  <table>
+    <tr><th>Table</th><th>Purpose</th></tr>
+    <tr><td><code>events</code></td><td>First-party analytics. Page views, searches, reads, AI questions, exports</td></tr>
+    <tr><td><code>feature_interest</code></td><td>"I'd pay for this" votes against roadmap features — demand before build</td></tr>
+    <tr><td><code>app_config</code></td><td>Key/value feature flags read by the live app</td></tr>
+  </table>
+
+  <h2>Views behind the admin console</h2>
+  <div class="pills">
+    <span class="pill">insights_daily</span>
+    <span class="pill">insights_top_searches</span>
+    <span class="pill">insights_zero_result_searches</span>
+    <span class="pill">insights_top_documents</span>
+    <span class="pill">insights_country_activity</span>
+    <span class="pill">insights_feature_interest</span>
+    <span class="pill">insights_activity_heatmap</span>
+    <span class="pill">insights_inbox_daily</span>
+  </div>
+  <div class="note">
+    <b>Why views, not client-side aggregation.</b> Every view is declared
+    <code>security_invoker = true</code>, which means row-level security still applies when it is
+    queried. An aggregate is therefore admin-only by the same rules as the underlying table — the
+    client never receives the raw rows it would need to compute these itself.
+  </div>
+
+  <h2>The two that pay for themselves</h2>
+  <div class="grid g2">
+    <div class="card">
+      <h3>Zero-result searches</h3>
+      <p>Every search that returned nothing, ranked by frequency and grouped by country. This is a
+      content roadmap written by users: it names the exact laws to digitise next, in demand order.</p>
+    </div>
+    <div class="card">
+      <h3>Country activity</h3>
+      <p>Sessions, searches, reads and AI questions per country. Decides which national library to
+      open next using evidence rather than instinct.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ SECURITY ══════════════ -->
+<section class="pane" id="security">
+  <h1>Security model</h1>
+  <p class="lede">
+    There is no server to trust, so nothing is enforced in the UI. Access rules live in the database
+    and apply identically to the app, a stray <code>curl</code>, or anyone poking at the API from a
+    console.
+  </p>
+
+  <h2>Three rules</h2>
+  <div class="grid g3">
+    <div class="card">
+      <h3>Deny by default</h3>
+      <p>RLS is enabled on every table. With no policy matching, a row is invisible. Access is
+      granted explicitly, never assumed.</p>
+    </div>
+    <div class="card">
+      <h3>Own your rows</h3>
+      <p>A user may read and write only rows where <code>user_id = auth.uid()</code>. Admins get
+      separate read policies through a security-definer <code>is_admin()</code> helper.</p>
+    </div>
+    <div class="card">
+      <h3>Privilege is not self-service</h3>
+      <p>A trigger on <code>profiles</code> rejects any change to <b>role</b> or <b>plan</b> that
+      did not come from an admin — so a user cannot promote themselves or grant themselves a paid
+      plan by editing their own row.</p>
+    </div>
+  </div>
+
+  <h2>Keys</h2>
+  <table>
+    <tr><th>Key</th><th>Where it lives</th><th>Why that is safe</th></tr>
+    <tr>
+      <td><b>Publishable</b></td>
+      <td>Browser bundle, via <code>VITE_</code> env var</td>
+      <td>Identifies the project; grants nothing. Every request is still evaluated against RLS as the anonymous or signed-in user.</td>
+    </tr>
+    <tr>
+      <td><b>Secret / service role</b></td>
+      <td><b>Nowhere in this project</b></td>
+      <td>It bypasses RLS entirely. It is never placed in a <code>VITE_</code> variable, a credentials file, or any committed file.</td>
+    </tr>
+  </table>
+  <div class="note danger">
+    <b>Hard rule.</b> Any variable prefixed <code>VITE_</code> is compiled into JavaScript that
+    every visitor downloads. Only the publishable key may ever go there. Credentials live in
+    git-ignored files and are never committed.
+  </div>
+
+  <h2>Authentication</h2>
+  <table>
+    <tr><th>Path</th><th>Status</th><th>Detail</th></tr>
+    <tr><td>Email + password</td><td><b>Live</b></td><td>Sign up, sign in, reset. One door for everyone.</td></tr>
+    <tr><td>Magic link</td><td>Wired</td><td>Passwordless email sign-in.</td></tr>
+    <tr><td>Google OAuth</td><td>Built, disabled</td><td>PKCE flow ready; hidden until <code>google_login_enabled</code> is flipped in the admin console.</td></tr>
+  </table>
+  <div class="note">
+    <b>The sign-in page reveals nothing about roles.</b> There is no "admin login" and no hint that
+    privileged accounts exist. Administrators use the same form as everyone else and are routed by
+    the <code>role</code> the database reports after authentication. Failed sign-ins return one
+    generic message, so the form cannot be used to discover which email addresses are registered.
+  </div>
+
+  <h2>Privacy posture</h2>
+  <div class="grid g2">
+    <div class="card">
+      <h3>First-party analytics only</h3>
+      <p>No third-party trackers, no advertising pixels, no cookies for measurement. Events go to our
+      own Postgres table and nowhere else.</p>
+    </div>
+    <div class="card">
+      <h3>Minimal collection</h3>
+      <p>No IP addresses or fingerprints are stored. Events carry a random session id, a country, and
+      what happened — enough to improve the product, not enough to follow a person.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ FLOWS ══════════════ -->
+<section class="pane" id="flows">
+  <h1>Runtime flows</h1>
+  <p class="lede">The four paths worth knowing, end to end.</p>
+
+  <h2>Reading the law — no account, no network</h2>
+  <div class="seq">
+    <ol>
+      <li><span class="who">Browser</span><span class="what">Loads the hashed bundle from the Vercel edge. The full corpus is already inside it.</span></li>
+      <li><span class="who">Client</span><span class="what">Ranks the corpus locally as the visitor types. <b>No request is made.</b></span></li>
+      <li><span class="who">Client</span><span class="what">Renders the instrument with provenance, citation and export controls.</span></li>
+      <li><span class="who">Analytics</span><span class="what">Queues a <code>search</code> and a <code>doc_view</code> event for later batching.</span></li>
+    </ol>
+  </div>
+
+  <h2>Signing in and merging a library</h2>
+  <div class="seq">
+    <ol>
+      <li><span class="who">User</span><span class="what">Submits email and password on a single form with no role hints.</span></li>
+      <li><span class="who">GoTrue</span><span class="what">Verifies and returns a JWT. Failures return one generic message.</span></li>
+      <li><span class="who">AuthProvider</span><span class="what">Loads the <code>profiles</code> row, exposing role, plan, country and <b>isAdmin</b>.</span></li>
+      <li><span class="who">StoreProvider</span><span class="what">Fetches the cloud library and <b>union-merges</b> it with whatever was saved locally while signed out.</span></li>
+      <li><span class="who">Postgres</span><span class="what">Accepts the writes only for rows belonging to this user, per RLS.</span></li>
+      <li><span class="who">Router</span><span class="what">Sends admins to the console, everyone else to where they were headed.</span></li>
+    </ol>
+  </div>
+
+  <h2>Analytics — batched, cheap, interruption-proof</h2>
+  <div class="seq">
+    <ol>
+      <li><span class="who">Any page</span><span class="what">Calls <code>track(name, props)</code>. The event goes into an in-memory queue.</span></li>
+      <li><span class="who">Queue</span><span class="what">Flushes on a timer, or once the batch is full — one insert instead of dozens of requests.</span></li>
+      <li><span class="who">Browser</span><span class="what">Also flushes on <code>visibilitychange</code> and <code>pagehide</code>, so closing the tab does not lose the session.</span></li>
+      <li><span class="who">Postgres</span><span class="what">Insert-only for clients. Nobody can read the events table back except an admin.</span></li>
+    </ol>
+  </div>
+
+  <h2>Admin console</h2>
+  <div class="seq">
+    <ol>
+      <li><span class="who">Route guard</span><span class="what"><code>ProtectedRoute requireAdmin</code> hides the page — convenience, not security.</span></li>
+      <li><span class="who">Console</span><span class="what">Queries the eight insight views in parallel on load.</span></li>
+      <li><span class="who">Postgres</span><span class="what">Because the views are <code>security_invoker</code>, a non-admin gets nothing — the guard is in the database.</span></li>
+      <li><span class="who">Admin</span><span class="what">Triages feedback, requests and corrections; reads insights; flips feature flags.</span></li>
+      <li><span class="who">app_config</span><span class="what">A flag change reaches every live visitor on their next config read. <b>No deploy.</b></span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ══════════════ PRODUCT ══════════════ -->
+<section class="pane" id="product">
+  <h1>Product &amp; revenue</h1>
+  <p class="lede">
+    Reading primary law is free and stays free — that is the mission, and it is also the moat.
+    Revenue comes from professional workflow built on top of it.
+  </p>
+
+  <h2>The split</h2>
+  <div class="grid g2">
+    <div class="card b-green" style="border-left-width:2px">
+      <h3>Free, permanently</h3>
+      <ul>
+        <li>Full-text search across every instrument</li>
+        <li>Read, copy, print and export any law</li>
+        <li>AI assistant, per country</li>
+        <li>Compare provisions across ECOWAS states</li>
+        <li>Saved library and brief builder</li>
+        <li>Report a correction · courts map</li>
+      </ul>
+      <p>Free access is what earns the traffic, the goodwill and the institutional trust that nothing
+      else in this market has.</p>
+    </div>
+    <div class="card b-gold" style="border-left-width:2px">
+      <h3>Paid later — professional workflow</h3>
+      <ul>
+        <li>Citation and amendment alerts</li>
+        <li>Firm workspace with shared briefs and roles</li>
+        <li>AI memo drafting with pinned citations</li>
+        <li>Offline country packs</li>
+        <li>Branded exports with a table of authorities</li>
+        <li>Compliance checklists · developer API</li>
+      </ul>
+      <p>None of it restricts access to the law. It sells time saved to people whose time is billable.</p>
+    </div>
+  </div>
+
+  <h2>Demand before build</h2>
+  <p>
+    Every roadmap feature ships to the public plans page with an "I'd pay for this" button. Votes
+    land in <code>feature_interest</code> and surface in the admin console ranked by demand. Features
+    are built in the order users are willing to pay for them, not in the order they were imagined.
+  </p>
+
+  <h2>Switching revenue on</h2>
+  <p>
+    The groundwork is already in the schema: <code>profiles.plan</code> exists and is
+    trigger-protected against self-service upgrades, and <code>app_config.paywall_enabled</code> is
+    the single switch that turns gating on. Adding billing later is a payment webhook writing to
+    <code>plan</code> plus flipping one flag — not a re-architecture.
+  </p>
+  <div class="note">
+    <b>Everything is free today.</b> The paywall flag ships in the off position deliberately. The
+    machinery exists so that the decision to charge is a business decision, available on any given
+    Tuesday, rather than an engineering project.
+  </div>
+</section>
+
+<!-- ══════════════ DECISIONS ══════════════ -->
+<section class="pane" id="decisions">
+  <h1>Design decisions</h1>
+  <p class="lede">
+    The choices that shaped the system, and what each one cost. Recorded so that a future
+    maintainer can tell a deliberate trade-off from an accident.
+  </p>
+
+  <div class="adr">
+    <div class="adr__t"><span class="adr__n">ADR-01</span><b>No API server — RLS is the authorisation layer</b></div>
+    <dl>
+      <dt>Context</dt><dd>A small team needs authorisation it cannot get wrong.</dd>
+      <dt>Decision</dt><dd>The browser queries Postgres directly. Row-level security policies are the only access control.</dd>
+      <dt>Gains</dt><dd>No server to run, patch or pay for. One place to audit. Rules apply to every client equally, including ones we did not write.</dd>
+      <dt>Costs</dt><dd>Authorisation is expressed in SQL, which is less familiar than middleware. Policy mistakes are severe, so migrations need careful review.</dd>
+    </dl>
+  </div>
+
+  <div class="adr">
+    <div class="adr__t"><span class="adr__n">ADR-02</span><b>The law corpus is a build artefact, not database rows</b></div>
+    <dl>
+      <dt>Context</dt><dd>Connectivity across West Africa is uneven and often metered.</dd>
+      <dt>Decision</dt><dd>Primary law is compiled into the bundle as typed modules and served from the CDN.</dd>
+      <dt>Gains</dt><dd>Search is instant and offline-capable. Zero database cost for the most common action. Read-only data cannot be corrupted at runtime.</dd>
+      <dt>Costs</dt><dd>Publishing a new law requires a deploy, and the bundle grows with the corpus. Both become limiting as coverage expands beyond a few countries.</dd>
+      <dt>Revisit</dt><dd>Move the corpus into Postgres with full-text indexes once editors need to publish without engineers, or the bundle outgrows a cheap download.</dd>
+    </dl>
+  </div>
+
+  <div class="adr">
+    <div class="adr__t"><span class="adr__n">ADR-03</span><b>Local-first storage, merged on sign-in</b></div>
+    <dl>
+      <dt>Context</dt><dd>Forcing an account before a first-time visitor can save anything loses the visitor.</dd>
+      <dt>Decision</dt><dd>Saving works signed out and persists locally; signing in union-merges local and cloud state.</dd>
+      <dt>Gains</dt><dd>No feature is gated behind registration. Nothing is ever lost by signing in late. Sign-up is encouraged by value, not by a wall.</dd>
+      <dt>Costs</dt><dd>Two sources of truth to reconcile. Merge is additive, so a deletion made while signed out does not propagate.</dd>
+    </dl>
+  </div>
+
+  <div class="adr">
+    <div class="adr__t"><span class="adr__n">ADR-04</span><b>One sign-in door, no role hints</b></div>
+    <dl>
+      <dt>Context</dt><dd>A visible "admin login" advertises where the valuable accounts are.</dd>
+      <dt>Decision</dt><dd>Everyone uses one form. Role is read from the database after authentication and only ever affects routing.</dd>
+      <dt>Gains</dt><dd>No reconnaissance surface. Generic failure messages prevent using the form to enumerate registered emails.</dd>
+      <dt>Costs</dt><dd>Administrators get no dedicated entry point and must know to look for the console.</dd>
+    </dl>
+  </div>
+
+  <div class="adr">
+    <div class="adr__t"><span class="adr__n">ADR-05</span><b>Feature flags in the database, not the bundle</b></div>
+    <dl>
+      <dt>Context</dt><dd>Announcements, sign-in providers and the paywall need to change faster than a deploy cycle.</dd>
+      <dt>Decision</dt><dd>Behaviour reads from <code>app_config</code>, editable in the admin console.</dd>
+      <dt>Gains</dt><dd>Operational changes take seconds. A broken provider can be switched off without a rebuild.</dd>
+      <dt>Costs</dt><dd>A config read on load, and the need for sane defaults so the app still works if the fetch fails.</dd>
+    </dl>
+  </div>
+
+  <div class="adr">
+    <div class="adr__t"><span class="adr__n">ADR-06</span><b>First-party analytics, deliberately incomplete</b></div>
+    <dl>
+      <dt>Context</dt><dd>A legal platform must not leak what a person is researching.</dd>
+      <dt>Decision</dt><dd>Batched inserts into our own table. No third parties, no IP addresses, no fingerprints, no measurement cookies.</dd>
+      <dt>Gains</dt><dd>Credible privacy for a sensitive use case. Data stays inside the same database the rest of the product uses.</dd>
+      <dt>Costs</dt><dd>No funnel tooling out of the box, and coarser attribution than a commercial analytics product would give.</dd>
+    </dl>
+  </div>
+
+  <div class="adr">
+    <div class="adr__t"><span class="adr__n">ADR-07</span><b>Insights as security-invoker views</b></div>
+    <dl>
+      <dt>Context</dt><dd>Aggregates would otherwise require shipping raw rows to the client.</dd>
+      <dt>Decision</dt><dd>Aggregate in Postgres through views declared <code>security_invoker = true</code>.</dd>
+      <dt>Gains</dt><dd>RLS still applies to the aggregate, so a non-admin gets nothing. The client downloads summaries, not the event log.</dd>
+      <dt>Costs</dt><dd>Aggregation happens per request; heavy views will eventually need materialising.</dd>
+    </dl>
+  </div>
+</section>
+
+<!-- ══════════════ OPS ══════════════ -->
+<section class="pane" id="ops">
+  <h1>Build &amp; deploy</h1>
+
+  <h2>Pipeline</h2>
+  <div class="seq">
+    <ol>
+      <li><span class="who">git push</span><span class="what">Vercel picks up the commit.</span></li>
+      <li><span class="who">tsc -b</span><span class="what">Whole-project typecheck. A type error fails the build before anything ships.</span></li>
+      <li><span class="who">vite build</span><span class="what">Bundles and hashes assets. <code>VITE_</code> env vars are <b>baked in at this moment</b>.</span></li>
+      <li><span class="who">Vercel</span><span class="what">Publishes immutable assets to the global edge.</span></li>
+    </ol>
+  </div>
+  <div class="note">
+    <b>Consequence worth remembering.</b> Because environment variables are compiled in at build
+    time, changing one in the hosting dashboard does nothing until the next deploy. New env var,
+    new build — always.
+  </div>
+
+  <h2>Environment</h2>
+  <table>
+    <tr><th>Variable</th><th>Purpose</th></tr>
+    <tr><td><code>VITE_SUPABASE_URL</code></td><td>Project endpoint</td></tr>
+    <tr><td><code>VITE_SUPABASE_PUBLISHABLE_KEY</code></td><td>Browser-safe project key</td></tr>
+  </table>
+  <p style="margin-top:10px">
+    Absent either one, the Supabase client is <code>null</code> and the app runs fully local: the law
+    is still searchable and readable, accounts and sync are simply unavailable. Degradation is a
+    designed state, not a crash.
+  </p>
+
+  <h2>Migrations</h2>
+  <table>
+    <tr><th>File</th><th>Establishes</th></tr>
+    <tr><td><code>0001_auth_and_library.sql</code></td><td>Roles, profiles, the personal library, corrections, RLS, privilege-escalation trigger</td></tr>
+    <tr><td><code>0002_product_platform.sql</code></td><td>Profile preferences, feedback, document requests, events, feature interest, config, six insight views</td></tr>
+    <tr><td><code>0003_admin_insights.sql</code></td><td>Activity heatmap and inbox calendar views</td></tr>
+  </table>
+  <p style="margin-top:10px">Applied in order. Numbered, forward-only, each one idempotent where it can be.</p>
+
+  <h2>Quality gates</h2>
+  <div class="grid g3">
+    <div class="card"><h3>TypeScript strict</h3><p>Build fails on any type error across the project.</p></div>
+    <div class="card"><h3>ESLint</h3><p>React Hooks rules enforced, including purity and effect discipline.</p></div>
+    <div class="card"><h3>Production build</h3><p>Every change verified against a real <code>vite build</code>, not just the dev server.</p></div>
+  </div>
+
+  <h2>Known limits</h2>
+  <table>
+    <tr><th>Limit</th><th>Bites when</th><th>Answer</th></tr>
+    <tr><td>Corpus ships in the bundle</td><td>Coverage passes a few countries</td><td>Move to Postgres full-text search; keep a cached offline pack</td></tr>
+    <tr><td>Single JS chunk over 500&nbsp;kB</td><td>First load on a slow connection</td><td>Route-level code splitting; maps and PDF are already lazy</td></tr>
+    <tr><td>Views aggregate per request</td><td>Event volume grows</td><td>Materialised views on a refresh schedule</td></tr>
+    <tr><td>Publishing needs a deploy</td><td>Non-engineers become editors</td><td>Corpus in the database with an editor role and review workflow</td></tr>
+  </table>
+</section>
+
+</main>
+</div>
+
+<script>
+  const nav = document.getElementById('nav');
+  const panes = document.querySelectorAll('.pane');
+  const buttons = nav.querySelectorAll('button');
+
+  function show(id, push) {
+    panes.forEach(p => p.classList.toggle('on', p.id === id));
+    buttons.forEach(b => b.classList.toggle('on', b.dataset.p === id));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (push) history.replaceState(null, '', '#' + id);
+  }
+
+  nav.addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (b) show(b.dataset.p, true);
+  });
+
+  // Deep links: blueprint/index.html#security opens straight to that section.
+  const start = location.hash.slice(1);
+  if (start && document.getElementById(start)) show(start, false);
+
+  // 1-8 jump between sections.
+  addEventListener('keydown', e => {
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= buttons.length && !e.metaKey && !e.ctrlKey) {
+      show(buttons[n - 1].dataset.p, true);
     }
-
-    nav.addEventListener('click', e => {
-      const b = e.target.closest('button');
-      if (b) show(b.dataset.p, true);
-    });
-
-    // Deep links: blueprint/index.html#security opens straight to that section.
-    const start = location.hash.slice(1);
-    if (start && document.getElementById(start)) show(start, false);
-
-    // 1-8 jump between sections.
-    addEventListener('keydown', e => {
-      const n = parseInt(e.key, 10);
-      if (n >= 1 && n <= buttons.length && !e.metaKey && !e.ctrlKey) {
-        show(buttons[n - 1].dataset.p, true);
-      }
-    });
-  </script>
+  });
+</script>
 </body>
-
 </html>
