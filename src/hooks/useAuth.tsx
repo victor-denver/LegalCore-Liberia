@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase, isSupabaseConfigured, type Profile } from '../lib/supabase';
 import { callbackUrl, rememberNext } from '../lib/authRedirect';
+import { authErrorMessage } from '../lib/authErrors';
 import { setAnalyticsUser, track } from '../lib/analytics';
 
 /**
@@ -84,7 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         queryParams: { access_type: 'offline', prompt: 'select_account' },
       },
     });
-    return error ? { error: error.message } : {};
+    return error ? { error: authErrorMessage(error) } : {};
   }, []);
 
   const signInWithPassword = useCallback(async (email: string, password: string) => {
@@ -101,11 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password,
       options: { data: { full_name: fullName.trim() }, emailRedirectTo: callbackUrl() },
     });
-    if (error) {
-      // Don't leak whether an address is registered.
-      if (/already|registered|exists/i.test(error.message)) return { error: 'Could not create the account. If you already have one, sign in instead.' };
-      return { error: error.message };
-    }
+    if (error) return { error: authErrorMessage(error) };
     // With "Confirm email" on, Supabase returns a user but no session until the link is clicked.
     return { needsConfirmation: !data.session };
   }, []);
@@ -117,7 +114,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email: email.trim(),
       options: { emailRedirectTo: callbackUrl(), shouldCreateUser: false },
     });
-    return error ? { error: error.message } : {};
+    return error ? { error: authErrorMessage(error) } : {};
   }, []);
 
   const sendPasswordReset = useCallback(async (email: string) => {
@@ -125,7 +122,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
       redirectTo: `${window.location.origin}/auth/reset`,
     });
-    return error ? { error: error.message } : {};
+    return error ? { error: authErrorMessage(error) } : {};
   }, []);
 
   const signOut = useCallback(async () => {

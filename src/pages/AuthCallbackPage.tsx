@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Loader2, MailCheck } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { callbackUrl, consumeNext } from '../lib/authRedirect';
+import { authErrorMessage } from '../lib/authErrors';
 import './LoginPage.css';
 
 type ProviderError = { message: string; expired: boolean };
@@ -65,7 +66,7 @@ export default function AuthCallbackPage() {
       options: { emailRedirectTo: callbackUrl() },
     });
     setSending(false);
-    if (err) { setResendError(err.message); return; }
+    if (err) { setResendError(authErrorMessage(err)); return; }
     setSent(true);
   };
 
