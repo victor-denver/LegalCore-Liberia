@@ -123,7 +123,7 @@ export default function Home() {
         <div className="card card--search">
           <span className="card__updated">Try it</span>
           <div className="card__search-wrap">
-            <SearchBar placeholder="Search Liberian law — try Land Rights Act..." />
+            <SearchBar placeholder="Search the law — try Land Rights Act..." />
             <div className="card__search-help">
               <Sparkles size={12}/> Ask AI after you search — it cites real docs
             </div>

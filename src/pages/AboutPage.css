@@ -21,9 +21,44 @@
   padding: 64px 24px 56px;
 }
 
+/* Image left, copy right. The image column is narrower so the text still leads. */
 .about-hero__inner {
-  max-width: 720px;
+  max-width: 1120px;
   margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1fr);
+  gap: 44px;
+  align-items: center;
+}
+
+.about-hero__media {
+  margin: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-card);
+  /* Hold the aspect ratio so the grid does not reflow as the image decodes. */
+  aspect-ratio: 4 / 3;
+}
+
+.about-hero__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about-hero__copy {
+  min-width: 0;
+}
+
+.about-hero__note {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin: 18px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
 }
 
 .about-hero__logo {
@@ -273,6 +308,17 @@
 }
 
 /* ── Responsive ── */
+/* Below this the two columns get too narrow to read comfortably. */
+@media (max-width: 960px) {
+  .about-hero__inner {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .about-hero__media {
+    aspect-ratio: 16 / 9;
+  }
+}
+
 @media (max-width: 768px) {
   .about-hero {
     padding: 40px 16px 36px;

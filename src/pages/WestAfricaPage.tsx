@@ -314,7 +314,7 @@ export default function WestAfricaPage(){
           <h2 className="wa-title"><span className="wa-num">04.</span>Phased Roadmap</h2>
           <p className="wa-muted" style={{marginBottom:16}}>No area goes live before its corpus clears legal review. Status is shown honestly below.</p>
           <div className="wa-roadmap">
-            <div className="wa-phase wa-phase--dark"><span>PHASE 0</span><h4>Foundations</h4><p>✅ Live now</p><p>Liberia on the multi-jurisdiction model: full library, per-country AI, certificates on every law, court map.</p><em>Live: {TOTAL_DOCS} instruments, 1847–2026, free with no login</em></div>
+            <div className="wa-phase wa-phase--dark"><span>PHASE 0</span><h4>Foundations</h4><p>✅ Live now</p><p>Liberia on the multi-jurisdiction model: full library, per-country AI, certificates on every law, court map.</p><em>Live: {TOTAL_DOCS} instruments, 1847–2026, free to read, with an account for search and the AI</em></div>
             <div className="wa-phase"><span>PHASE 1</span><h4>Anglophone</h4><p>Next</p><p>Sierra Leone, Ghana, The Gambia, Nigeria — federal first, then states.</p><em>Goes live corpus by corpus as each clears review</em></div>
             <div className="wa-phase"><span>PHASE 2</span><h4>Francophone</h4><p>Queued</p><p>Senegal, Côte d’Ivoire, Benin, Togo, Guinea + OHADA module.</p><em>OHADA guides already live in the Community layer</em></div>
             <div className="wa-phase"><span>PHASE 3</span><h4>Lusophone</h4><p>Queued</p><p>Cabo Verde, Guinea-Bissau + ECOWAS Community law & Court.</p><em>Free-movement + Court protocol already live</em></div>
@@ -327,7 +327,7 @@ export default function WestAfricaPage(){
       <section className="wa-section">
         <div className="wa-container">
           <h2 className="wa-title"><span className="wa-num">05.</span>Who it&apos;s for</h2>
-          <p className="wa-muted">One library, four ways to use it — free, no login.</p>
+          <p className="wa-muted">One library, four ways to use it — free, with an account for search and the AI.</p>
           <div className="wa-work wa-work--4col">
             <div className="wa-work__card wa-work__card--icon">
               <div className="wa-work__badge">
@@ -427,7 +427,7 @@ export default function WestAfricaPage(){
           <Link to="/about" className="wa-btn wa-btn--light">About LegalCore</Link>
           <Link to="/search" className="wa-btn wa-btn--red">Start searching →</Link>
         </div>
-        <span>Free, no login. Liberia is live today.</span>
+        <span>Free, with no card. Liberia is live today.</span>
       </section>
     </div>
   );
