@@ -27,7 +27,7 @@
   font-family: var(--font-display);
   font-size: 36px;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--display-tracking);
   margin: 0 0 4px;
 }
 
@@ -81,6 +81,7 @@
 
 .saved-empty h3 {
   font-family: var(--font-display);
+  letter-spacing: var(--display-tracking);
   font-size: 20px;
   font-weight: 700;
   margin: 0 0 8px;
@@ -264,6 +265,7 @@
 
 .brief-num {
   font-family: var(--font-display);
+  letter-spacing: var(--display-tracking);
   font-size: 24px;
   font-weight: 700;
   color: var(--text-muted);
@@ -345,6 +347,7 @@
 
 .brief-sheet h2 {
   font-family: var(--font-display);
+  letter-spacing: var(--display-tracking);
   font-size: 24px;
   font-weight: 700;
   margin: 0 0 6px;
@@ -378,6 +381,7 @@
 .brief-sheet li::before {
   content: counter(brief) '.';
   font-family: var(--font-display);
+  letter-spacing: var(--display-tracking);
   font-size: 16px;
   font-weight: 700;
   color: var(--text-muted);

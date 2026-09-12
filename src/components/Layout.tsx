@@ -5,6 +5,7 @@ import AiDock from './AiDock';
 import UserMenu from './UserMenu';
 import FeedbackWidget from './FeedbackWidget';
 import LoginNudge from './LoginNudge';
+import PwaBanner from './PwaBanner';
 import OnboardingModal from './OnboardingModal';
 import { useAppConfig } from '../hooks/useAppConfig';
 import { useAuth } from '../hooks/useAuth';
@@ -181,6 +182,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <MobileTabBar />
       <FeedbackWidget />
       <LoginNudge />
+      <PwaBanner />
       <OnboardingModal />
 
       <footer className="footer">

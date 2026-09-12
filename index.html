@@ -2,11 +2,40 @@
 <html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <title>LegalCore West Africa — ECOWAS legal research</title>
+    <meta
+      name="description"
+      content="Primary law from all 12 ECOWAS states in one place. Search statutes, acts and regulations in plain English, with every result cited to the instrument it came from."
+    />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="LegalCore West Africa — ECOWAS-wide legal intelligence: 12 states, 3 traditions, 590+ laws. Search primary law instantly." />
-    <meta name="theme-color" content="#0A2E22" />
-    <title>LegalCore West Africa — ECOWAS Legal Intelligence Platform</title>
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- The browser chrome follows the chosen theme; useTheme keeps these in sync
+         after a manual switch, and the media queries cover the first paint. -->
+    <meta name="theme-color" content="#0D0D0B" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#FAF7F0" media="(prefers-color-scheme: light)" />
+    <meta name="color-scheme" content="dark light" />
+
+    <!-- iOS predates the manifest and reads these instead. -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="LegalCore" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="LegalCore West Africa" />
+    <meta property="og:title" content="LegalCore West Africa — ECOWAS legal research" />
+    <meta
+      property="og:description"
+      content="Primary law from all 12 ECOWAS states in one place. Search statutes, acts and regulations in plain English, with every result cited."
+    />
+    <meta property="og:image" content="/icons/icon-512.png" />
+    <meta name="twitter:card" content="summary" />
+
     <!-- Resolve the theme before first paint so there is no flash of the wrong one. -->
     <script>
       (function () {

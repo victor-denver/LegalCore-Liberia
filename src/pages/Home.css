@@ -348,6 +348,7 @@
 
 .card__ai h3 {
   font-family: var(--font-display);
+  letter-spacing: var(--display-tracking);
   font-size: 18px;
   font-weight: 700;
   margin: 0 0 8px;
@@ -403,6 +404,7 @@
 
 .card__map h3 {
   font-family: var(--font-display);
+  letter-spacing: var(--display-tracking);
   font-size: 18px;
   font-weight: 700;
   margin: 0 0 6px;

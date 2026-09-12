@@ -20,10 +20,23 @@ function preferred(): Theme {
   return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
 }
 
+/** Matches --bg for each theme, so the mobile browser chrome blends with the page. */
+const CHROME: Record<Theme, string> = { dark: '#0D0D0B', light: '#FAF7F0' };
+
 function paint(t: Theme) {
   const root = document.documentElement;
   root.setAttribute('data-theme', t);
   root.style.colorScheme = t;
+
+  // index.html ships two media-scoped theme-color tags for the first paint. Once
+  // the user picks a theme explicitly, those queries are wrong, so collapse them
+  // into one unconditional tag — this matters most for an installed PWA, where
+  // the colour is the app's title bar rather than a thin strip.
+  const tags = document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]');
+  tags.forEach((tag, i) => {
+    if (i === 0) { tag.removeAttribute('media'); tag.content = CHROME[t]; }
+    else tag.remove();
+  });
 }
 
 let current: Theme = preferred();

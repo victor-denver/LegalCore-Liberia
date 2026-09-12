@@ -1,7 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="6" fill="#6366f1"/>
-  <path d="M16 6 L22 12 L20.5 13.5 L16 9 L11.5 13.5 L10 12 Z" fill="white" opacity="0.9"/>
-  <rect x="15" y="11" width="2" height="10" rx="1" fill="white" opacity="0.9"/>
-  <rect x="10" y="22" width="12" height="2" rx="1" fill="white" opacity="0.9"/>
-  <rect x="8" y="25" width="16" height="2" rx="1" fill="white" opacity="0.7"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="LegalCore">
+  <rect width="32" height="32" rx="6" fill="#0D0D0B"/>
+  <!-- LC monogram, geometric so it stays legible at 16px. -->
+  <path d="M7 8h3.4v12.2h6V23H7z" fill="#F7B733"/>
+  <path d="M25 11.6a6.6 6.6 0 0 0-3.7-1.1c-2.4 0-3.9 1.7-3.9 5s1.5 5 3.9 5a6.6 6.6 0 0 0 3.7-1.1V23a8.3 8.3 0 0 1-4 .9c-4.3 0-7-2.9-7-8.4S14.7 7 19 7a8.3 8.3 0 0 1 4 .9z" fill="#F7B733"/>
 </svg>

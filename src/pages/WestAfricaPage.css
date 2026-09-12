@@ -586,6 +586,7 @@
 
 .wa-phase h4 {
   font-family: var(--font-display);
+  letter-spacing: var(--display-tracking);
   font-size: 18px;
   font-weight: 800;
   margin: 0 0 10px;
@@ -670,6 +671,7 @@
 
 .wa-work__card--icon h4 {
   font-family: var(--font-display);
+  letter-spacing: var(--display-tracking);
   font-size: 18px;
   font-weight: 800;
   color: var(--text-primary);
@@ -702,6 +704,7 @@
 
 .wa-work__card h4 {
   font-family: var(--font-display);
+  letter-spacing: var(--display-tracking);
   font-size: 16px;
   font-weight: 800;
   margin-bottom: 8px;
@@ -834,6 +837,7 @@
 
 .wa-cta h2 {
   font-family: var(--font-display);
+  letter-spacing: var(--display-tracking);
   font-size: clamp(32px, 5vw, 48px);
   font-weight: 900;
   margin-bottom: 12px;

@@ -29,6 +29,8 @@ export type EventName =
   | 'nudge_shown'
   | 'nudge_clicked'
   | 'auth_gate_shown'
+  | 'pwa_installed'
+  | 'pwa_install_dismissed'
   | 'country_changed'
   /** Written by the admin_delete_user function, not the client — listed so the
    *  event vocabulary in the database is documented in one place. */

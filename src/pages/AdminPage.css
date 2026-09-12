@@ -27,7 +27,7 @@
   padding: 4px 9px; border-radius: 999px;
   background: rgba(247,183,51,0.1); border: 1px solid rgba(247,183,51,0.25);
 }
-.admin-head h1 { font-family: var(--font-display); font-size: clamp(28px, 3.4vw, 40px); letter-spacing: -0.025em; line-height: 1.05; margin: 0 0 6px; }
+.admin-head h1 { font-family: var(--font-display); font-size: clamp(28px, 3.4vw, 40px); letter-spacing: var(--display-tracking); line-height: 1.05; margin: 0 0 6px; }
 .admin-head p { font-size: 13px; color: var(--text-secondary); margin: 0; max-width: 72ch; }
 .admin-refresh {
   display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 14px;

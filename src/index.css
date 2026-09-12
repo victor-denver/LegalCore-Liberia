@@ -64,6 +64,10 @@
 
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-display: 'Anak Paud', 'Inter', sans-serif;
+  /* Anak Paud is a caps-only display face and already sets tight. Caps need air
+     between them, so display headings track positive — the opposite of the
+     negative tracking that suits Inter at large sizes. */
+  --display-tracking: 0.03em;
 
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
