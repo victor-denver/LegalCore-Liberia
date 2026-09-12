@@ -73,22 +73,6 @@ export default function AboutPage(){
         </div>
       </section>
 
-      <section className="about-section about-section--flag">
-        <div className="about-container about-flag">
-          <img src="/liberiaFlag.png" alt="Flag of Liberia" />
-          <div>
-            <h3>What is live today</h3>
-            <p>
-              Liberia is complete and searchable: {stats.totalDocuments} instruments spanning 1847 to 2026.
-              For the other eleven ECOWAS states you get community law — the Revised Treaty, protocols
-              and supplementary acts that bind all members — plus comparative reference while each
-              national corpus clears legal review. We would rather tell you what is missing than
-              imply coverage we do not have.
-            </p>
-          </div>
-        </div>
-      </section>
-
       <section className="about-cta">
         <div className="about-container">
           <h2>Ready to use it?</h2>
