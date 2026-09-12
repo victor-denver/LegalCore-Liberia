@@ -37,7 +37,7 @@ const HERO_COLS: HeroCol[] = [
     { src: '/herosection/hero-tile-books.png', alt: 'Leather-bound law reporters' },
   ]},
   { width: 'wide', tiles: [
-    { src: '/herosection/hero-tile-chamber.png', alt: 'Supreme court chamber' },
+    { src: '/herosection/hero-tile-chamber.png', alt: 'Supreme Court chamber' },
     { src: '/herosection/hero-tile-notes.png', alt: 'Annotating a statute' },
   ]},
 ];
@@ -223,7 +223,7 @@ export default function WestAfricaPage(){
           <h2 className="wa-title"><span className="wa-num">01.</span>Executive Summary</h2>
           <p className="wa-lead">LegalCore Liberia has proven the thesis in a single jurisdiction: lawyers, judges, students and businesses need fast, searchable and reliable access to primary law. That problem is far larger across West Africa, where most national law exists only in paper gazettes, out-of-print codes, or scattered PDFs — with no consolidation, version history or citator.</p>
           <div className="wa-callout">
-            This plan proposes <strong>LegalCore West Africa</strong>: a single, multilingual, multi-jurisdiction platform covering legislation, case law and community instruments of the ECOWAS region. <strong>Liberia is live today with {TOTAL_DOCS} instruments (1847–2026)</strong> — Anglophone states go next, then Francophone, then Lusophone + Community law, each the day its corpus clears legal review.
+            <strong>LegalCore West Africa</strong> is a single, multilingual, multi-jurisdiction platform covering legislation, case law and community instruments of the ECOWAS region. <strong>Liberia is live today with {TOTAL_DOCS} instruments (1847–2026)</strong> — Anglophone states go next, then Francophone, then Lusophone + Community law, each the day its corpus clears legal review.
           </div>
           <div className="wa-grid3">
             <div className="wa-card"><span className="wa-card__num">01</span><h4>Sequence by legal tradition, not geography</h4><p>Anglophone common-law first — citation conventions match Liberia. Francophone civil law is a re-architecture, not translation.</p></div>
@@ -241,7 +241,7 @@ export default function WestAfricaPage(){
           <div className="wa-table">
             <div className="wa-table__head"><span>Cluster</span><span>Member states</span><span>Legal tradition</span><span>Language</span></div>
             <div className="wa-table__row"><span>Anglophone common law</span><span>Liberia, Nigeria, Ghana, Sierra Leone, The Gambia</span><span>Common law (Liberia US-influenced; others English)</span><span>English</span></div>
-            <div className="wa-table__row"><span>Francophone civil law</span><span>Senegal, Cote d’Ivoire, Benin, Togo, Guinea</span><span>Civil law, French-derived</span><span>French</span></div>
+            <div className="wa-table__row"><span>Francophone civil law</span><span>Senegal, Côte d’Ivoire, Benin, Togo, Guinea</span><span>Civil law, French-derived</span><span>French</span></div>
             <div className="wa-table__row"><span>Lusophone civil law</span><span>Cabo Verde, Guinea-Bissau</span><span>Civil law, Portuguese-derived</span><span>Portuguese</span></div>
             <div className="wa-table__row"><span>Community layer</span><span>ECOWAS institutions</span><span>Treaty law</span><span>EN / FR / PT</span></div>
           </div>
@@ -271,9 +271,9 @@ export default function WestAfricaPage(){
               { code:'gm', name:'The Gambia', capital:'Banjul', lang:'English', tradition:'Common law', status:'queued' },
               { code:'ng', name:'Nigeria', capital:'Abuja', lang:'English', tradition:'Common law (37 jurisdictions)', status:'queued' },
               { code:'sn', name:'Senegal', capital:'Dakar', lang:'French', tradition:'Civil law', status:'queued' },
-              { code:'ci', name:"Cote d'Ivoire", capital:'Yamoussoukro', lang:'French', tradition:'Civil law', status:'queued' },
+              { code:'ci', name:"Côte d'Ivoire", capital:'Yamoussoukro', lang:'French', tradition:'Civil law', status:'queued' },
               { code:'bj', name:'Benin', capital:'Porto-Novo', lang:'French', tradition:'Civil law', status:'queued' },
-              { code:'tg', name:'Togo', capital:'Lome', lang:'French', tradition:'Civil law', status:'queued' },
+              { code:'tg', name:'Togo', capital:'Lomé', lang:'French', tradition:'Civil law', status:'queued' },
               { code:'gn', name:'Guinea', capital:'Conakry', lang:'French', tradition:'Civil law', status:'queued' },
               { code:'cv', name:'Cabo Verde', capital:'Praia', lang:'Portuguese', tradition:'Civil law', status:'queued' },
               { code:'gw', name:'Guinea-Bissau', capital:'Bissau', lang:'Portuguese', tradition:'Civil law', status:'queued' },
@@ -316,7 +316,7 @@ export default function WestAfricaPage(){
           <div className="wa-roadmap">
             <div className="wa-phase wa-phase--dark"><span>PHASE 0</span><h4>Foundations</h4><p>✅ Live now</p><p>Liberia on the multi-jurisdiction model: full library, per-country AI, certificates on every law, court map.</p><em>Live: {TOTAL_DOCS} instruments, 1847–2026, free with no login</em></div>
             <div className="wa-phase"><span>PHASE 1</span><h4>Anglophone</h4><p>Next</p><p>Sierra Leone, Ghana, The Gambia, Nigeria — federal first, then states.</p><em>Goes live corpus by corpus as each clears review</em></div>
-            <div className="wa-phase"><span>PHASE 2</span><h4>Francophone</h4><p>Queued</p><p>Senegal, Cote d’Ivoire, Benin, Togo, Guinea + OHADA module.</p><em>OHADA guides already live in the Community layer</em></div>
+            <div className="wa-phase"><span>PHASE 2</span><h4>Francophone</h4><p>Queued</p><p>Senegal, Côte d’Ivoire, Benin, Togo, Guinea + OHADA module.</p><em>OHADA guides already live in the Community layer</em></div>
             <div className="wa-phase"><span>PHASE 3</span><h4>Lusophone</h4><p>Queued</p><p>Cabo Verde, Guinea-Bissau + ECOWAS Community law & Court.</p><em>Free-movement + Court protocol already live</em></div>
           </div>
           <p className="wa-footnote">Later: deeper history, analytics, practice tools. Why this order: it follows legal traditions, so citations and procedures carry over instead of starting from zero.</p>
@@ -372,7 +372,7 @@ export default function WestAfricaPage(){
           </Suspense>
           <ul className="wa-list" style={{ marginTop: 16 }}>
             <li><strong>12 states, one tap each</strong> — Anglophone, Francophone, Lusophone + Community layer</li>
-            <li><strong>Liberia is LIVE</strong> — 590+ laws already searchable; others run on ECOWAS law + comparative reference</li>
+            <li><strong>Liberia is LIVE</strong> — {TOTAL_DOCS} instruments already searchable; others run on ECOWAS law + comparative reference</li>
             <li><strong>3 legal traditions</strong> co-exist in one platform — not 12 separate apps</li>
           </ul>
         </div>

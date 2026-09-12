@@ -12,7 +12,7 @@ const tierIcon: Record<VerificationTier, typeof BadgeCheck> = {
 const tierHint: Record<VerificationTier, string> = {
   certified: 'Certified — hand-checked verbatim text from the official source',
   verified: 'Verified — sourced from the official treaty depository',
-  reference: 'Reference — structural placeholder, verbatim replacement in progress',
+  reference: 'Reference — orientation entry; confirm the exact wording in the official gazette before citing',
 };
 
 /** Small pill: ✅ Certified / ✓ Verified / • Reference */

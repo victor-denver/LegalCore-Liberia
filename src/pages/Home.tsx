@@ -41,7 +41,7 @@ export default function Home() {
             <div className="mega__list">
               <Link to="/search" className="mega__item">Search</Link>
               <Link to="/browse" className="mega__item">Browse</Link>
-              <Link to="/map" className="mega__item">Court Map</Link>
+              <Link to="/map" className="mega__item">Court map</Link>
               <Link to="/ai" className="mega__item">AI Assistant</Link>
               <Link to="/compare" className="mega__item">Compare</Link>
             </div>
@@ -50,7 +50,6 @@ export default function Home() {
             <span className="mega__heading">ECOWAS</span>
             <div className="mega__list">
               <Link to="/west-africa" className="mega__item">West Africa</Link>
-              <Link to="/map" className="mega__item">Flag map</Link>
               <Link to="/methodology" className="mega__item">Trust & sources</Link>
               <Link to="/about" className="mega__item">About</Link>
             </div>
@@ -136,7 +135,7 @@ export default function Home() {
         </div>
 
         <Link to="/ai" className="card card--ai">
-          <span className="card__updated">Own AI</span>
+          <span className="card__updated">LegalCore AI</span>
           <div className="card__ai">
             <div className="card__ai-icon"><Sparkles size={18}/></div>
             <h3>Ask in plain English</h3>

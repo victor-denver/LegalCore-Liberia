@@ -14,6 +14,9 @@ import './SearchPage.css';
 
 const searchCorpus = [...documents, ...ecowasCommunityDocs];
 
+/** The sort keys double as labels elsewhere, so they need presentable forms here. */
+const SORT_LABELS = { relevance: 'Relevance', newest: 'Newest', oldest: 'Oldest' } as const;
+
 const typeFilters:{value:DocumentType|'all';label:string}[]=[
   {value:'all',label:'All'},
   {value:'constitution',label:'Constitution'},
@@ -93,7 +96,7 @@ export default function SearchPage(){
             <div className="search-controls__right">
               <div className="sort-pills">
                 {(['relevance','newest','oldest'] as const).map(s=>(
-                  <button key={s} className={`sort-pill ${sortBy===s?'sort-pill--active':''}`} onClick={()=>setSortBy(s)}>{s}</button>
+                  <button key={s} className={`sort-pill ${sortBy===s?'sort-pill--active':''}`} onClick={()=>setSortBy(s)}>{SORT_LABELS[s]}</button>
                 ))}
               </div>
               <button className={`filter-btn ${showFilters?'filter-btn--active':''}`} onClick={()=>setShowFilters(!showFilters)}>

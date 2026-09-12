@@ -93,7 +93,7 @@ function CourtsView() {
               </button>
             );
           })}
-          {filtered.length === 0 && <div className="map-empty">No courts found. Try clear filter.</div>}
+          {filtered.length === 0 && <div className="map-empty">No courts found. Clear the filter.</div>}
         </div>
 
         {selected && (

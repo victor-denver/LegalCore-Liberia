@@ -35,7 +35,7 @@ export default function AboutPage(){
             </div>
             <div className="about-card">
               <h3><Users size={18}/> For everyone</h3>
-              <p>Market woman in Duala, student at UL, counsel in Sanniquellie — all tap the same search, get same cited answer. If you can type “land”, you can use it. We made it <strong>dumb-proof</strong>.</p>
+              <p>Market woman in Duala, student at UL, counsel in Sanniquellie — all tap the same search, get the same cited answer. If you can type “land”, you can use it. We made it <strong>dumb-proof</strong>.</p>
             </div>
             <div className="about-card">
               <h3><Globe size={18}/> Built by AmaraTech</h3>

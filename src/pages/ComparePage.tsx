@@ -118,14 +118,14 @@ const TOPICS: CompareTopic[] = [
   {
     id: 'cyber',
     label: 'Cybercrime',
-    intro: 'New digital offences, harmonized from one ECOWAS directive.',
+    intro: 'New digital offences, harmonised from one ECOWAS directive.',
     sideA: ['stat-2024-cybercrime'],
     sideB: ['ecowas-criminal-cooperation'],
     rows: [
       {
         dim: 'Core offences',
         a: 'Unauthorized access (≤3 yrs), computer fraud incl. phishing (≤5 yrs), data interference, cyber harassment; digital evidence admissible with chain of custody.',
-        b: 'ECOWAS Directive C/DIR.1/08/11 required all states to criminalize the same family: unlawful access, data interference, fraud, child-pornography + expedited preservation powers.',
+        b: 'ECOWAS Directive C/DIR.1/08/11 required all states to criminalise the same family: unlawful access, data interference, fraud, child pornography + expedited preservation powers.',
         citeA: ['stat-2024-cybercrime'], citeB: ['ecowas-criminal-cooperation'],
       },
       {

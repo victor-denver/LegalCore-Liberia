@@ -633,10 +633,10 @@ const ANSWER_STRINGS: Record<'en' | 'fr' | 'pt', AnswerStrings> = {
     switchNote: (asked, workspace) =>
       `\n\n_Jurisdiction note: you asked about **${asked}** — I answered from that area's training slice. Your workspace is still set to **${workspace}**._`,
     comparativeNote: (jName, phase) =>
-      `\n\n_Respect-area note: **${jName}** full corpus is queued (${phase}). Above is ECOWAS community law + Liberia comparative reference — verified, but confirm with local counsel before relying._`,
+      `\n\n_Jurisdiction note: the full **${jName}** corpus is queued (${phase}). The above is ECOWAS community law plus comparative reference — confirm with local counsel before relying on it._`,
     lowNote: (pct) =>
       `\n\n_Low-confidence match (${pct}%) — closest verified instruments shown. Rephrase with a year, article number, or Act name for a stronger hit._`,
-    footer: (title) => `\n\nTap any **source** below to read the full text. Want it simpler? Say "summarize ${title} simply".`,
+    footer: (title) => `\n\nTap any **source** below to read the full text. Want it simpler? Say "summarise ${title} simply".`,
   },
   fr: {
     ecowasName: 'le droit communautaire CEDEAO',

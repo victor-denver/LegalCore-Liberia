@@ -110,7 +110,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <span>{juris.name}</span>
               <small>{juris.status==='active' ? 'LIVE' : juris.phase}</small>
             </button>
-            <button className="topbar__icon" aria-label="Saved library" title="Saved & briefs" onClick={()=>navigate('/saved')}><Bookmark size={16}/></button>
+            <button className="topbar__icon" aria-label="Saved & briefs" title="Saved & briefs" onClick={()=>navigate('/saved')}><Bookmark size={16}/></button>
             <button className="topbar__icon" aria-label="Notifications"><Bell size={16}/></button>
             <button
               className="topbar__theme"
@@ -133,10 +133,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="mobile-menu" role="menu">
               <Link to="/search" onClick={()=>setMobileOpen(false)} className={location.pathname==='/search'?'active':''}>Search</Link>
               <Link to="/browse" onClick={()=>setMobileOpen(false)} className={location.pathname==='/browse'?'active':''}>Browse</Link>
-              <Link to="/map" onClick={()=>setMobileOpen(false)} className={location.pathname==='/map'?'active':''}>Map</Link>
+              <Link to="/map" onClick={()=>setMobileOpen(false)} className={location.pathname==='/map'?'active':''}>Courts</Link>
               <Link to="/compare" onClick={()=>setMobileOpen(false)} className={location.pathname==='/compare'?'active':''}><GitCompare size={14}/> Compare</Link>
               <Link to="/ai" onClick={()=>setMobileOpen(false)} className={location.pathname==='/ai'?'active':''}><Sparkles size={14}/> AI Assistant</Link>
-              <Link to="/saved" onClick={()=>setMobileOpen(false)} className={location.pathname==='/saved'?'active':''}><Bookmark size={14}/> Saved & Briefs</Link>
+              <Link to="/saved" onClick={()=>setMobileOpen(false)} className={location.pathname==='/saved'?'active':''}><Bookmark size={14}/> Saved & briefs</Link>
               <Link to="/methodology" onClick={()=>setMobileOpen(false)} className={location.pathname==='/methodology'?'active':''}>Methodology</Link>
               <Link to="/about" onClick={()=>setMobileOpen(false)} className={location.pathname==='/about'?'active':''}>About Us</Link>
               <Link to="/west-africa" onClick={()=>setMobileOpen(false)} className={(location.pathname==='/west-africa'||location.pathname==='/')?'active':''}>ECOWAS Plan</Link>

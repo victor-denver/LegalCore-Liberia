@@ -12,9 +12,9 @@ const COPY: Record<GatedFeature, { icon: ReactNode; title: string; lead: string;
   search: {
     icon: <Search size={22} />,
     title: 'Create a free account to search',
-    lead: 'Search runs across every statute, act and regulation in the library — with typo tolerance and the exact section cited.',
+    lead: 'Search runs across every statute, act and regulation in the library — misspellings are fine, and every result cites the exact section.',
     perks: [
-      'Full-text search across all 12 ECOWAS jurisdictions',
+      "Full-text search across Liberia's live library and ECOWAS community law",
       'Save laws and briefs, synced to every device',
       'Ask the AI in plain English and get cited answers',
     ],
@@ -25,7 +25,7 @@ const COPY: Record<GatedFeature, { icon: ReactNode; title: string; lead: string;
     lead: 'Ask a legal question in plain English. Every answer quotes the instrument it came from and links to the full text.',
     perks: [
       'Cited answers drawn from the live corpus — no invented law',
-      'Full-text search with typo tolerance',
+      'Full-text search that tolerates misspellings',
       'Save laws and briefs, synced to every device',
     ],
   },

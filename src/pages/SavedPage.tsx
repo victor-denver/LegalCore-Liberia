@@ -119,7 +119,7 @@ export default function SavedPage() {
                   <h2>{title || 'Legal Memorandum'}</h2>
                   {matter && <p className="brief-sheet__matter">Matter: {matter}</p>}
                   <p className="brief-sheet__meta">
-                    Prepared {new Date().toLocaleDateString()} • {brief.length} authorities • All citations verified in LegalCore
+                    Prepared {new Date().toLocaleDateString()} • {brief.length} authorities • Citations from LegalCore — confirm against the gazette before filing
                   </p>
                 </header>
                 <ol>

@@ -43,13 +43,20 @@ export default function DocumentPage(){
   const Icon=c.icon;
   const related=allDocs.filter(d=>d.id!==doc.id && d.category===doc.category).slice(0,4);
   const saved=isSaved(doc.id);
+  // Provenance drives every trust label on this page. Hard-coding them claimed
+  // more than the document could support: a Reference-tier orientation entry was
+  // being presented as "Verified", and an ECOWAS treaty as Liberian official text.
+  const prov=getProvenance(doc);
+  const jurisdiction=(doc as { jurisdiction?: string }).jurisdiction ?? 'LR';
+  const isCommunityLaw=jurisdiction==='ECOWAS' || doc.id.startsWith('ecowas-') || doc.id.startsWith('ohada-');
+  const readingMinutes=Math.max(1, Math.round(doc.body.split(/\s+/).length / 200));
 
   const copyText=async()=>{
     await navigator.clipboard.writeText(doc.body);
     setCopied(true); setTimeout(()=>setCopied(false),1500);
   };
   const copyCite=async()=>{
-    await navigator.clipboard.writeText(`${doc.title} (${doc.date}) — LegalCore Liberia — https://legalcore.lr/document/${doc.id}`);
+    await navigator.clipboard.writeText(`${doc.title} (${doc.date}) — LegalCore West Africa — https://legalcore.lr/document/${doc.id}`);
     setCopiedCite(true); setTimeout(()=>setCopiedCite(false),1500);
   };
 
@@ -59,7 +66,7 @@ export default function DocumentPage(){
         <div className="doc-nav">
           <Link to="/search" className="doc-back"><ArrowLeft size={14}/> Back to results</Link>
           <div className="doc-nav__right">
-            <span className="doc-nav__hint"><Clock3 size={12}/> ~2 min read • Verified</span>
+            <span className="doc-nav__hint"><Clock3 size={12}/> ~{readingMinutes} min read • {prov.tierLabel}</span>
             <Link to="/ai" className="doc-ai"><Sparkles size={12}/> Ask AI about this</Link>
           </div>
         </div>
@@ -107,8 +114,14 @@ export default function DocumentPage(){
 
               <div className="doc-paper">
                 <div className="doc-paper__header">
-                  <img src="/liberiaFlag.png" alt="Liberia Flag" className="doc-paper__flag-img" />
-                  <span className="doc-paper__label">Republic of Liberia — Official Text</span>
+                  {!isCommunityLaw && <img src="/liberiaFlag.png" alt="Flag of Liberia" className="doc-paper__flag-img" />}
+                  <span className="doc-paper__label">
+                    {prov.tier === 'reference'
+                      ? 'Reference text — confirm wording in the official gazette'
+                      : isCommunityLaw
+                        ? 'ECOWAS — Official text'
+                        : 'Republic of Liberia — Official text'}
+                  </span>
                   <span className="doc-paper__id">{doc.id.toUpperCase()}</span>
                 </div>
                 <div className="doc-body">
@@ -120,7 +133,7 @@ export default function DocumentPage(){
                   })}
                 </div>
                 <div className="doc-paper__footer">
-                  <span>LegalCore Liberia — Source verified • {doc.year}</span>
+                  <span>LegalCore West Africa — {prov.tierLabel} • {doc.year}</span>
                   <span>Page 1 • {doc.type}</span>
                 </div>
               </div>
@@ -181,7 +194,7 @@ export default function DocumentPage(){
               <div className="doc-aside__ai-head"><Sparkles size={14}/> Ask AI about this law</div>
               <p>Get a plain-English summary, key points, and how it applies — cited.</p>
               <Link to={`/ai?q=${encodeURIComponent(doc.title)}`} className="doc-aside__ai-btn">Ask AI <ExternalLink size={12}/></Link>
-              <span className="doc-aside__ai-note">Knows all {documents.length} laws • Never guesses</span>
+              <span className="doc-aside__ai-note">Searches {allDocs.length} instruments • Answers are cited or refused</span>
             </div>
 
             <div className="doc-aside__card">

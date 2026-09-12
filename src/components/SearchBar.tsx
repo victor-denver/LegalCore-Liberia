@@ -25,8 +25,8 @@ export default function SearchBar({ size = 'default', initialQuery = '', placeho
           className="search-bar__input"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder={placeholder || 'Search law — typos are fine'}
-          aria-label="Search Liberian law"
+          placeholder={placeholder || 'Search law — misspellings are fine'}
+          aria-label="Search law"
         />
         <button type="submit" className="search-bar__btn" aria-label="Search">
           <span className="search-bar__btn-text">Search</span>

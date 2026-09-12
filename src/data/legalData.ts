@@ -45,7 +45,7 @@ export const categories: { id: LegalCategory; label: string; description: string
   { id: 'property', label: 'Property & Land Law', description: 'Land rights, property disputes, deeds, hinterland regulations, and tenure systems', count: 48 },
   { id: 'commercial', label: 'Commercial Law', description: 'Business regulations, contracts, trade law, concessions, and corporate governance', count: 38 },
   { id: 'family', label: 'Family Law', description: 'Marriage, divorce, custody, inheritance, and domestic relations', count: 29 },
-  { id: 'labor', label: 'Labor & Employment', description: 'Workers rights, employment contracts, labor disputes, and workplace safety', count: 24 },
+  { id: 'labor', label: 'Labor & Employment', description: 'Workers’ rights, employment contracts, labor disputes, and workplace safety', count: 24 },
   { id: 'environmental', label: 'Environmental Law', description: 'Environmental protection, forestry, mining regulations, and conservation', count: 22 },
   { id: 'human-rights', label: 'Human Rights', description: 'Civil liberties, TRC recommendations, international conventions, and protections', count: 35 },
   { id: 'maritime', label: 'Maritime Law', description: 'Liberian Maritime Authority, vessel registration, shipping regulations', count: 31 },

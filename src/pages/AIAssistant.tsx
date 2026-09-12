@@ -222,7 +222,7 @@ export default function AIAssistant() {
             <span className="ai-header__icon"><img src={flagSrc} alt={activeJ.name} style={{ width: 22, height: 14, objectFit: 'cover', borderRadius: 2, border: '1px solid rgba(0,0,0,0.1)' }} /></span>
             <div>
               <span className="ai-header__title">LegalCore AI — {activeJ.name} {FLAG_EMOJI[jurisdiction] ?? ''}</span>
-              <span className="ai-header__sub">{documents.length + ecowasCommunityDocs.length} instruments • {activeJ.languageLabel} • Own WebEngine v1</span>
+              <span className="ai-header__sub">{documents.length + ecowasCommunityDocs.length} instruments • {activeJ.languageLabel} • Cited answers</span>
             </div>
           </div>
           <div className="ai-header__right">
@@ -233,7 +233,7 @@ export default function AIAssistant() {
 
         {/* ── OWN ENGINE: jurisdiction (respect-area country) + training status ── */}
         <div className="ai-engine">
-          <span className="ai-engine__badge"><Cpu size={12} /> Own WebEngine v1</span>
+          <span className="ai-engine__badge"><Cpu size={12} /> LegalCore AI</span>
           <div className="ai-engine__juris" ref={jurisRef}>
             <Globe2 size={12} />
             <button
@@ -302,7 +302,7 @@ export default function AIAssistant() {
                   <div className="ai-msg__text" dangerouslySetInnerHTML={{ __html: formatAiHtml(m.content) }} />
                   {m.meta && m.role === 'assistant' && (
                     <div className="ai-meta">
-                      <span><Cpu size={10} /> WebEngine v1</span>
+                        <span><Cpu size={10} /> LegalCore AI</span>
                       <span><Globe2 size={10} /> {m.meta.jurisdiction === 'ECOWAS' ? 'ECOWAS' : getJurisdiction(m.meta.jurisdiction).name}</span>
                       <span>confidence {Math.round(m.meta.confidence * 100)}%</span>
                       <span>{m.meta.latencyMs} ms</span>
@@ -345,7 +345,7 @@ export default function AIAssistant() {
               <div className="ai-msg ai-msg--assistant">
                 <LawAvatar size={36} thinking />
                 <div className="ai-msg__bubble">
-                  {stream ? <div className="ai-msg__text" dangerouslySetInnerHTML={{ __html: formatAiHtml(stream) }} /> : <div className="ai-typing"><span /><span /><span /> WebEngine searching {trainStats?.totalIndexed ?? documents.length} {activeJ.name} instruments…</div>}
+                  {stream ? <div className="ai-msg__text" dangerouslySetInnerHTML={{ __html: formatAiHtml(stream) }} /> : <div className="ai-typing"><span /><span /><span /> Searching {trainStats?.totalIndexed ?? documents.length} {activeJ.name} instruments…</div>}
                 </div>
               </div>
             )}

@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react';
+import { documents } from '../data/legalData';
+import { ecowasCommunityDocs } from '../data/ecowasCommunity';
 import './LoadingScreen.css';
+
+/** Counted from the corpus rather than hard-coded, so it cannot drift out of date. */
+const CORPUS_SIZE = documents.length + ecowasCommunityDocs.length;
 
 export default function LoadingScreen({ onDone }: { onDone: () => void }) {
   const [progress, setProgress] = useState(0);
@@ -20,7 +25,7 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
       <div className="loading-card">
         <img src="/logo/AmaraTech IT Logo (new) - dark bg.png" alt="AmaraTech" className="loading-logo" />
         <h1>LegalCore West Africa</h1>
-        <p>Loading laws across 12 ECOWAS states — 590+ documents, offline ready</p>
+        <p>Loading law across 12 ECOWAS states — {CORPUS_SIZE} instruments, offline-ready</p>
         <div className="loading-bar">
           <div className="loading-bar__fill" style={{ width: `${progress}%` }} />
         </div>

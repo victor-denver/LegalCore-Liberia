@@ -22,7 +22,7 @@ export default function BrowsePage(){
             <span><strong>{stats.categories}</strong> topics</span>
             <span><strong>{stats.yearsSpan}</strong></span>
           </div>
-          <div className="browse-stats browse-stats--tiers" title="Certified = hand-checked verbatim • Verified = official treaty source • Reference = structural placeholder being replaced verbatim">
+          <div className="browse-stats browse-stats--tiers" title="Certified = hand-checked against the official text • Verified = from the official treaty depository • Reference = orientation entry; confirm in the gazette before citing">
             <span><strong>{tiers.certified}</strong> certified</span>
             <span><strong>{tiers.verified}</strong> verified</span>
             <span><strong>{tiers.reference}</strong> reference</span>

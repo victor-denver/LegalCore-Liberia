@@ -69,11 +69,11 @@ export default function MethodologyPage() {
         <section className="method-cite">
           <h2>Cite us like this</h2>
           <code>Land Rights Act of 2018 (Sept 19, 2018) — LegalCore STAT-2018-LAND-RIGHTS [Certified, verified {VERIFIED_ON}]</code>
-          <p>For counsel: always confirm section wording against the official gazette before filing. Build a printable memo with citations in <Link to="/saved">My Library → Brief</Link>.</p>
+          <p>For counsel: always confirm section wording against the official gazette before filing. Build a printable memo with citations in <Link to="/saved">Saved &amp; briefs</Link>.</p>
         </section>
 
         <section className="method-correct">
-          <h2><Flag size={15} /> Report an error — corrected in 48h</h2>
+          <h2><Flag size={15} /> Report an error — corrected within 48 hours</h2>
           <p>Found a wrong date, a bad citation, a moved court? Tell us. Reports are logged publicly below.</p>
           {sent ? (
             <p className="method-sent"><Check size={14} /> Logged. Our editors review within 48 hours. Thank you for keeping the law honest.</p>
